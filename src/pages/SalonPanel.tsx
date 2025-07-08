@@ -17,6 +17,7 @@ interface Salon {
   phone: string;
   address: string;
   photo_url: string;
+  responsible_name: string;
   is_active: boolean;
 }
 
@@ -43,6 +44,7 @@ const SalonPanel = () => {
     phone: '',
     address: '',
     photo_url: '',
+    responsible_name: '',
     is_active: true
   });
   const { toast } = useToast();
@@ -50,9 +52,14 @@ const SalonPanel = () => {
   useEffect(() => {
     if (user && profile?.role === 'salon') {
       fetchSalonData();
-      fetchSalonTreatments();
     }
   }, [user, profile]);
+
+  useEffect(() => {
+    if (salon?.id) {
+      fetchSalonTreatments();
+    }
+  }, [salon]);
 
   if (loading) {
     return (
@@ -85,6 +92,7 @@ const SalonPanel = () => {
           phone: data.phone || '',
           address: data.address || '',
           photo_url: data.photo_url || '',
+          responsible_name: data.responsible_name || '',
           is_active: data.is_active
         });
       }
@@ -230,14 +238,25 @@ const SalonPanel = () => {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="address" className="text-admin-text">Endereço</Label>
-              <Input
-                id="address"
-                value={salonForm.address}
-                onChange={(e) => setSalonForm({ ...salonForm, address: e.target.value })}
-                className="border-admin-border"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="responsible_name" className="text-admin-text">Nome do Responsável</Label>
+                <Input
+                  id="responsible_name"
+                  value={salonForm.responsible_name}
+                  onChange={(e) => setSalonForm({ ...salonForm, responsible_name: e.target.value })}
+                  className="border-admin-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address" className="text-admin-text">Endereço</Label>
+                <Input
+                  id="address"
+                  value={salonForm.address}
+                  onChange={(e) => setSalonForm({ ...salonForm, address: e.target.value })}
+                  className="border-admin-border"
+                />
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -267,6 +286,7 @@ const SalonPanel = () => {
         ) : (
           <div className="space-y-2 text-admin-text">
             <p><strong>Nome:</strong> {salon?.name || 'Não informado'}</p>
+            <p><strong>Responsável:</strong> {salon?.responsible_name || 'Não informado'}</p>
             <p><strong>Telefone:</strong> {salon?.phone || 'Não informado'}</p>
             <p><strong>Endereço:</strong> {salon?.address || 'Não informado'}</p>
             <p><strong>Status:</strong> {salon?.is_active ? 'Ativo' : 'Inativo'}</p>
