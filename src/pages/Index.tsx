@@ -9,8 +9,9 @@ interface Salon {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  logo_url?: string;
+  phone?: string;
+  address?: string;
+  instagram?: string;
 }
 
 const Index = () => {
@@ -26,6 +27,7 @@ const Index = () => {
       const { data, error } = await supabase
         .from('salons')
         .select('*')
+        .eq('is_active', true)
         .order('name');
 
       if (error) {
@@ -55,10 +57,12 @@ const Index = () => {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-3">
-            <Scissors className="h-8 w-8 text-primary" />
+            <div className="text-2xl font-bold">
+              A<span className="text-gold">RO</span>
+            </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Cardápios Digitais</h1>
-              <p className="text-muted-foreground">Encontre os melhores salões de beleza</p>
+              <h1 className="text-3xl font-bold text-foreground">Painel Administrativo</h1>
+              <p className="text-muted-foreground">Gerencie os menus digitais dos salões parceiros</p>
             </div>
           </div>
         </div>
@@ -67,9 +71,9 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Salões Disponíveis</h2>
+          <h2 className="text-2xl font-semibold mb-4">Salões Parceiros</h2>
           <p className="text-muted-foreground">
-            Explore os cardápios de serviços dos nossos parceiros
+            Clique em um salão para ver seu menu digital
           </p>
         </div>
 
@@ -86,26 +90,20 @@ const Index = () => {
               <Card key={salon.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    {salon.logo_url ? (
-                      <img 
-                        src={salon.logo_url} 
-                        alt={`Logo ${salon.name}`}
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <Scissors className="h-6 w-6 text-primary" />
-                    )}
+                    <Scissors className="h-6 w-6 text-primary" />
                     {salon.name}
                   </CardTitle>
-                  {salon.description && (
-                    <CardDescription>{salon.description}</CardDescription>
-                  )}
+                  <CardDescription>
+                    {salon.address && <div>📍 {salon.address}</div>}
+                    {salon.phone && <div>📞 {salon.phone}</div>}
+                    {salon.instagram && <div>📷 {salon.instagram}</div>}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button asChild className="w-full">
-                    <Link to={`/salon/${salon.slug}`}>
+                    <Link to={`/menu/${salon.slug}`}>
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      Ver Cardápio
+                      Ver Menu Digital
                     </Link>
                   </Button>
                 </CardContent>
@@ -118,7 +116,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="mt-16 border-t bg-card">
         <div className="container mx-auto px-4 py-6 text-center text-muted-foreground">
-          <p>© 2024 Cardápios Digitais - Conectando você aos melhores salões</p>
+          <p>© 2024 Appro - Sistema de Menus Digitais</p>
         </div>
       </footer>
     </div>

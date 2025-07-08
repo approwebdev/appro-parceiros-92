@@ -14,10 +14,40 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       salon_treatments: {
         Row: {
           created_at: string
-          custom_price: number | null
+          custom_price: number
           id: string
           is_active: boolean
           salon_id: string
@@ -26,7 +56,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          custom_price?: number | null
+          custom_price: number
           id?: string
           is_active?: boolean
           salon_id: string
@@ -35,7 +65,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          custom_price?: number | null
+          custom_price?: number
           id?: string
           is_active?: boolean
           salon_id?: string
@@ -61,64 +91,91 @@ export type Database = {
       }
       salons: {
         Row: {
+          address: string | null
           created_at: string
-          description: string | null
           id: string
-          logo_url: string | null
+          instagram: string | null
+          is_active: boolean
           name: string
+          phone: string | null
           slug: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          address?: string | null
           created_at?: string
-          description?: string | null
           id?: string
-          logo_url?: string | null
+          instagram?: string | null
+          is_active?: boolean
           name: string
+          phone?: string | null
           slug: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          address?: string | null
           created_at?: string
-          description?: string | null
           id?: string
-          logo_url?: string | null
+          instagram?: string | null
+          is_active?: boolean
           name?: string
+          phone?: string | null
           slug?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
       treatments: {
         Row: {
-          base_price: number | null
-          category: string | null
+          base_price: number
+          category: string
           created_at: string
           description: string | null
           duration_minutes: number | null
           id: string
+          images: string[] | null
+          is_active: boolean
           name: string
+          rating: number | null
+          rating_count: number | null
+          subtitle: string | null
           updated_at: string
+          video_url: string | null
         }
         Insert: {
-          base_price?: number | null
-          category?: string | null
+          base_price?: number
+          category: string
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
           id?: string
+          images?: string[] | null
+          is_active?: boolean
           name: string
+          rating?: number | null
+          rating_count?: number | null
+          subtitle?: string | null
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
-          base_price?: number | null
-          category?: string | null
+          base_price?: number
+          category?: string
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
           id?: string
+          images?: string[] | null
+          is_active?: boolean
           name?: string
+          rating?: number | null
+          rating_count?: number | null
+          subtitle?: string | null
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: []
       }
