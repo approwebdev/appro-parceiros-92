@@ -130,6 +130,12 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
                 alt={category.name}
                 className="w-full h-full object-cover"
               />
+              {/* Nome da categoria em cima */}
+              <div className="absolute top-8 left-8 right-8">
+                <h3 className="text-white text-2xl md:text-3xl font-bold text-center bg-black/30 backdrop-blur-sm rounded-lg py-2 px-4">
+                  {category.name}
+                </h3>
+              </div>
               <div className="absolute bottom-8 left-8">
                 <h3 className="text-white text-3xl md:text-4xl font-bold">{category.name}</h3>
               </div>

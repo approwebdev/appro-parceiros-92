@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Edit, Save, Plus, Search, Copy, ExternalLink } from 'lucide-react';
+import { LogOut, Edit, Save, Plus, Search, Copy, ExternalLink, Upload, Image } from 'lucide-react';
 import { SalonSidebar } from '@/components/salon/SalonSidebar';
 
 interface Salon {
@@ -52,6 +52,7 @@ const SalonPanel = () => {
     plan: 'basico',
     is_active: true
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -231,6 +232,61 @@ const SalonPanel = () => {
     }
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Erro",
+        description: "Por favor, selecione apenas arquivos de imagem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar tamanho (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Erro",
+        description: "A imagem deve ter no máximo 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      // Criar um nome único para o arquivo
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      // No futuro, aqui seria o upload para o Supabase Storage
+      // Por agora, vamos simular com um FileReader para converter para base64
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setSalonForm({ ...salonForm, photo_url: imageUrl });
+        toast({
+          title: "Imagem carregada!",
+          description: "A imagem foi carregada com sucesso.",
+        });
+        setUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao fazer upload da imagem.",
+        variant: "destructive",
+      });
+      setUploadingImage(false);
+    }
+  };
+
   const renderSalonInfo = () => (
     <Card className="bg-admin-card border-admin-border">
       <CardHeader>
@@ -320,13 +376,61 @@ const SalonPanel = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="photo_url" className="text-admin-text">URL da Foto</Label>
-              <Input
-                id="photo_url"
-                value={salonForm.photo_url}
-                onChange={(e) => setSalonForm({ ...salonForm, photo_url: e.target.value })}
-                className="border-admin-border"
-              />
+              <Label className="text-admin-text">Foto do Salão</Label>
+              <div className="space-y-3">
+                {/* Preview da imagem */}
+                {salonForm.photo_url && (
+                  <div className="relative w-32 h-32 border border-admin-border rounded-lg overflow-hidden">
+                    <img 
+                      src={salonForm.photo_url} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                
+                {/* Upload de arquivo */}
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-admin-border bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full cursor-pointer"
+                    >
+                      {uploadingImage ? (
+                        <>
+                          <Upload className="h-4 w-4 mr-2 animate-spin" />
+                          Carregando...
+                        </>
+                      ) : (
+                        <>
+                          <Image className="h-4 w-4 mr-2" />
+                          Escolher arquivo
+                        </>
+                      )}
+                    </label>
+                  </div>
+                </div>
+                
+                {/* URL manual como alternativa */}
+                <div className="relative">
+                  <Label htmlFor="photo_url" className="text-admin-text text-xs">Ou cole a URL da imagem:</Label>
+                  <Input
+                    id="photo_url"
+                    value={salonForm.photo_url}
+                    onChange={(e) => setSalonForm({ ...salonForm, photo_url: e.target.value })}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="border-admin-border text-sm"
+                  />
+                </div>
+              </div>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -480,14 +584,9 @@ const SalonPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-admin-content flex flex-col lg:flex-row">
-      {/* Sidebar - Hidden on mobile, overlay on tablet */}
-      <div className="lg:block">
-        <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      </div>
-      
+    <div className="min-h-screen bg-admin-content flex flex-col lg:pb-16">
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:mb-16">
         {/* Top Header */}
         <header className="bg-admin-card border-b border-admin-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
@@ -526,9 +625,14 @@ const SalonPanel = () => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-4 lg:p-6">
+        <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
           {renderContent()}
         </main>
+      </div>
+      
+      {/* Sidebar - Fixed bottom on mobile, fixed left on desktop */}
+      <div className="fixed bottom-0 left-0 right-0 lg:fixed lg:top-0 lg:bottom-auto lg:left-0 lg:right-auto lg:h-full">
+        <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     </div>
   );

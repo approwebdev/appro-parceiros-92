@@ -29,6 +29,8 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   const [loading, setLoading] = useState(true);
   const [showPrice, setShowPrice] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [currentTreatmentIndex, setCurrentTreatmentIndex] = useState(0);
+  const [allTreatments, setAllTreatments] = useState<Treatment[]>([]);
 
   useEffect(() => {
     if (slug && treatmentId) {
@@ -88,11 +90,18 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
 
       const selectedTreatment = treatmentData[treatmentId as keyof typeof treatmentData];
       
+      const allTreatmentsList = Object.values(treatmentData);
+      setAllTreatments(allTreatmentsList);
+      
       if (selectedTreatment) {
         setTreatment(selectedTreatment);
         
+        // Encontrar o índice do tratamento atual
+        const currentIndex = allTreatmentsList.findIndex(t => t.id === treatmentId);
+        setCurrentTreatmentIndex(currentIndex !== -1 ? currentIndex : 0);
+        
         // Produtos relacionados fictícios
-        const related = Object.values(treatmentData)
+        const related = allTreatmentsList
           .filter(t => t.id !== treatmentId)
           .slice(0, 3);
         setRelatedTreatments(related);
@@ -114,6 +123,20 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   const truncateDescription = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+  };
+
+  const nextTreatment = () => {
+    const nextIndex = (currentTreatmentIndex + 1) % allTreatments.length;
+    setCurrentTreatmentIndex(nextIndex);
+    const nextTreatment = allTreatments[nextIndex];
+    setTreatment(nextTreatment);
+  };
+
+  const prevTreatment = () => {
+    const prevIndex = (currentTreatmentIndex - 1 + allTreatments.length) % allTreatments.length;
+    setCurrentTreatmentIndex(prevIndex);
+    const prevTreatment = allTreatments[prevIndex];
+    setTreatment(prevTreatment);
   };
 
   if (loading) {
@@ -143,9 +166,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-white border-b">
         <div className="flex items-center gap-4">
-          <div className="text-black font-bold text-2xl">
-            A<span className="text-gold">RO</span>
-          </div>
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
           <Button 
             onClick={onBack}
             variant="ghost"
@@ -170,13 +191,36 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
 
       {/* Conteúdo Principal */}
       <div className="h-full pt-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-6 py-8 relative">
+          {/* Controles do Carrossel */}
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
+            <Button
+              onClick={prevTreatment}
+              variant="outline"
+              size="icon"
+              className="rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+          </div>
+          
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
+            <Button
+              onClick={nextTreatment}
+              variant="outline"
+              size="icon"
+              className="rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
             
-            {/* Lado Esquerdo - Imagens */}
-            <div className="lg:col-span-1">
+            {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
+            <div className="lg:col-span-1 space-y-6">
               {/* Imagem Principal */}
-              <div className="h-96 bg-gray-100 rounded-2xl mb-4 overflow-hidden">
+              <div className="h-96 bg-gray-100 rounded-2xl overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                   alt={treatment.name}
@@ -199,6 +243,27 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                     />
                   </div>
                 ))}
+              </div>
+              
+              {/* Produtos Relacionados */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Produtos Relacionados</h3>
+                <div className="flex gap-4 overflow-x-auto">
+                  {[
+                    "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+                  ].map((img, i) => (
+                    <div key={i} className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+                      <img 
+                        src={img}
+                        alt={`Produto relacionado ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -322,29 +387,6 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
               </div>
             </div>
 
-            {/* Produtos Relacionados */}
-            <div className="lg:col-span-3">
-              <h3 className="text-lg font-semibold mb-4">Produtos Relacionados</h3>
-              <div className="flex gap-4 overflow-x-auto">
-                {[
-                  "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-                  "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-                  "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-                  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-                ].map((img, i) => (
-                  <div key={i} className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                    <img 
-                      src={img}
-                      alt={`Produto relacionado ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-                <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <ChevronRight className="h-6 w-6 text-gray-400" />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

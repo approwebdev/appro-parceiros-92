@@ -27,7 +27,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     // Carregar Google Maps API
     if (!window.google) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCuU-wlEg9F4IWhAOyz0iW573ftQzVf6M&libraries=places&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDummy-Key-Replace-With-Real&libraries=places&callback=initMap`;
       script.async = true;
       script.defer = true;
       
@@ -110,8 +110,8 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-2">Carregando mapa...</p>
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-gray-600 mb-2">Mapa indisponível</p>
+          <p className="text-xs text-gray-500">Configure a API do Google Maps</p>
         </div>
       </div>
     );

@@ -200,7 +200,7 @@ const SalonFinder = () => {
             <div className="relative mb-4">
               <Input
                 type="text"
-                placeholder="Digite seu endereço"
+                placeholder="Buscar salão ou endereço..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full border border-gray-300"

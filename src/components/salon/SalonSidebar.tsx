@@ -43,10 +43,11 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-admin-sidebar text-white 
+        fixed lg:static inset-y-0 left-0 lg:inset-y-auto lg:bottom-0 lg:left-0 lg:right-0 
+        z-50 w-64 lg:w-full lg:h-16 bg-admin-sidebar text-white 
         transform transition-transform duration-300 ease-in-out lg:transform-none
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        flex flex-col min-h-screen
+        flex flex-col lg:flex-row lg:items-center min-h-screen lg:min-h-0
       `}>
         {/* Close Button for Mobile */}
         <div className="lg:hidden flex justify-end p-4">
@@ -82,27 +83,27 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4">
-          <ul className="space-y-2">
+        <nav className="flex-1 px-4 lg:flex lg:justify-center lg:px-0">
+          <ul className="space-y-2 lg:space-y-0 lg:flex lg:space-x-6">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               
               return (
-                <li key={item.id}>
+                <li key={item.id} className="lg:flex lg:items-center">
                   <button
                     onClick={() => {
                       onTabChange(item.id);
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                    className={`w-full lg:w-auto flex items-center gap-3 lg:gap-2 px-3 py-2 lg:px-4 lg:py-2 rounded-lg transition-colors ${
                       isActive 
                         ? 'bg-admin-sidebar-active text-white' 
                         : 'text-gray-300 hover:bg-admin-sidebar-hover hover:text-white'
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
+                    <Icon className="h-5 w-5 lg:h-4 lg:w-4" />
+                    <span className="font-medium lg:text-sm lg:hidden xl:inline">{item.label}</span>
                   </button>
                 </li>
               );
@@ -111,19 +112,19 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
         </nav>
 
         {/* User Profile */}
-        <div className="p-4 border-t border-admin-sidebar-hover">
-          <div className="flex items-center gap-3 mb-3">
-            <Avatar className="h-8 w-8">
+        <div className="p-4 border-t border-admin-sidebar-hover lg:border-t-0 lg:border-l lg:p-2 lg:flex lg:items-center lg:gap-2">
+          <div className="flex items-center gap-3 mb-3 lg:mb-0 lg:gap-2">
+            <Avatar className="h-8 w-8 lg:h-6 lg:w-6">
               <AvatarImage src="" />
-              <AvatarFallback className="bg-admin-success text-white text-sm">
+              <AvatarFallback className="bg-admin-success text-white text-sm lg:text-xs">
                 {profile?.name?.charAt(0)?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 lg:hidden">
               <p className="text-white font-medium text-sm truncate">{profile?.name}</p>
               <p className="text-gray-400 text-xs truncate">{profile?.email}</p>
             </div>
-            <Badge variant="outline" className="bg-admin-success/20 text-admin-success border-admin-success">
+            <Badge variant="outline" className="bg-admin-success/20 text-admin-success border-admin-success lg:hidden">
               Salão
             </Badge>
           </div>
@@ -131,10 +132,10 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
           <Button 
             onClick={signOut}
             variant="outline"
-            className="w-full bg-transparent border-admin-sidebar-hover text-gray-300 hover:bg-admin-sidebar-hover hover:text-white"
+            className="w-full lg:w-auto bg-transparent border-admin-sidebar-hover text-gray-300 hover:bg-admin-sidebar-hover hover:text-white lg:px-2 lg:py-1"
           >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sair
+            <LogOut className="h-4 w-4 mr-2 lg:mr-1 lg:h-3 lg:w-3" />
+            <span className="lg:text-xs">Sair</span>
           </Button>
         </div>
       </div>
