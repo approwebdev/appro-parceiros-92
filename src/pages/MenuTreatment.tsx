@@ -176,7 +176,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
             {/* Lado Esquerdo - Imagens */}
             <div className="lg:col-span-1">
               {/* Imagem Principal */}
-              <div className="aspect-square bg-gray-100 rounded-2xl mb-4 overflow-hidden">
+              <div className="h-96 bg-gray-100 rounded-2xl mb-4 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                   alt={treatment.name}
@@ -281,7 +281,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
 
             {/* Lado Direito - Vídeo */}
             <div className="lg:col-span-1">
-              <div className="aspect-square bg-black rounded-2xl overflow-hidden relative z-30">
+              <div className="aspect-video bg-black rounded-2xl overflow-hidden relative z-30 h-80">
                 <img 
                   src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                   alt="Vídeo demonstrativo"
