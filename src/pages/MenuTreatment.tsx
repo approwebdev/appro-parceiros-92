@@ -162,7 +162,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full pt-20 pb-20">
+      <div className="h-full pt-20 pb-32">
         <div className="h-full flex">
           {/* Lado Esquerdo - Imagens */}
           <div className="flex-1 p-8">
