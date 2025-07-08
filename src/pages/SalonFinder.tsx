@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import SalonMap from "@/components/SalonMap";
+import { useToast } from "@/hooks/use-toast";
 
 interface Salon {
   id: string;
@@ -12,7 +15,9 @@ interface Salon {
   phone?: string;
   address?: string;
   instagram?: string;
-  distance?: string;
+  latitude?: number;
+  longitude?: number;
+  distance?: number;
 }
 
 const SalonFinder = () => {
@@ -20,10 +25,80 @@ const SalonFinder = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewType, setViewType] = useState<'list' | 'map'>('list');
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [distanceFilter, setDistanceFilter] = useState<'50' | '100' | 'all'>('all');
+  const [gettingLocation, setGettingLocation] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchSalons();
   }, []);
+
+  // Função para calcular distância entre dois pontos
+  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const R = 6371; // Raio da Terra em km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distância em km
+  };
+
+  // Função para obter localização do usuário
+  const getUserLocation = () => {
+    setGettingLocation(true);
+    
+    if (!navigator.geolocation) {
+      toast({
+        title: "Erro",
+        description: "Seu navegador não suporta geolocalização.",
+        variant: "destructive",
+      });
+      setGettingLocation(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        setUserLocation(location);
+        
+        // Calcular distâncias para todos os salões
+        setSalons(prevSalons => prevSalons.map(salon => {
+          if (salon.latitude && salon.longitude) {
+            const distance = calculateDistance(
+              location.lat, 
+              location.lng, 
+              salon.latitude, 
+              salon.longitude
+            );
+            return { ...salon, distance };
+          }
+          return salon;
+        }));
+
+        toast({
+          title: "Localização obtida!",
+          description: "Mostrando salões próximos a você.",
+        });
+        setGettingLocation(false);
+      },
+      (error) => {
+        toast({
+          title: "Erro ao obter localização",
+          description: "Não foi possível acessar sua localização. Tente novamente.",
+          variant: "destructive",
+        });
+        setGettingLocation(false);
+      }
+    );
+  };
 
   const fetchSalons = async () => {
     try {
@@ -38,7 +113,14 @@ const SalonFinder = () => {
         return;
       }
 
-      setSalons(data || []);
+      // Adicionar coordenadas simuladas para demonstração
+      const salonsWithCoords = (data || []).map((salon, index) => ({
+        ...salon,
+        latitude: -23.5505 + (Math.random() - 0.5) * 0.2, // São Paulo +/- variação
+        longitude: -46.6333 + (Math.random() - 0.5) * 0.2,
+      }));
+
+      setSalons(salonsWithCoords);
     } catch (error) {
       console.error('Erro ao buscar salões:', error);
     } finally {
@@ -46,10 +128,21 @@ const SalonFinder = () => {
     }
   };
 
-  const filteredSalons = salons.filter(salon =>
-    salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    salon.address?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filtrar salões por busca e distância
+  const filteredSalons = salons
+    .filter(salon => 
+      salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      salon.address?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter(salon => {
+      if (distanceFilter === 'all' || !salon.distance) return true;
+      const maxDistance = parseInt(distanceFilter);
+      return salon.distance <= maxDistance;
+    })
+    .sort((a, b) => {
+      if (a.distance && b.distance) return a.distance - b.distance;
+      return 0;
+    });
 
   const formatPhone = (phone: string) => {
     if (!phone) return '';
@@ -106,7 +199,48 @@ const SalonFinder = () => {
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
           </div>
 
-          {/* Filter Buttons */}
+          {/* Location Button */}
+          <Button
+            onClick={getUserLocation}
+            disabled={gettingLocation}
+            variant="outline" 
+            className="w-full mb-4 border-menu-gold text-menu-gold hover:bg-menu-gold hover:text-menu-dark"
+          >
+            <Navigation className="h-4 w-4 mr-2" />
+            {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
+          </Button>
+
+          {/* Distance Filters */}
+          {userLocation && (
+            <div className="flex gap-2 mb-4">
+              <Button
+                variant={distanceFilter === '50' ? 'default' : 'outline'}
+                onClick={() => setDistanceFilter('50')}
+                size="sm"
+                className="flex-1"
+              >
+                50km
+              </Button>
+              <Button
+                variant={distanceFilter === '100' ? 'default' : 'outline'}
+                onClick={() => setDistanceFilter('100')}
+                size="sm"
+                className="flex-1"
+              >
+                100km
+              </Button>
+              <Button
+                variant={distanceFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setDistanceFilter('all')}
+                size="sm"
+                className="flex-1"
+              >
+                Todos
+              </Button>
+            </div>
+          )}
+
+          {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
             <Button
               variant={viewType === 'list' ? 'default' : 'outline'}
@@ -127,56 +261,93 @@ const SalonFinder = () => {
           </div>
         </div>
 
+        {/* Map View */}
+        {viewType === 'map' && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">Mapa dos Salões</h3>
+            <SalonMap salons={filteredSalons} userLocation={userLocation} />
+          </div>
+        )}
+
         {/* Salons List */}
-        <div className="space-y-4 mb-8">
-          <h3 className="text-lg font-semibold">Salões mais próximo de você</h3>
-          
-          {filteredSalons.map((salon, index) => (
-            <Card key={salon.id} className="bg-menu-white text-black">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  {/* Avatar */}
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
-                    {salon.name.charAt(0)}
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-lg">{salon.name}</h4>
-                      <span className="bg-black text-menu-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
-                        Parceiro
-                      </span>
+        {viewType === 'list' && (
+          <div className="space-y-4 mb-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                {userLocation ? 'Salões próximos de você' : 'Todos os salões'}
+              </h3>
+              {userLocation && filteredSalons.length > 0 && (
+                <Badge variant="outline" className="border-menu-gold text-menu-gold">
+                  {filteredSalons.length} encontrados
+                </Badge>
+              )}
+            </div>
+            
+            {filteredSalons.map((salon) => (
+              <Card key={salon.id} className="bg-menu-white text-black">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
+                      {salon.name.charAt(0)}
                     </div>
                     
-                    {salon.phone && (
-                      <div className="flex items-center gap-2 mb-1">
-                        <Phone className="h-4 w-4 text-green-600" />
-                        <button
-                          onClick={() => openWhatsApp(salon.phone!)}
-                          className="text-green-600 hover:underline"
-                        >
-                          {formatPhone(salon.phone)}
-                        </button>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-lg">{salon.name}</h4>
+                        <span className="bg-black text-menu-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
+                          Parceiro
+                        </span>
                       </div>
-                    )}
-                    
-                    {salon.address && (
-                      <div className="flex items-start gap-2 mb-2">
-                        <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-600">{salon.address}</span>
+                      
+                      {salon.phone && (
+                        <div className="flex items-center gap-2 mb-1">
+                          <Phone className="h-4 w-4 text-green-600" />
+                          <button
+                            onClick={() => openWhatsApp(salon.phone!)}
+                            className="text-green-600 hover:underline"
+                          >
+                            {formatPhone(salon.phone)}
+                          </button>
+                        </div>
+                      )}
+                      
+                      {salon.address && (
+                        <div className="flex items-start gap-2 mb-2">
+                          <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">{salon.address}</span>
+                        </div>
+                      )}
+                      
+                      <div className="text-sm text-gray-500">
+                        {salon.distance 
+                          ? `A ${salon.distance.toFixed(1)}km de você`
+                          : 'Localização não disponível'
+                        }
                       </div>
-                    )}
-                    
-                    <div className="text-sm text-gray-500">
-                      A {Math.floor(Math.random() * 10) + 1}km de você
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            {filteredSalons.length === 0 && (
+              <Card className="bg-menu-white text-black">
+                <CardContent className="p-8 text-center">
+                  <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h4 className="font-semibold text-lg mb-2">Nenhum salão encontrado</h4>
+                  <p className="text-gray-600 text-sm">
+                    {userLocation 
+                      ? 'Tente aumentar o raio de busca ou alterar os filtros.'
+                      : 'Use sua localização para encontrar salões próximos.'
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
 
         {/* Informativo Section */}
         <div className="mb-8">
