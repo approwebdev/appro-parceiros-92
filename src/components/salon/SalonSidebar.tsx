@@ -15,6 +15,7 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
 
   const menuItems = [
     { id: 'salon-info', label: 'Informações', icon: User },
+    { id: 'menu-link', label: 'Link do Menu', icon: Home },
     { id: 'treatments', label: 'Tratamentos', icon: Package },
     { id: 'settings', label: 'Configurações', icon: Settings },
   ];

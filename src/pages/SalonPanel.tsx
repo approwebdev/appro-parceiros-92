@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Edit, Save, Plus, Search } from 'lucide-react';
+import { LogOut, Edit, Save, Plus, Search, Copy, ExternalLink } from 'lucide-react';
 import { SalonSidebar } from '@/components/salon/SalonSidebar';
 
 interface Salon {
@@ -18,6 +18,7 @@ interface Salon {
   address: string;
   photo_url: string;
   responsible_name: string;
+  slug: string;
   is_active: boolean;
 }
 
@@ -197,6 +198,33 @@ const SalonPanel = () => {
     }
   };
 
+  const copyMenuLink = async () => {
+    if (!salon?.slug) {
+      toast({
+        title: "Erro",
+        description: "Salão não encontrado ou sem slug definido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const menuUrl = `${window.location.origin}/menu/${salon.slug}`;
+    
+    try {
+      await navigator.clipboard.writeText(menuUrl);
+      toast({
+        title: "Link copiado!",
+        description: "O link do seu menu foi copiado para a área de transferência.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao copiar",
+        description: "Não foi possível copiar o link. Tente selecionar e copiar manualmente.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const renderSalonInfo = () => (
     <Card className="bg-admin-card border-admin-border">
       <CardHeader>
@@ -339,10 +367,72 @@ const SalonPanel = () => {
     </Card>
   );
 
+  const renderMenuLink = () => {
+    const menuUrl = salon?.slug ? `${window.location.origin}/menu/${salon.slug}` : '';
+    
+    return (
+      <Card className="bg-admin-card border-admin-border">
+        <CardHeader>
+          <CardTitle className="text-admin-text">Link do Menu Digital</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {salon?.slug ? (
+            <>
+              <div className="space-y-2">
+                <Label className="text-admin-text">URL do seu menu digital:</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    value={menuUrl}
+                    readOnly
+                    className="border-admin-border bg-admin-content"
+                  />
+                  <Button onClick={copyMenuLink} variant="outline" size="sm">
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    onClick={() => window.open(menuUrl, '_blank')}
+                    variant="outline" 
+                    size="sm"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="bg-admin-content p-4 rounded-lg border border-admin-border">
+                <h4 className="font-medium text-admin-text mb-2">Como usar seu link:</h4>
+                <ul className="text-admin-text-muted text-sm space-y-1">
+                  <li>• Compartilhe este link com seus clientes</li>
+                  <li>• Adicione em suas redes sociais</li>
+                  <li>• Imprima um QR Code para seu estabelecimento</li>
+                  <li>• O link é atualizado automaticamente quando você edita as informações</li>
+                </ul>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-admin-text-muted mb-4">
+                Complete as informações do seu salão para gerar o link do menu digital.
+              </p>
+              <Button 
+                onClick={() => setActiveTab('salon-info')}
+                className="bg-admin-success hover:bg-admin-success-hover text-white"
+              >
+                Completar Informações
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'salon-info':
         return renderSalonInfo();
+      case 'menu-link':
+        return renderMenuLink();
       case 'treatments':
         return renderTreatments();
       case 'settings':
@@ -374,11 +464,13 @@ const SalonPanel = () => {
             <div>
               <h1 className="text-2xl font-bold text-admin-text">
                 {activeTab === 'salon-info' && 'Informações do Salão'}
+                {activeTab === 'menu-link' && 'Link do Menu Digital'}
                 {activeTab === 'treatments' && 'Meus Tratamentos'}
                 {activeTab === 'settings' && 'Configurações'}
               </h1>
               <p className="text-admin-text-muted">
                 {activeTab === 'salon-info' && 'Gerencie as informações do seu salão'}
+                {activeTab === 'menu-link' && 'Acesse e compartilhe o link do seu menu digital'}
                 {activeTab === 'treatments' && 'Gerencie os tratamentos oferecidos'}
                 {activeTab === 'settings' && 'Configurações gerais do sistema'}
               </p>
