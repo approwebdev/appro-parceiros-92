@@ -70,6 +70,18 @@ export default {
 					gold: 'hsl(var(--menu-gold))',
 					white: 'hsl(var(--menu-white))',
 					gray: 'hsl(var(--menu-gray))'
+				},
+				admin: {
+					sidebar: 'hsl(var(--admin-sidebar))',
+					'sidebar-hover': 'hsl(var(--admin-sidebar-hover))',
+					'sidebar-active': 'hsl(var(--admin-sidebar-active))',
+					content: 'hsl(var(--admin-content))',
+					card: 'hsl(var(--admin-card))',
+					text: 'hsl(var(--admin-text))',
+					'text-muted': 'hsl(var(--admin-text-muted))',
+					border: 'hsl(var(--admin-border))',
+					success: 'hsl(var(--admin-success))',
+					'success-hover': 'hsl(var(--admin-success-hover))'
 				}
 			},
 			borderRadius: {

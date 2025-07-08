@@ -3,19 +3,23 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, LogOut } from 'lucide-react';
+import { Plus, Search, Bell, Settings } from 'lucide-react';
 import { AdminTreatments } from '@/components/admin/AdminTreatments';
 import { AdminSalons } from '@/components/admin/AdminSalons';
 import { AdminBanners } from '@/components/admin/AdminBanners';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 const AdminPanel = () => {
-  const { user, profile, signOut, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState('treatments');
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-menu-gold"></div>
+      <div className="min-h-screen flex items-center justify-center bg-admin-content">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-admin-success"></div>
       </div>
     );
   }
@@ -24,47 +28,65 @@ const AdminPanel = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  return (
-    <div className="min-h-screen bg-menu-dark text-menu-white">
-      {/* Header */}
-      <header className="bg-menu-dark border-b border-menu-gold/20 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Painel Administrativo</h1>
-            <p className="text-menu-gray">Bem-vindo, {profile.name}</p>
-          </div>
-          <Button 
-            onClick={signOut}
-            variant="outline"
-            className="border-menu-gold text-menu-gold hover:bg-menu-gold hover:text-menu-dark"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sair
-          </Button>
-        </div>
-      </header>
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'treatments':
+        return <AdminTreatments />;
+      case 'salons':
+        return <AdminSalons />;
+      case 'banners':
+        return <AdminBanners />;
+      default:
+        return <AdminTreatments />;
+    }
+  };
 
-      {/* Content */}
-      <div className="p-6">
-        <Tabs defaultValue="treatments" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-menu-gray">
-            <TabsTrigger value="treatments">Tratamentos</TabsTrigger>
-            <TabsTrigger value="salons">Salões</TabsTrigger>
-            <TabsTrigger value="banners">Banners</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="treatments" className="mt-6">
-            <AdminTreatments />
-          </TabsContent>
-          
-          <TabsContent value="salons" className="mt-6">
-            <AdminSalons />
-          </TabsContent>
-          
-          <TabsContent value="banners" className="mt-6">
-            <AdminBanners />
-          </TabsContent>
-        </Tabs>
+  return (
+    <div className="min-h-screen bg-admin-content flex">
+      {/* Sidebar */}
+      <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Header */}
+        <header className="bg-admin-card border-b border-admin-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-admin-text">
+                {activeTab === 'treatments' && 'Tratamentos'}
+                {activeTab === 'salons' && 'Salões Parceiros'}
+                {activeTab === 'banners' && 'Banners'}
+              </h1>
+              <p className="text-admin-text-muted">
+                {activeTab === 'treatments' && 'Gerencie todos os tratamentos cadastrados'}
+                {activeTab === 'salons' && 'Visualize e gerencie todos os salões parceiros'}
+                {activeTab === 'banners' && 'Gerencie os banners promocionais'}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-admin-text-muted" />
+                <Input 
+                  placeholder="Buscar..."
+                  className="pl-10 w-80 bg-admin-card border-admin-border"
+                />
+              </div>
+              <Button 
+                size="sm" 
+                className="bg-admin-success hover:bg-admin-success-hover text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 p-6">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );
