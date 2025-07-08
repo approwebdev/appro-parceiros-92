@@ -71,7 +71,7 @@ const SalonFinder = () => {
   }
 
   return (
-    <div className="min-h-screen bg-menu-dark text-menu-white">
+    <div className="min-h-screen bg-menu-dark text-menu-white overflow-y-auto">
       {/* Header */}
       <header className="bg-menu-dark border-b border-menu-gold/20 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
