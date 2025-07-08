@@ -166,7 +166,7 @@ const SalonFinder = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
@@ -201,37 +201,36 @@ const SalonFinder = () => {
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
           </div>
 
-          {/* Location Filter - Collapsible */}
-          <Collapsible open={isLocationFilterOpen} onOpenChange={setIsLocationFilterOpen}>
-            <CollapsibleTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full mb-4 border-blue-600 text-blue-600 hover:bg-blue-50"
-              >
-                <Navigation className="h-4 w-4 mr-2" />
-                Filtros de Localização
-                {isLocationFilterOpen ? (
-                  <ChevronUp className="h-4 w-4 ml-2" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                )}
-              </Button>
-            </CollapsibleTrigger>
-            
-            <CollapsibleContent className="space-y-3 mb-4">
-              {/* Get Location Button */}
-              <Button
-                onClick={getUserLocation}
-                disabled={gettingLocation}
-                variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                <Navigation className="h-4 w-4 mr-2" />
-                {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
-              </Button>
+          {/* Get Location Button - Always visible */}
+          <Button
+            onClick={getUserLocation}
+            disabled={gettingLocation}
+            variant="outline"
+            className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            <Navigation className="h-4 w-4 mr-2" />
+            {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
+          </Button>
 
-              {/* Distance Filters */}
-              {userLocation && (
+          {/* Distance Filters - Collapsible, but show one by default */}
+          {userLocation && (
+            <Collapsible open={isLocationFilterOpen} onOpenChange={setIsLocationFilterOpen}>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-4 border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  <Navigation className="h-4 w-4 mr-2" />
+                  Filtros de Distância
+                  {isLocationFilterOpen ? (
+                    <ChevronUp className="h-4 w-4 ml-2" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="space-y-3 mb-4">
                 <div className="flex gap-2">
                   <Button
                     variant={distanceFilter === '50' ? 'default' : 'outline'}
@@ -258,9 +257,9 @@ const SalonFinder = () => {
                     Todos
                   </Button>
                 </div>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
+              </CollapsibleContent>
+            </Collapsible>
+          )}
 
           {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
@@ -296,7 +295,7 @@ const SalonFinder = () => {
           <div className="space-y-4 mb-8">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900">
-                {userLocation ? 'Salões próximos de você' : 'Todos os salões'}
+                {userLocation ? <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span> : 'Todos os salões'}
               </h3>
               {userLocation && filteredSalons.length > 0 && (
                 <Badge variant="outline" className="border-blue-600 text-blue-600">

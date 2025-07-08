@@ -129,6 +129,8 @@ export type Database = {
           name: string
           phone: string | null
           photo_url: string | null
+          plan: string | null
+          responsible_email: string | null
           responsible_name: string | null
           slug: string
           updated_at: string
@@ -143,6 +145,8 @@ export type Database = {
           name: string
           phone?: string | null
           photo_url?: string | null
+          plan?: string | null
+          responsible_email?: string | null
           responsible_name?: string | null
           slug: string
           updated_at?: string
@@ -157,6 +161,8 @@ export type Database = {
           name?: string
           phone?: string | null
           photo_url?: string | null
+          plan?: string | null
+          responsible_email?: string | null
           responsible_name?: string | null
           slug?: string
           updated_at?: string

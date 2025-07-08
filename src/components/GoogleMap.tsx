@@ -27,7 +27,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     // Carregar Google Maps API
     if (!window.google) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&libraries=places&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCuU-wlEg9F4IWhAOyz0iW573ftQzVf6M&libraries=places&callback=initMap`;
       script.async = true;
       script.defer = true;
       

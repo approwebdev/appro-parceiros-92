@@ -44,16 +44,16 @@ All colors MUST be HSL.
     --menu-gray: 0 0% 50%;
     
     /* Admin Panel Design System */
-    --admin-sidebar: 210 24% 16%;
-    --admin-sidebar-hover: 210 24% 20%;
-    --admin-sidebar-active: 142 76% 36%;
+    --admin-sidebar: 0 0% 0%;
+    --admin-sidebar-hover: 0 0% 6%;
+    --admin-sidebar-active: 48 36 15%;
     --admin-content: 0 0% 98%;
     --admin-card: 0 0% 100%;
     --admin-text: 210 11% 15%;
     --admin-text-muted: 215 16% 47%;
     --admin-border: 214 32% 91%;
-    --admin-success: 142 76% 36%;
-    --admin-success-hover: 142 76% 32%;
+    --admin-success: 48 36 15%;
+    --admin-success-hover: 38 29 12%;
     
     /* Gradientes para categorias */
     --gradient-treatment: linear-gradient(135deg, #ff6b35 0%, #ff8e53 100%);

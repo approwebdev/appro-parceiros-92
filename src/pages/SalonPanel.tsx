@@ -18,6 +18,8 @@ interface Salon {
   address: string;
   photo_url: string;
   responsible_name: string;
+  responsible_email: string;
+  plan: string;
   slug: string;
   is_active: boolean;
 }
@@ -46,6 +48,8 @@ const SalonPanel = () => {
     address: '',
     photo_url: '',
     responsible_name: '',
+    responsible_email: '',
+    plan: 'basico',
     is_active: true
   });
   const { toast } = useToast();
@@ -94,6 +98,8 @@ const SalonPanel = () => {
           address: data.address || '',
           photo_url: data.photo_url || '',
           responsible_name: data.responsible_name || '',
+          responsible_email: data.responsible_email || '',
+          plan: data.plan || 'basico',
           is_active: data.is_active
         });
       }
@@ -277,6 +283,19 @@ const SalonPanel = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="responsible_email" className="text-admin-text">Email do Responsável</Label>
+                <Input
+                  id="responsible_email"
+                  type="email"
+                  value={salonForm.responsible_email}
+                  onChange={(e) => setSalonForm({ ...salonForm, responsible_email: e.target.value })}
+                  className="border-admin-border"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label htmlFor="address" className="text-admin-text">Endereço</Label>
                 <Input
                   id="address"
@@ -284,6 +303,19 @@ const SalonPanel = () => {
                   onChange={(e) => setSalonForm({ ...salonForm, address: e.target.value })}
                   className="border-admin-border"
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="plan" className="text-admin-text">Plano</Label>
+                <select
+                  id="plan"
+                  value={salonForm.plan}
+                  onChange={(e) => setSalonForm({ ...salonForm, plan: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-admin-border bg-background px-3 py-2 text-sm"
+                >
+                  <option value="basico">Plano Básico</option>
+                  <option value="verificado_azul">Verificado Azul</option>
+                  <option value="verificado_dourado">Verificado Dourado</option>
+                </select>
               </div>
             </div>
             
@@ -315,8 +347,15 @@ const SalonPanel = () => {
           <div className="space-y-2 text-admin-text">
             <p><strong>Nome:</strong> {salon?.name || 'Não informado'}</p>
             <p><strong>Responsável:</strong> {salon?.responsible_name || 'Não informado'}</p>
+            <p><strong>Email do Responsável:</strong> {salon?.responsible_email || 'Não informado'}</p>
             <p><strong>Telefone:</strong> {salon?.phone || 'Não informado'}</p>
             <p><strong>Endereço:</strong> {salon?.address || 'Não informado'}</p>
+            <p><strong>Plano:</strong> {
+              salon?.plan === 'basico' ? 'Plano Básico' :
+              salon?.plan === 'verificado_azul' ? 'Verificado Azul' :
+              salon?.plan === 'verificado_dourado' ? 'Verificado Dourado' :
+              'Não informado'
+            }</p>
             <p><strong>Status:</strong> {salon?.is_active ? 'Ativo' : 'Inativo'}</p>
           </div>
         )}
@@ -435,17 +474,6 @@ const SalonPanel = () => {
         return renderMenuLink();
       case 'treatments':
         return renderTreatments();
-      case 'settings':
-        return (
-          <Card className="bg-admin-card border-admin-border">
-            <CardHeader>
-              <CardTitle className="text-admin-text">Configurações</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-admin-text-muted">Configurações em desenvolvimento...</p>
-            </CardContent>
-          </Card>
-        );
       default:
         return renderSalonInfo();
     }
@@ -466,13 +494,11 @@ const SalonPanel = () => {
                 {activeTab === 'salon-info' && 'Informações do Salão'}
                 {activeTab === 'menu-link' && 'Link do Menu Digital'}
                 {activeTab === 'treatments' && 'Meus Tratamentos'}
-                {activeTab === 'settings' && 'Configurações'}
               </h1>
               <p className="text-admin-text-muted">
                 {activeTab === 'salon-info' && 'Gerencie as informações do seu salão'}
                 {activeTab === 'menu-link' && 'Acesse e compartilhe o link do seu menu digital'}
                 {activeTab === 'treatments' && 'Gerencie os tratamentos oferecidos'}
-                {activeTab === 'settings' && 'Configurações gerais do sistema'}
               </p>
             </div>
             
