@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map, Navigation } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import SalonMap from "@/components/SalonMap";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
 
 interface Salon {
@@ -28,6 +29,7 @@ const SalonFinder = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [distanceFilter, setDistanceFilter] = useState<'50' | '100' | 'all'>('all');
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [isLocationFilterOpen, setIsLocationFilterOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -157,21 +159,21 @@ const SalonFinder = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-menu-dark">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-menu-gold"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-menu-dark text-menu-white overflow-y-auto">
+    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Header */}
-      <header className="bg-menu-dark border-b border-menu-gold/20 px-4 py-4">
+      <header className="bg-white border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
-          <div className="text-2xl font-bold">
-            A<span className="text-menu-gold">RO</span>
+          <div className="text-2xl font-bold text-gray-900">
+            A<span className="text-blue-600">RO</span>
           </div>
-          <Button variant="ghost" size="icon" className="text-menu-white">
+          <Button variant="ghost" size="icon" className="text-gray-900">
             <Menu className="h-6 w-6" />
           </Button>
         </div>
@@ -180,10 +182,10 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold mb-2">
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">
             Encontre o Salão mais
           </h1>
-          <h2 className="text-2xl font-bold text-menu-gold mb-6">
+          <h2 className="text-2xl font-bold text-blue-600 mb-6">
             próximo de você.
           </h2>
           
@@ -194,51 +196,71 @@ const SalonFinder = () => {
               placeholder="Digite seu endereço"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-menu-white text-black pl-4 pr-12 py-3 rounded-lg w-full"
+              className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full border border-gray-300"
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
           </div>
 
-          {/* Location Button */}
-          <Button
-            onClick={getUserLocation}
-            disabled={gettingLocation}
-            variant="outline" 
-            className="w-full mb-4 border-menu-gold text-menu-gold hover:bg-menu-gold hover:text-menu-dark"
-          >
-            <Navigation className="h-4 w-4 mr-2" />
-            {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
-          </Button>
+          {/* Location Filter - Collapsible */}
+          <Collapsible open={isLocationFilterOpen} onOpenChange={setIsLocationFilterOpen}>
+            <CollapsibleTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full mb-4 border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                <Navigation className="h-4 w-4 mr-2" />
+                Filtros de Localização
+                {isLocationFilterOpen ? (
+                  <ChevronUp className="h-4 w-4 ml-2" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 ml-2" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            
+            <CollapsibleContent className="space-y-3 mb-4">
+              {/* Get Location Button */}
+              <Button
+                onClick={getUserLocation}
+                disabled={gettingLocation}
+                variant="outline"
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <Navigation className="h-4 w-4 mr-2" />
+                {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
+              </Button>
 
-          {/* Distance Filters */}
-          {userLocation && (
-            <div className="flex gap-2 mb-4">
-              <Button
-                variant={distanceFilter === '50' ? 'default' : 'outline'}
-                onClick={() => setDistanceFilter('50')}
-                size="sm"
-                className="flex-1"
-              >
-                50km
-              </Button>
-              <Button
-                variant={distanceFilter === '100' ? 'default' : 'outline'}
-                onClick={() => setDistanceFilter('100')}
-                size="sm"
-                className="flex-1"
-              >
-                100km
-              </Button>
-              <Button
-                variant={distanceFilter === 'all' ? 'default' : 'outline'}
-                onClick={() => setDistanceFilter('all')}
-                size="sm"
-                className="flex-1"
-              >
-                Todos
-              </Button>
-            </div>
-          )}
+              {/* Distance Filters */}
+              {userLocation && (
+                <div className="flex gap-2">
+                  <Button
+                    variant={distanceFilter === '50' ? 'default' : 'outline'}
+                    onClick={() => setDistanceFilter('50')}
+                    size="sm"
+                    className="flex-1"
+                  >
+                    50km
+                  </Button>
+                  <Button
+                    variant={distanceFilter === '100' ? 'default' : 'outline'}
+                    onClick={() => setDistanceFilter('100')}
+                    size="sm"
+                    className="flex-1"
+                  >
+                    100km
+                  </Button>
+                  <Button
+                    variant={distanceFilter === 'all' ? 'default' : 'outline'}
+                    onClick={() => setDistanceFilter('all')}
+                    size="sm"
+                    className="flex-1"
+                  >
+                    Todos
+                  </Button>
+                </div>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
@@ -264,8 +286,8 @@ const SalonFinder = () => {
         {/* Map View */}
         {viewType === 'map' && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Mapa dos Salões</h3>
-            <SalonMap salons={filteredSalons} userLocation={userLocation} />
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Mapa dos Salões</h3>
+            <GoogleMap salons={filteredSalons} userLocation={userLocation} />
           </div>
         )}
 
@@ -273,18 +295,18 @@ const SalonFinder = () => {
         {viewType === 'list' && (
           <div className="space-y-4 mb-8">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-lg font-semibold text-gray-900">
                 {userLocation ? 'Salões próximos de você' : 'Todos os salões'}
               </h3>
               {userLocation && filteredSalons.length > 0 && (
-                <Badge variant="outline" className="border-menu-gold text-menu-gold">
+                <Badge variant="outline" className="border-blue-600 text-blue-600">
                   {filteredSalons.length} encontrados
                 </Badge>
               )}
             </div>
             
             {filteredSalons.map((salon) => (
-              <Card key={salon.id} className="bg-menu-white text-black">
+              <Card key={salon.id} className="bg-white text-black border border-gray-200">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
@@ -295,8 +317,8 @@ const SalonFinder = () => {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-lg">{salon.name}</h4>
-                        <span className="bg-black text-menu-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
+                        <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
+                        <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
                           Parceiro
                         </span>
                       </div>
@@ -333,10 +355,10 @@ const SalonFinder = () => {
             ))}
 
             {filteredSalons.length === 0 && (
-              <Card className="bg-menu-white text-black">
+              <Card className="bg-white text-black border border-gray-200">
                 <CardContent className="p-8 text-center">
                   <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h4 className="font-semibold text-lg mb-2">Nenhum salão encontrado</h4>
+                  <h4 className="font-semibold text-lg mb-2 text-gray-900">Nenhum salão encontrado</h4>
                   <p className="text-gray-600 text-sm">
                     {userLocation 
                       ? 'Tente aumentar o raio de busca ou alterar os filtros.'
@@ -351,7 +373,7 @@ const SalonFinder = () => {
 
         {/* Informativo Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4">Informativo para você</h3>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900">Informativo para você</h3>
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
             <CardContent className="p-0 relative h-48">
               <img
@@ -368,15 +390,15 @@ const SalonFinder = () => {
           </Card>
           
           <div className="mt-4 text-center">
-            <p className="text-sm mb-2">
+            <p className="text-sm mb-2 text-gray-900">
               <strong>Atenção:</strong>
             </p>
-            <p className="text-xs text-gray-300 mb-4">
+            <p className="text-xs text-gray-600 mb-4">
               Este site apenas indica onde utilizam os produtos
               AP Professional. A responsabilidade pelos serviços prestados é
               exclusivamente do salão listado acima.
             </p>
-            <Button className="bg-menu-white text-black hover:bg-gray-100 w-full">
+            <Button className="bg-blue-600 text-white hover:bg-blue-700 w-full">
               Saiba mais
             </Button>
           </div>
@@ -384,9 +406,9 @@ const SalonFinder = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-black text-center py-6 px-4">
+      <footer className="bg-gray-900 text-center py-6 px-4">
         <div className="max-w-md mx-auto">
-          <div className="text-menu-white mb-2">
+          <div className="text-white mb-2">
             <span className="text-2xl">📷</span>
           </div>
           <p className="text-xs text-gray-400">
