@@ -181,23 +181,26 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold mb-2 text-gray-900">
-            Encontre o Salão mais
-          </h1>
-          <h2 className="text-2xl font-bold mb-6" style={{ color: '#F8E7BF' }}>
-            próximo de você.
-          </h2>
-          
-          {/* Search */}
-          <div className="relative mb-4">
-            <Input
-              type="text"
-              placeholder="Digite seu endereço"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full border border-gray-300"
-            />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+          {/* Search Container with dark gray background */}
+          <div className="bg-gray-700 rounded-lg p-6 mb-6">
+            <h1 className="text-2xl font-bold mb-1 text-white">
+              Encontre o Salão mais
+            </h1>
+            <h2 className="text-2xl font-bold mb-6" style={{ color: '#F8E7BF' }}>
+              próximo de você.
+            </h2>
+            
+            {/* Search */}
+            <div className="relative mb-4">
+              <Input
+                type="text"
+                placeholder="Digite seu endereço"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full border border-gray-300"
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+            </div>
           </div>
 
           {/* Get Location Button - Always visible */}
