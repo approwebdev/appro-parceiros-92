@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      salon_treatments: {
+        Row: {
+          created_at: string
+          custom_price: number | null
+          id: string
+          is_active: boolean
+          salon_id: string
+          treatment_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_price?: number | null
+          id?: string
+          is_active?: boolean
+          salon_id: string
+          treatment_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_price?: number | null
+          id?: string
+          is_active?: boolean
+          salon_id?: string
+          treatment_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_treatments_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_treatments_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
+            referencedRelation: "treatments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      salons: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      treatments: {
+        Row: {
+          base_price: number | null
+          category: string | null
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
