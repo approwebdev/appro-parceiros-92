@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map, Instagram } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -64,21 +64,21 @@ const SalonFinder = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-menu-dark">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-menu-gold"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-menu-dark text-menu-white">
       {/* Header */}
-      <header className="bg-black border-b border-yellow-500/20 px-4 py-4">
+      <header className="bg-menu-dark border-b border-menu-gold/20 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="text-2xl font-bold">
-            A<span className="text-yellow-500">RO</span>
+            A<span className="text-menu-gold">RO</span>
           </div>
-          <Button variant="ghost" size="icon" className="text-white">
+          <Button variant="ghost" size="icon" className="text-menu-white">
             <Menu className="h-6 w-6" />
           </Button>
         </div>
@@ -90,7 +90,7 @@ const SalonFinder = () => {
           <h1 className="text-2xl font-bold mb-2">
             Encontre o Salão mais
           </h1>
-          <h2 className="text-2xl font-bold text-yellow-500 mb-6">
+          <h2 className="text-2xl font-bold text-menu-gold mb-6">
             próximo de você.
           </h2>
           
@@ -101,7 +101,7 @@ const SalonFinder = () => {
               placeholder="Digite seu endereço"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full"
+              className="bg-menu-white text-black pl-4 pr-12 py-3 rounded-lg w-full"
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
           </div>
@@ -132,68 +132,44 @@ const SalonFinder = () => {
           <h3 className="text-lg font-semibold">Salões mais próximo de você</h3>
           
           {filteredSalons.map((salon, index) => (
-            <Card key={salon.id} className="bg-white text-black rounded-3xl overflow-hidden shadow-lg">
-              <CardContent className="p-0">
-                {/* Photo Section */}
-                <div className="h-32 bg-gray-200 relative">
-                  <img
-                    src={`https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=128&fit=crop&crop=center`}
-                    alt={`Foto do ${salon.name}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3 bg-black text-white px-2 py-1 rounded-full text-xs">
-                    Parceiro
+            <Card key={salon.id} className="bg-menu-white text-black">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  {/* Avatar */}
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
+                    {salon.name.charAt(0)}
                   </div>
-                </div>
-                
-                {/* Content Section */}
-                <div className="p-4">
-                  <div className="flex items-start gap-3">
-                    {/* Avatar */}
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 -mt-8 border-4 border-white">
-                      {salon.name.charAt(0)}
+                  
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-lg">{salon.name}</h4>
+                      <span className="bg-black text-menu-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
+                        Parceiro
+                      </span>
                     </div>
                     
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-lg mb-2">{salon.name}</h4>
-                      
-                      {salon.phone && (
-                        <div className="flex items-center gap-2 mb-1">
-                          <Phone className="h-4 w-4 text-green-600" />
-                          <button
-                            onClick={() => openWhatsApp(salon.phone!)}
-                            className="text-green-600 hover:underline"
-                          >
-                            {formatPhone(salon.phone)}
-                          </button>
-                        </div>
-                      )}
-                      
-                      {salon.address && (
-                        <div className="flex items-start gap-2 mb-1">
-                          <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-600">{salon.address}</span>
-                        </div>
-                      )}
-                      
-                      {salon.instagram && (
-                        <div className="flex items-center gap-2 mb-2">
-                          <Instagram className="h-4 w-4 text-pink-500" />
-                          <a
-                            href={`https://instagram.com/${salon.instagram.replace('@', '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-pink-500 hover:underline text-sm"
-                          >
-                            {salon.instagram}
-                          </a>
-                        </div>
-                      )}
-                      
-                      <div className="text-sm text-gray-500">
-                        A {Math.floor(Math.random() * 10) + 1}km de você
+                    {salon.phone && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <Phone className="h-4 w-4 text-green-600" />
+                        <button
+                          onClick={() => openWhatsApp(salon.phone!)}
+                          className="text-green-600 hover:underline"
+                        >
+                          {formatPhone(salon.phone)}
+                        </button>
                       </div>
+                    )}
+                    
+                    {salon.address && (
+                      <div className="flex items-start gap-2 mb-2">
+                        <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-600">{salon.address}</span>
+                      </div>
+                    )}
+                    
+                    <div className="text-sm text-gray-500">
+                      A {Math.floor(Math.random() * 10) + 1}km de você
                     </div>
                   </div>
                 </div>
@@ -229,7 +205,7 @@ const SalonFinder = () => {
               AP Professional. A responsabilidade pelos serviços prestados é
               exclusivamente do salão listado acima.
             </p>
-            <Button className="bg-white text-black hover:bg-gray-100 w-full">
+            <Button className="bg-menu-white text-black hover:bg-gray-100 w-full">
               Saiba mais
             </Button>
           </div>
@@ -239,7 +215,7 @@ const SalonFinder = () => {
       {/* Footer */}
       <footer className="bg-black text-center py-6 px-4">
         <div className="max-w-md mx-auto">
-          <div className="text-white mb-2">
+          <div className="text-menu-white mb-2">
             <span className="text-2xl">📷</span>
           </div>
           <p className="text-xs text-gray-400">
