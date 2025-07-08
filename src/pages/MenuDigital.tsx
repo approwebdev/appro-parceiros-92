@@ -74,9 +74,7 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6">
         {/* Logo Appro */}
         <div className="flex items-center">
-          <div className="text-white font-bold text-3xl">
-            A<span className="text-gold">PRO</span>
-          </div>
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
 
         {/* Ícones superiores */}
@@ -141,8 +139,8 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
         <div className="flex-1 relative">
           <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/20"></div>
           <img 
-            src="/lovable-uploads/b5d43ff0-f061-4528-b645-d6b8ea12f516.png"
-            alt="Ana Paula Carvalho"
+            src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png"
+            alt="Profissional de beleza"
             className="w-full h-full object-cover object-center"
           />
         </div>

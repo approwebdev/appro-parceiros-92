@@ -170,9 +170,7 @@ const SalonFinder = () => {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
-          <div className="text-2xl font-bold text-gray-900">
-            A<span className="text-blue-600">RO</span>
-          </div>
+          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
           <Button variant="ghost" size="icon" className="text-gray-900">
             <Menu className="h-6 w-6" />
           </Button>
