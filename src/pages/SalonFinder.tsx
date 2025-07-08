@@ -188,7 +188,7 @@ const SalonFinder = () => {
         
         <div className="text-center mb-6">
           {/* Search Container with dark gray background */}
-          <div className="bg-gray-700 rounded-lg p-6 mb-6">
+          <div className="rounded-lg p-6 mb-6" style={{ backgroundColor: '#242424' }}>
             <h1 className="text-2xl font-bold mb-1 text-white">
               Encontre o Salão mais
             </h1>
