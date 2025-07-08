@@ -321,30 +321,30 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Produtos Relacionados */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white border-t p-6">
-        <h3 className="text-lg font-semibold mb-4">Produtos Relacionados</h3>
-        <div className="flex gap-4 overflow-x-auto">
-          {[
-            "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-            "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-          ].map((img, i) => (
-            <div key={i} className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
-              <img 
-                src={img}
-                alt={`Produto relacionado ${i + 1}`}
-                className="w-full h-full object-cover"
-              />
+            {/* Produtos Relacionados */}
+            <div className="lg:col-span-3 mt-8">
+              <h3 className="text-lg font-semibold mb-4">Produtos Relacionados</h3>
+              <div className="flex gap-4 overflow-x-auto">
+                {[
+                  "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                  "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                  "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
+                  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+                ].map((img, i) => (
+                  <div key={i} className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
+                    <img 
+                      src={img}
+                      alt={`Produto relacionado ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <ChevronRight className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
             </div>
-          ))}
-          <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-            <ChevronRight className="h-6 w-6 text-gray-400" />
           </div>
         </div>
       </div>
