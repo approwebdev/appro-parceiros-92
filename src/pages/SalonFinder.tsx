@@ -178,14 +178,17 @@ const SalonFinder = () => {
         </div>
       </header>
 
-      {/* Hero Section with Background Image */}
-      <div 
-        className="px-4 py-8 max-w-md mx-auto relative bg-cover bg-center bg-no-repeat min-h-[500px]"
-        style={{ backgroundImage: 'url(/lovable-uploads/1572fc57-750b-4248-a2aa-a7bf7e6da5a2.png)' }}
-      >
+      {/* Hero Section */}
+      <div className="px-4 py-8 max-w-md mx-auto">
+        {/* Background Image div above the gray container */}
+        <div 
+          className="h-64 bg-cover bg-center bg-no-repeat rounded-lg mb-4"
+          style={{ backgroundImage: 'url(/lovable-uploads/1572fc57-750b-4248-a2aa-a7bf7e6da5a2.png)' }}
+        ></div>
+        
         <div className="text-center mb-6">
-          {/* Search Container with dark gray background - positioned with top margin */}
-          <div className="bg-gray-800 bg-opacity-90 rounded-lg p-6 mb-6 mt-32">
+          {/* Search Container with dark gray background */}
+          <div className="bg-gray-700 rounded-lg p-6 mb-6">
             <h1 className="text-2xl font-bold mb-1 text-white">
               Encontre o Salão mais
             </h1>
