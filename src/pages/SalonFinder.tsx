@@ -65,7 +65,7 @@ const SalonFinder = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-menu-dark">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gold"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-menu-gold"></div>
       </div>
     );
   }
@@ -73,10 +73,10 @@ const SalonFinder = () => {
   return (
     <div className="min-h-screen bg-menu-dark text-menu-white">
       {/* Header */}
-      <header className="bg-menu-dark border-b border-gold/20 px-4 py-4">
+      <header className="bg-menu-dark border-b border-menu-gold/20 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="text-2xl font-bold">
-            A<span className="text-gold">RO</span>
+            A<span className="text-menu-gold">RO</span>
           </div>
           <Button variant="ghost" size="icon" className="text-menu-white">
             <Menu className="h-6 w-6" />
@@ -90,7 +90,7 @@ const SalonFinder = () => {
           <h1 className="text-2xl font-bold mb-2">
             Encontre o Salão mais
           </h1>
-          <h2 className="text-2xl font-bold text-gold mb-6">
+          <h2 className="text-2xl font-bold text-menu-gold mb-6">
             próximo de você.
           </h2>
           
@@ -101,7 +101,7 @@ const SalonFinder = () => {
               placeholder="Digite seu endereço"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full"
+              className="bg-menu-white text-black pl-4 pr-12 py-3 rounded-lg w-full"
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
           </div>
@@ -132,7 +132,7 @@ const SalonFinder = () => {
           <h3 className="text-lg font-semibold">Salões mais próximo de você</h3>
           
           {filteredSalons.map((salon, index) => (
-            <Card key={salon.id} className="bg-white text-black">
+            <Card key={salon.id} className="bg-menu-white text-black">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   {/* Avatar */}
@@ -144,7 +144,7 @@ const SalonFinder = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg">{salon.name}</h4>
-                      <span className="bg-black text-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
+                      <span className="bg-black text-menu-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
                         Parceiro
                       </span>
                     </div>
@@ -205,7 +205,7 @@ const SalonFinder = () => {
               AP Professional. A responsabilidade pelos serviços prestados é
               exclusivamente do salão listado acima.
             </p>
-            <Button className="bg-white text-black hover:bg-gray-100 w-full">
+            <Button className="bg-menu-white text-black hover:bg-gray-100 w-full">
               Saiba mais
             </Button>
           </div>
@@ -215,7 +215,7 @@ const SalonFinder = () => {
       {/* Footer */}
       <footer className="bg-black text-center py-6 px-4">
         <div className="max-w-md mx-auto">
-          <div className="text-white mb-2">
+          <div className="text-menu-white mb-2">
             <span className="text-2xl">📷</span>
           </div>
           <p className="text-xs text-gray-400">
