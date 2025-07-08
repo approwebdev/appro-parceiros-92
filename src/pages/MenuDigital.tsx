@@ -69,13 +69,13 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
   }
 
   return (
-    <div className="menu-container bg-menu-dark relative">
+    <div className="menu-container bg-black relative">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6">
         {/* Logo Appro */}
         <div className="flex items-center">
-          <div className="text-white font-bold text-2xl">
-            A<span className="text-gold">RO</span>
+          <div className="text-white font-bold text-3xl">
+            A<span className="text-gold">PRO</span>
           </div>
         </div>
 
@@ -104,9 +104,11 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
         {/* Lado Esquerdo - Texto */}
         <div className="flex-1 flex flex-col justify-center pl-16">
           <div className="mb-8">
-            <h1 className="text-6xl font-bold mb-4">
-              <span className="text-gold">Menu</span>
-              <span className="text-white block">Digital</span>
+            <h1 className="flex items-center gap-4 mb-4">
+              <span className="text-8xl font-bold bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 bg-clip-text text-transparent">
+                Menu
+              </span>
+              <span className="text-6xl font-bold text-white">Digital</span>
             </h1>
             
             {/* Informações do Salão */}
@@ -137,10 +139,10 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
 
         {/* Lado Direito - Modelo */}
         <div className="flex-1 relative">
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-menu-dark/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/20"></div>
           <img 
             src="/lovable-uploads/b5d43ff0-f061-4528-b645-d6b8ea12f516.png"
-            alt="Menu Digital"
+            alt="Ana Paula Carvalho"
             className="w-full h-full object-cover object-center"
           />
         </div>

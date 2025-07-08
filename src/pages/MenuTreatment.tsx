@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowLeft, Phone, Star, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
 
 interface Treatment {
@@ -27,6 +28,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   const [relatedTreatments, setRelatedTreatments] = useState<Treatment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPrice, setShowPrice] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     if (slug && treatmentId) {
@@ -109,6 +111,11 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
     }).format(price);
   };
 
+  const truncateDescription = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
   if (loading) {
     return (
       <div className="menu-container bg-white flex items-center justify-center">
@@ -162,13 +169,13 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full pt-20 pb-32">
-        <div className="h-full flex">
+      <div className="h-full pt-20 pb-32 overflow-y-auto md:overflow-hidden">
+        <div className="h-full flex flex-col md:flex-row">
           {/* Lado Esquerdo - Imagens */}
-          <div className="flex-1 p-8">
+          <div className="flex-1 p-4 md:p-8">
             <div className="h-full flex flex-col">
               {/* Imagem Principal */}
-              <div className="flex-1 bg-gray-100 rounded-lg mb-4 overflow-hidden">
+              <div className="h-64 md:h-80 bg-gray-100 rounded-lg mb-4 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
                   alt={treatment.name}
@@ -196,20 +203,39 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
           </div>
 
           {/* Centro - Informações */}
-          <div className="flex-1 p-8 max-w-md mx-auto">
+          <div className="flex-1 p-4 md:p-8 max-w-md mx-auto">
             <div className="h-full flex flex-col">
               <div className="mb-2">
                 <span className="text-sm text-gray-500">Categoria</span>
               </div>
               
-              <h1 className="text-3xl font-bold mb-2">{treatment.name}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">{treatment.name}</h1>
               
               <p className="text-lg text-gray-600 mb-4">{treatment.subtitle}</p>
               
               <div className="flex-1 mb-6">
                 <p className="text-gray-700 leading-relaxed">
-                  {treatment.description}
+                  {truncateDescription(treatment.description, 330)}
                 </p>
+                {treatment.description.length > 330 && (
+                  <Dialog open={isDescriptionExpanded} onOpenChange={setIsDescriptionExpanded}>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-800">
+                        Ler mais
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>{treatment.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="mt-4">
+                        <p className="text-gray-700 leading-relaxed">
+                          {treatment.description}
+                        </p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
               
               {/* Avaliações */}
@@ -225,37 +251,39 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                 <span className="text-sm text-gray-500">({treatment.rating_count})</span>
               </div>
               
-              {/* Preço */}
+              {/* Preço e Botões */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm text-gray-500">de</span>
                   <span className="text-lg line-through text-gray-400">R$ ****</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-3xl font-bold text-black">
-                    {showPrice ? formatPrice(treatment.custom_price) : 'R$ ****'}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl md:text-3xl font-bold text-black">
+                      {showPrice ? formatPrice(treatment.custom_price) : 'R$ ****'}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowPrice(!showPrice)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      {showPrice ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowPrice(!showPrice)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    {showPrice ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  
+                  {/* Botão Saiba Mais */}
+                  <Button className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-full">
+                    Saiba mais...
                   </Button>
                 </div>
               </div>
-              
-              {/* Botão Saiba Mais */}
-              <Button className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-full mb-4">
-                Saiba mais...
-              </Button>
             </div>
           </div>
 
           {/* Lado Direito - Vídeo */}
-          <div className="flex-1 p-8">
-            <div className="h-full bg-gray-100 rounded-lg overflow-hidden relative">
+          <div className="flex-1 p-4 md:p-8">
+            <div className="h-64 md:h-full bg-gray-100 rounded-lg overflow-hidden relative z-20">
               <img 
                 src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
                 alt="Vídeo demonstrativo"

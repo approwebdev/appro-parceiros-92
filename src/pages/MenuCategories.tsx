@@ -113,62 +113,36 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
   }
 
   return (
-    <div className="menu-container bg-white relative">
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6">
-        {/* Logo Appro */}
-        <div className="flex items-center">
-          <div className="text-black font-bold text-2xl">
-            A<span className="text-gold">RO</span>
-          </div>
-        </div>
-
-        {/* Ícones superiores */}
-        <div className="flex items-center gap-4">
-          <div className="text-black">
-            <div className="h-6 w-6 rounded-full bg-black/20 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-black"></div>
-            </div>
-          </div>
-          <div className="text-black">
-            <div className="h-6 w-6 rounded-full bg-black/20 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-black"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="menu-container bg-black relative overflow-hidden">
       {/* Conteúdo Principal */}
-      <div className="h-full flex items-center justify-center">
-        <div className="w-full max-w-6xl mx-auto px-8">
-          {/* Carrossel de Categorias */}
-          <div className="grid grid-cols-4 gap-4 h-96">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className={`relative overflow-hidden rounded-2xl cursor-pointer transition-transform hover:scale-105 ${category.gradient}`}
-                onClick={() => onCategorySelect(category.id, category.treatmentId)}
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
-                <img 
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-6 left-6">
-                  <h3 className="text-white text-2xl font-bold">{category.name}</h3>
-                </div>
+      <div className="h-full">
+        {/* Carrossel de Categorias */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 h-full">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className={`relative overflow-hidden cursor-pointer transition-transform hover:scale-105 ${category.gradient} h-full`}
+              onClick={() => onCategorySelect(category.id, category.treatmentId)}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40"></div>
+              <img 
+                src={category.image}
+                alt={category.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-8 left-8">
+                <h3 className="text-white text-3xl md:text-4xl font-bold">{category.name}</h3>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-6 left-6">
+      <div className="absolute bottom-6 left-6 z-20">
         <Button 
           onClick={onBack}
-          className="bg-black/80 text-white hover:bg-black p-3 rounded-full"
+          className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 p-3 rounded-full border border-white/20"
         >
           <Home className="h-6 w-6" />
         </Button>
