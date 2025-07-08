@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      salon_banners: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_active: boolean
+          order_position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          order_position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          order_position?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       salon_treatments: {
         Row: {
           created_at: string
@@ -98,6 +128,7 @@ export type Database = {
           is_active: boolean
           name: string
           phone: string | null
+          photo_url: string | null
           slug: string
           updated_at: string
           user_id: string | null
@@ -110,6 +141,7 @@ export type Database = {
           is_active?: boolean
           name: string
           phone?: string | null
+          photo_url?: string | null
           slug: string
           updated_at?: string
           user_id?: string | null
@@ -122,6 +154,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           phone?: string | null
+          photo_url?: string | null
           slug?: string
           updated_at?: string
           user_id?: string | null
@@ -131,6 +164,7 @@ export type Database = {
       treatments: {
         Row: {
           base_price: number
+          button_color: string | null
           category: string
           created_at: string
           description: string | null
@@ -147,6 +181,7 @@ export type Database = {
         }
         Insert: {
           base_price?: number
+          button_color?: string | null
           category: string
           created_at?: string
           description?: string | null
@@ -163,6 +198,7 @@ export type Database = {
         }
         Update: {
           base_price?: number
+          button_color?: string | null
           category?: string
           created_at?: string
           description?: string | null
