@@ -100,12 +100,19 @@ const Index = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                <div className="space-y-2">
                   <Button asChild className="w-full">
                     <Link to={`/menu/${salon.slug}`}>
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Ver Menu Digital
                     </Link>
                   </Button>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to="/auth">
+                      Acesso Painel
+                    </Link>
+                  </Button>
+                </div>
                 </CardContent>
               </Card>
             ))}
