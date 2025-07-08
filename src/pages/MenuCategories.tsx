@@ -13,7 +13,7 @@ interface Treatment {
 
 interface MenuCategoriesProps {
   onBack: () => void;
-  onCategorySelect: (category: string) => void;
+  onCategorySelect: (category: string, treatmentId: string) => void;
 }
 
 const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
@@ -78,25 +78,29 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
       id: 'treatment',
       name: 'Treatment',
       image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-treatment'
+      gradient: 'category-treatment',
+      treatmentId: 'liso-lambido'
     },
     {
-      id: 'transformation',
+      id: 'transformation', 
       name: 'Transformation',
       image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-transformation'
+      gradient: 'category-transformation',
+      treatmentId: 'coloracao-premium'
     },
     {
       id: 'combos',
-      name: 'Combos',
+      name: 'Combos', 
       image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-combos'
+      gradient: 'category-combos',
+      treatmentId: 'combo-liso-hidratacao'
     },
     {
       id: 'home_care',
       name: 'Home Care',
-      image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-homecare'
+      image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png', 
+      gradient: 'category-homecare',
+      treatmentId: 'kit-manutencao'
     }
   ];
 
@@ -143,7 +147,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
               <div
                 key={category.id}
                 className={`relative overflow-hidden rounded-2xl cursor-pointer transition-transform hover:scale-105 ${category.gradient}`}
-                onClick={() => onCategorySelect(category.id)}
+                onClick={() => onCategorySelect(category.id, category.treatmentId)}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
                 <img 

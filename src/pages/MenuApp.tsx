@@ -17,10 +17,8 @@ const MenuApp = () => {
     setCurrentPage('home');
   };
 
-  const handleCategorySelect = (category: string) => {
-    // Por enquanto, vou buscar o primeiro tratamento dessa categoria
-    // Aqui você pode implementar a lógica para mostrar tratamentos da categoria
-    setSelectedTreatment('first-treatment'); // Placeholder
+  const handleCategorySelect = (category: string, treatmentId: string) => {
+    setSelectedTreatment(treatmentId);
     setCurrentPage('treatment');
   };
 
