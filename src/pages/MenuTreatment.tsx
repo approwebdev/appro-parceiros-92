@@ -169,7 +169,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full pt-20 pb-40 overflow-hidden">
+      <div className="h-full pt-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
             
