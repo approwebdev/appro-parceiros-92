@@ -101,7 +101,7 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
     font-family: 'DM Sans', sans-serif;
-    overflow: hidden; /* Remove scroll global */
+    overflow-x: hidden; /* Remove apenas scroll horizontal */
   }
 
   /* Estilos específicos para menu digital */

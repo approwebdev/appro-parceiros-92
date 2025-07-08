@@ -19,6 +19,7 @@ interface Salon {
   latitude?: number;
   longitude?: number;
   distance?: number;
+  plan?: string;
 }
 
 const SalonFinder = () => {
@@ -160,13 +161,13 @@ const SalonFinder = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2" style={{ borderColor: '#F8E7BF' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-between">
@@ -183,7 +184,7 @@ const SalonFinder = () => {
           <h1 className="text-2xl font-bold mb-2 text-gray-900">
             Encontre o Salão mais
           </h1>
-          <h2 className="text-2xl font-bold text-blue-600 mb-6">
+          <h2 className="text-2xl font-bold mb-6" style={{ color: '#F8E7BF' }}>
             próximo de você.
           </h2>
           
@@ -216,7 +217,7 @@ const SalonFinder = () => {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="outline" 
-                  className="w-full mb-4 border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   <Navigation className="h-4 w-4 mr-2" />
                   Filtros de Distância
@@ -296,7 +297,7 @@ const SalonFinder = () => {
                 {userLocation ? <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span> : 'Todos os salões'}
               </h3>
               {userLocation && filteredSalons.length > 0 && (
-                <Badge variant="outline" className="border-blue-600 text-blue-600">
+                <Badge variant="outline" className="border-gray-300 text-gray-600">
                   {filteredSalons.length} encontrados
                 </Badge>
               )}
@@ -315,9 +316,21 @@ const SalonFinder = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
-                        <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap ml-2">
-                          Parceiro
-                        </span>
+                        <div className="flex gap-2">
+                          {salon.plan === 'verificado_azul' && (
+                            <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+                              Verificado
+                            </span>
+                          )}
+                          {salon.plan === 'verificado_dourado' && (
+                            <span className="text-white px-2 py-1 rounded text-xs whitespace-nowrap" style={{ backgroundColor: '#F8E7BF', color: '#000' }}>
+                              Verificado
+                            </span>
+                          )}
+                          <span className="bg-gray-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+                            Parceiro
+                          </span>
+                        </div>
                       </div>
                       
                       {salon.phone && (
@@ -374,8 +387,8 @@ const SalonFinder = () => {
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
             <CardContent className="p-0 relative h-48">
               <img
-                src="/lovable-uploads/63155ad2-ae8d-41f6-8e01-774a09edeb0a.png"
-                alt="Tratamento capilar"
+                src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png"
+                alt="Ana Paula - Profissional de beleza"
                 className="w-full h-full object-cover"
               />
               <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded">
@@ -395,7 +408,7 @@ const SalonFinder = () => {
               AP Professional. A responsabilidade pelos serviços prestados é
               exclusivamente do salão listado acima.
             </p>
-            <Button className="bg-blue-600 text-white hover:bg-blue-700 w-full">
+            <Button className="text-white hover:opacity-90 w-full" style={{ backgroundColor: '#F8E7BF', color: '#000' }}>
               Saiba mais
             </Button>
           </div>
