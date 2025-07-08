@@ -480,34 +480,36 @@ const SalonPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-admin-content flex">
-      {/* Sidebar */}
-      <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+    <div className="min-h-screen bg-admin-content flex flex-col lg:flex-row">
+      {/* Sidebar - Hidden on mobile, overlay on tablet */}
+      <div className="lg:block">
+        <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <header className="bg-admin-card border-b border-admin-border px-6 py-4">
+        <header className="bg-admin-card border-b border-admin-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-admin-text">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg lg:text-2xl font-bold text-admin-text truncate">
                 {activeTab === 'salon-info' && 'Informações do Salão'}
                 {activeTab === 'menu-link' && 'Link do Menu Digital'}
                 {activeTab === 'treatments' && 'Meus Tratamentos'}
               </h1>
-              <p className="text-admin-text-muted">
+              <p className="text-sm text-admin-text-muted hidden sm:block">
                 {activeTab === 'salon-info' && 'Gerencie as informações do seu salão'}
                 {activeTab === 'menu-link' && 'Acesse e compartilhe o link do seu menu digital'}
                 {activeTab === 'treatments' && 'Gerencie os tratamentos oferecidos'}
               </p>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="relative">
+            <div className="flex items-center gap-2 lg:gap-4">
+              <div className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-admin-text-muted" />
                 <Input 
                   placeholder="Buscar..."
-                  className="pl-10 w-80 bg-admin-card border-admin-border"
+                  className="pl-10 w-40 lg:w-80 bg-admin-card border-admin-border"
                 />
               </div>
               {activeTab === 'treatments' && (
@@ -515,8 +517,8 @@ const SalonPanel = () => {
                   size="sm" 
                   className="bg-admin-success hover:bg-admin-success-hover text-white"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar
+                  <Plus className="h-4 w-4 lg:mr-2" />
+                  <span className="hidden lg:inline">Adicionar</span>
                 </Button>
               )}
             </div>
@@ -524,7 +526,7 @@ const SalonPanel = () => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 lg:p-6">
           {renderContent()}
         </main>
       </div>

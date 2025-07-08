@@ -10,6 +10,7 @@ import SalonFinder from "./pages/SalonFinder";
 import Auth from "./pages/Auth";
 import AdminPanel from "./pages/AdminPanel";
 import SalonPanel from "./pages/SalonPanel";
+import Navigation from "./pages/Navigation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/navigation" element={<Navigation />} />
             <Route path="/salons" element={<SalonFinder />} />
             <Route path="/menu/:slug" element={<MenuApp />} />
             <Route path="/auth" element={<Auth />} />
