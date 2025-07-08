@@ -323,7 +323,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
             </div>
 
             {/* Produtos Relacionados */}
-            <div className="lg:col-span-3 mt-8">
+            <div className="lg:col-span-3 mt-4">
               <h3 className="text-lg font-semibold mb-4">Produtos Relacionados</h3>
               <div className="flex gap-4 overflow-x-auto">
                 {[
