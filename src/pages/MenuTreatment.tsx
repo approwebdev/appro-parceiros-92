@@ -182,13 +182,13 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   return (
     <div className="menu-container bg-white relative">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-black border-b">
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-white border-b">
         <div className="flex items-center gap-4">
           <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
           <Button 
             onClick={onBack}
             variant="ghost"
-            className="text-white hover:text-gold"
+            className="text-black hover:text-gray-600"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
@@ -196,12 +196,12 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="text-white">
+          <div className="text-black">
             <Phone className="h-6 w-6" />
           </div>
-          <div className="text-white">
-            <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-white"></div>
+          <div className="text-black">
+            <div className="h-6 w-6 rounded-full bg-black/20 flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-black"></div>
             </div>
           </div>
         </div>

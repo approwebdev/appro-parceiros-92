@@ -135,14 +135,13 @@ const AdminPanel = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex flex-col items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+                  className={`flex items-center justify-center p-3 rounded-lg transition-colors ${
                     isActive 
                       ? 'text-admin-sidebar-active' 
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-xs font-medium">{item.label}</span>
+                  <Icon className="h-6 w-6" />
                 </button>
               );
             })}

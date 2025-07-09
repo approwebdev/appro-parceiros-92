@@ -7,6 +7,7 @@ import { Plus, Search, Edit, Package, MapPin, Building, Home, User } from 'lucid
 import { Input } from '@/components/ui/input';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { SalonSidebar } from '@/components/salon/SalonSidebarNew';
+import { SalonInfoForm } from '@/components/salon/SalonInfoForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -187,14 +188,25 @@ const SalonPanelNew = () => {
 
   const handleUpdateSalon = async (data: any) => {
     try {
+      const updateData: any = {
+        name: data.name,
+        address: data.address,
+        instagram: data.instagram
+      };
+
+      // Se tem telefone, formatar apenas números
+      if (data.phone) {
+        updateData.phone = data.phone.replace(/\D/g, '');
+      }
+
+      // Se tem photo_url, incluir
+      if (data.photo_url) {
+        updateData.photo_url = data.photo_url;
+      }
+
       const { error } = await supabase
         .from('salons')
-        .update({
-          name: data.name,
-          address: data.address,
-          phone: data.phone,
-          instagram: data.instagram
-        })
+        .update(updateData)
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -204,8 +216,8 @@ const SalonPanelNew = () => {
         description: "As informações do salão foram salvas com sucesso.",
       });
 
-      setEditSalonOpen(false);
-      window.location.reload();
+      // Atualizar dados locais
+      setSalonData(prev => prev ? { ...prev, ...updateData } : prev);
     } catch (error) {
       console.error('Erro ao atualizar salão:', error);
       toast({
@@ -840,6 +852,12 @@ const SalonPanelNew = () => {
       case 'profile':
         return (
           <div className="space-y-6">
+            {salonData && (
+              <SalonInfoForm 
+                salon={salonData} 
+                onUpdate={handleUpdateSalon}
+              />
+            )}
             <Card className="bg-admin-card border-admin-border">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-admin-text">Meu Perfil</CardTitle>
@@ -1091,14 +1109,13 @@ const SalonPanelNew = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-colors ${
+                  className={`flex items-center justify-center p-3 rounded-lg transition-colors ${
                     isActive 
                       ? 'text-admin-sidebar-active' 
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-xs font-medium">{item.label}</span>
+                  <Icon className="h-6 w-6" />
                 </button>
               );
             })}
