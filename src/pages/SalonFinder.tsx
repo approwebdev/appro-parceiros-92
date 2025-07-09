@@ -167,12 +167,12 @@ const SalonFinder = () => {
           <div className="rounded-lg p-6 mb-6" style={{
           backgroundColor: '#242424'
         }}>
-            <h1 className="text-2xl font-bold mb-1 text-white">
+            <h1 className="font-bold mb-1 text-white text-4xl">
               Encontre o Salão mais
             </h1>
-            <h2 className="text-2xl font-bold mb-6" style={{
+            <h2 style={{
             color: '#F8E7BF'
-          }}>
+          }} className="font-bold mb-6 text-4xl text-yellow-100">
               próximo de você.
             </h2>
             
