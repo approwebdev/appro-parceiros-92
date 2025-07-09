@@ -20,8 +20,19 @@ interface Salon {
   distance?: number;
   plan?: string;
 }
+
+interface Banner {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  is_active: boolean;
+  order_position: number;
+}
+
 const SalonFinder = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewType, setViewType] = useState<'list' | 'map'>('list');
@@ -37,6 +48,7 @@ const SalonFinder = () => {
   } = useToast();
   useEffect(() => {
     fetchSalons();
+    fetchBanners();
   }, []);
 
   // Função para calcular distância entre dois pontos
@@ -119,6 +131,25 @@ const SalonFinder = () => {
     }
   };
 
+  const fetchBanners = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('salon_banners')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_position');
+
+      if (error) {
+        console.error('Erro ao buscar banners:', error);
+        return;
+      }
+
+      setBanners(data || []);
+    } catch (error) {
+      console.error('Erro ao buscar banners:', error);
+    }
+  };
+
   // Filtrar salões por busca e distância
   const filteredSalons = salons.filter(salon => salon.name.toLowerCase().includes(searchTerm.toLowerCase()) || salon.address?.toLowerCase().includes(searchTerm.toLowerCase())).filter(salon => {
     if (distanceFilter === 'all' || !salon.distance) return true;
@@ -146,12 +177,9 @@ const SalonFinder = () => {
   }
   return <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+      <header className="bg-black border-b border-gray-200 px-4 py-4">
+        <div className="max-w-md mx-auto flex items-center justify-center">
           <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
-          <Button variant="ghost" size="icon" className="text-gray-900">
-            <Menu className="h-6 w-6" />
-          </Button>
         </div>
       </header>
 
@@ -246,50 +274,36 @@ const SalonFinder = () => {
                 </Badge>}
             </div>
             
-            {filteredSalons.map(salon => <Card key={salon.id} className="bg-white text-black border border-gray-200">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
+            {filteredSalons.map(salon => <Card key={salon.id} className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
                     {/* Avatar */}
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
+                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl">
                       {salon.name.charAt(0)}
                     </div>
                     
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
-                          <CheckCircle className="h-5 w-5 text-blue-500" />
-                        </div>
-                        <div className="flex gap-2">
-                          {salon.plan === 'verificado_azul' && <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                              Verificado
-                            </span>}
-                          {salon.plan === 'verificado_dourado' && <span className="text-white px-2 py-1 rounded text-xs whitespace-nowrap" style={{
-                      backgroundColor: '#F8E7BF',
-                      color: '#000'
-                    }}>
-                              Verificado
-                            </span>}
-                          <span className="bg-gray-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                            Parceiro
-                          </span>
+                          <h4 className="font-semibold text-xl text-gray-900">{salon.name}</h4>
+                          <CheckCircle className="h-6 w-6 text-blue-500" />
                         </div>
                       </div>
                       
-                      {salon.phone && <div className="flex items-center gap-2 mb-1">
-                          <Phone className="h-4 w-4 text-green-600" />
-                          <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline">
+                      {salon.phone && <div className="flex items-center gap-2 mb-2">
+                          <Phone className="h-5 w-5 text-green-600" />
+                          <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline text-base">
                             {formatPhone(salon.phone)}
                           </button>
                         </div>}
                       
-                      {salon.address && <div className="flex items-start gap-2 mb-2">
-                          <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-600">{salon.address}</span>
+                      {salon.address && <div className="flex items-start gap-2 mb-3">
+                          <MapPin className="h-5 w-5 text-gray-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-base text-gray-600">{salon.address}</span>
                         </div>}
                       
-                      <div className="text-sm text-gray-500">
+                      <div className="text-base text-gray-500 font-medium">
                         {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
                       </div>
                     </div>
@@ -299,21 +313,57 @@ const SalonFinder = () => {
 
             {filteredSalons.length === 0 && <Card className="bg-white text-black border border-gray-200">
                 <CardContent className="p-8 text-center">
-                  <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h4 className="font-semibold text-lg mb-2 text-gray-900">Nenhum salão encontrado</h4>
-                  <p className="text-gray-600 text-sm">
+                  <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h4 className="font-semibold text-xl mb-3 text-gray-900">Nenhum salão encontrado</h4>
+                  <p className="text-gray-600 text-base">
                     {userLocation ? 'Tente aumentar o raio de busca ou alterar os filtros.' : 'Use sua localização para encontrar salões próximos.'}
                   </p>
                 </CardContent>
               </Card>}
           </div>}
 
+        {/* Banners */}
+        {banners.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
+            <div className="space-y-4">
+              {banners.map(banner => (
+                <Card key={banner.id} className="overflow-hidden">
+                  <CardContent className="p-0 relative h-48">
+                    <img 
+                      src={banner.image_url} 
+                      alt={banner.title} 
+                      className="w-full h-full object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                      <div className="p-4 text-white">
+                        <h4 className="font-bold text-lg">{banner.title}</h4>
+                        {banner.description && (
+                          <p className="text-sm opacity-90">{banner.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Informativo Section */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">Informativo para você</h3>
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
-            <CardContent className="p-0 relative h-48">
-              <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Ana Paula - Profissional de beleza" className="w-full h-full object-cover" />
+            <CardContent className="p-0 relative h-48 bg-black rounded-lg">
+              {/* Espaço para vídeo */}
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+                  </div>
+                  <p className="text-sm">Clique para reproduzir o vídeo</p>
+                </div>
+              </div>
               <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded">
                 <span className="text-2xl font-bold">02</span>
                 <br />

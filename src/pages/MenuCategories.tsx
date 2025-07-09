@@ -136,9 +136,6 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
                   {category.name}
                 </h3>
               </div>
-              <div className="absolute bottom-8 left-8">
-                <h3 className="text-white text-3xl md:text-4xl font-bold">{category.name}</h3>
-              </div>
             </div>
           ))}
         </div>

@@ -127,16 +127,34 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
 
   const nextTreatment = () => {
     const nextIndex = (currentTreatmentIndex + 1) % allTreatments.length;
-    setCurrentTreatmentIndex(nextIndex);
     const nextTreatment = allTreatments[nextIndex];
+    
+    // Atualizar todos os dados para o próximo tratamento
+    setCurrentTreatmentIndex(nextIndex);
     setTreatment(nextTreatment);
+    setShowPrice(false); // Reset price visibility
+    
+    // Atualizar produtos relacionados
+    const related = allTreatments
+      .filter(t => t.id !== nextTreatment.id)
+      .slice(0, 3);
+    setRelatedTreatments(related);
   };
 
   const prevTreatment = () => {
     const prevIndex = (currentTreatmentIndex - 1 + allTreatments.length) % allTreatments.length;
-    setCurrentTreatmentIndex(prevIndex);
     const prevTreatment = allTreatments[prevIndex];
+    
+    // Atualizar todos os dados para o tratamento anterior
+    setCurrentTreatmentIndex(prevIndex);
     setTreatment(prevTreatment);
+    setShowPrice(false); // Reset price visibility
+    
+    // Atualizar produtos relacionados
+    const related = allTreatments
+      .filter(t => t.id !== prevTreatment.id)
+      .slice(0, 3);
+    setRelatedTreatments(related);
   };
 
   if (loading) {
@@ -164,13 +182,13 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   return (
     <div className="menu-container bg-white relative">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-white border-b">
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-black border-b">
         <div className="flex items-center gap-4">
-          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
+          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
           <Button 
             onClick={onBack}
             variant="ghost"
-            className="text-black hover:text-gold"
+            className="text-white hover:text-gold"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
@@ -178,38 +196,38 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="text-black">
+          <div className="text-white">
             <Phone className="h-6 w-6" />
           </div>
-          <div className="text-black">
-            <div className="h-6 w-6 rounded-full bg-black/20 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-black"></div>
+          <div className="text-white">
+            <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-white"></div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full pt-20 overflow-hidden">
+      <div className="h-full pt-20 overflow-hidden bg-black">
         <div className="max-w-7xl mx-auto px-6 py-8 relative">
-          {/* Controles do Carrossel */}
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
+          {/* Controles do Carrossel - Mais afastados */}
+          <div className="absolute -left-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
               onClick={prevTreatment}
               variant="outline"
               size="icon"
-              className="rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
+              className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
             >
               <ChevronLeft className="h-6 w-6" />
             </Button>
           </div>
           
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
+          <div className="absolute -right-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
               onClick={nextTreatment}
               variant="outline"
               size="icon"
-              className="rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
+              className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
             >
               <ChevronRight className="h-6 w-6" />
             </Button>
@@ -222,45 +240,50 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
               {/* Imagem Principal */}
               <div className="h-96 bg-gray-100 rounded-2xl overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                  src={treatment.images && treatment.images.length > 0 
+                    ? treatment.images[0] 
+                    : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                  }
                   alt={treatment.name}
                   className="w-full h-full object-cover"
                 />
               </div>
               
-              {/* Miniaturas */}
-              <div className="flex gap-3">
-                {[
+              {/* Galeria de Miniaturas - Responsiva */}
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-3">
+                {(treatment.images && treatment.images.length > 0 ? treatment.images : [
                   "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
                   "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
                   "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-                ].map((img, i) => (
-                  <div key={i} className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden">
+                ]).slice(0, 6).map((img, i) => (
+                  <div key={i} className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
                     <img 
                       src={img}
                       alt={`${treatment.name} ${i + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
                     />
                   </div>
                 ))}
               </div>
               
-              {/* Produtos Relacionados */}
+              {/* Produtos Relacionados - Responsivo */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">Produtos Relacionados</h3>
-                <div className="flex gap-4 overflow-x-auto">
-                  {[
-                    "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-                    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-                    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
-                    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-                  ].map((img, i) => (
-                    <div key={i} className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                      <img 
-                        src={img}
-                        alt={`Produto relacionado ${i + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                <h3 className="text-lg font-semibold mb-4 text-white">Produtos Relacionados</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                  {relatedTreatments.slice(0, 4).map((related, i) => (
+                    <div key={i} className="group cursor-pointer">
+                      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        <img 
+                          src={related.images && related.images.length > 0 
+                            ? related.images[0] 
+                            : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+                          }
+                          alt={related.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                      <h4 className="text-sm font-medium text-white truncate">{related.name}</h4>
+                      <p className="text-xs text-gray-400">R$ {related.custom_price?.toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -270,30 +293,30 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
             {/* Centro - Informações */}
             <div className="lg:col-span-1">
               <div className="mb-3">
-                <span className="text-sm text-gray-500 uppercase tracking-wide">Categoria</span>
+                <span className="text-sm text-gray-400 uppercase tracking-wide">Categoria</span>
               </div>
               
-              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black">{treatment.name}</h1>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-white">{treatment.name}</h1>
               
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">{treatment.subtitle}</p>
+              <p className="text-lg text-gray-300 mb-6 leading-relaxed">{treatment.subtitle}</p>
               
               <div className="mb-6">
-                <p className="text-gray-700 leading-relaxed text-base">
+                <p className="text-gray-300 leading-relaxed text-base">
                   {truncateDescription(treatment.description, 330)}
                 </p>
                 {treatment.description.length > 330 && (
                   <Dialog open={isDescriptionExpanded} onOpenChange={setIsDescriptionExpanded}>
                     <DialogTrigger asChild>
-                      <Button variant="link" className="p-0 h-auto text-blue-600 hover:text-blue-800 mt-2">
+                      <Button variant="link" className="p-0 h-auto text-yellow-400 hover:text-yellow-300 mt-2">
                         Ler mais
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-2xl bg-gray-900 text-white border-gray-700">
                       <DialogHeader>
-                        <DialogTitle>{treatment.name}</DialogTitle>
+                        <DialogTitle className="text-white">{treatment.name}</DialogTitle>
                       </DialogHeader>
                       <div className="mt-4">
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-gray-300 leading-relaxed">
                           {treatment.description}
                         </p>
                       </div>
@@ -308,29 +331,31 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star 
                       key={star}
-                      className={`h-5 w-5 ${star <= treatment.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                      className={`h-5 w-5 ${star <= treatment.rating ? 'text-yellow-400 fill-current' : 'text-gray-600'}`}
                     />
                   ))}
                 </div>
-                <span className="text-sm text-gray-500">({treatment.rating_count})</span>
+                <span className="text-sm text-gray-400">({treatment.rating_count})</span>
               </div>
               
               {/* Preço e Botões */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm text-gray-500">de</span>
-                  <span className="text-lg line-through text-gray-400">R$ ********</span>
+                  <span className="text-sm text-gray-400">de</span>
+                  <span className="text-lg line-through text-gray-500">
+                    {showPrice ? `R$ ${(treatment.custom_price * 1.5).toFixed(2)}` : 'R$ ********'}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="text-3xl font-bold text-black">
+                    <div className="text-3xl font-bold text-white">
                       {showPrice ? formatPrice(treatment.custom_price) : 'R$ ********'}
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowPrice(!showPrice)}
-                      className="text-gray-500 hover:text-gray-700 p-2"
+                      className="text-gray-400 hover:text-gray-300 p-2"
                     >
                       {showPrice ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </Button>

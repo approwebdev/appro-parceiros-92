@@ -103,7 +103,8 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
         <div className="flex-1 flex flex-col justify-center pl-16">
           <div className="mb-8">
             <h1 className="flex items-center gap-4 mb-4">
-              <span className="text-8xl font-black bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400" style={{ backgroundImage: 'linear-gradient(135deg, #F8E7BF, #FFD700)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-12" />
+              <span className="text-8xl font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Menu
               </span>
               <span className="text-7xl font-bold text-white">Digital</span>
