@@ -102,10 +102,10 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
         </div>
         
         <Button
-          variant="outline"
+          variant="destructive"
           size="sm"
           onClick={signOut}
-          className="w-full justify-start gap-2 border-admin-sidebar-hover text-admin-sidebar-muted hover:bg-admin-sidebar-hover hover:text-white"
+          className="w-full justify-start gap-2 bg-red-600 hover:bg-red-700 text-white border-0"
         >
           <LogOut className="h-4 w-4" />
           {!isCollapsed && <span>Sair</span>}
