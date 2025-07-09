@@ -331,10 +331,10 @@ const SalonFinder = () => {
               AP Professional. A responsabilidade pelos serviços prestados é
               exclusivamente do salão listado acima.
             </p>
-            <Button className="text-white hover:opacity-90 w-full" style={{
+            <Button style={{
             backgroundColor: '#F8E7BF',
             color: '#000'
-          }}>
+          }} className="text-white hover:opacity-90 w-full bg-zinc-900 hover:bg-zinc-800">
               Saiba mais
             </Button>
           </div>
