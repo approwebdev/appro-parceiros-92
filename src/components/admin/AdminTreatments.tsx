@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Upload, X } from 'lucide-react';
 
 interface Treatment {
@@ -28,9 +29,16 @@ interface Treatment {
 
 export const AdminTreatments = () => {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [filteredTreatments, setFilteredTreatments] = useState<Treatment[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingTreatment, setEditingTreatment] = useState<Treatment | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -52,6 +60,33 @@ export const AdminTreatments = () => {
   useEffect(() => {
     fetchTreatments();
   }, []);
+
+  // Filter effect
+  useEffect(() => {
+    let filtered = treatments;
+    
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(treatment =>
+        treatment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        treatment.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Category filter
+    if (filterCategory !== 'all') {
+      filtered = filtered.filter(treatment => treatment.category === filterCategory);
+    }
+    
+    // Status filter
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(treatment => 
+        filterStatus === 'active' ? treatment.is_active : !treatment.is_active
+      );
+    }
+    
+    setFilteredTreatments(filtered);
+  }, [treatments, searchTerm, filterCategory, filterStatus]);
 
   const fetchTreatments = async () => {
     try {
@@ -376,24 +411,112 @@ export const AdminTreatments = () => {
         </Dialog>
       </div>
 
+      {/* Filtros */}
+      <Card className="bg-admin-card border-admin-border">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="search">Buscar por nome</Label>
+              <Input
+                id="search"
+                placeholder="Digite o nome do tratamento..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-admin-card border-admin-border"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="filter-category">Categoria</Label>
+              <Select value={filterCategory} onValueChange={setFilterCategory}>
+                <SelectTrigger className="bg-admin-card border-admin-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as categorias</SelectItem>
+                  <SelectItem value="treatment">Treatment</SelectItem>
+                  <SelectItem value="transformation">Transformation</SelectItem>
+                  <SelectItem value="combos">Combos</SelectItem>
+                  <SelectItem value="home_care">Home Care</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="filter-status">Status</Label>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="bg-admin-card border-admin-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="active">Ativos</SelectItem>
+                  <SelectItem value="inactive">Inativos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="mt-4 text-sm text-admin-text-muted">
+            Mostrando {filteredTreatments.length} de {treatments.length} tratamentos
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4">
-        {treatments.map((treatment) => (
-          <Card key={treatment.id} className="bg-menu-gray">
+        {filteredTreatments.map((treatment) => (
+          <Card key={treatment.id} className="bg-admin-card border-admin-border">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-menu-white">{treatment.name}</CardTitle>
-                  <p className="text-menu-gold">{treatment.subtitle}</p>
-                  <p className="text-sm text-gray-400">
-                    Categoria: {treatment.category} | Preço: R$ {treatment.base_price.toFixed(2)}
-                    {treatment.is_promotional && treatment.promotional_price > 0 && (
-                      <span className="text-green-500 ml-2">
-                        Promoção: R$ {treatment.promotional_price.toFixed(2)}
-                      </span>
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0">
+                    {treatment.images && treatment.images.length > 0 ? (
+                      <img 
+                        src={treatment.images[0]} 
+                        alt={treatment.name}
+                        className="w-20 h-16 rounded border object-cover"
+                      />
+                    ) : (
+                      <div className="w-20 h-16 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                        Sem foto
+                      </div>
                     )}
-                  </p>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <CardTitle className="text-admin-text">{treatment.name}</CardTitle>
+                    {treatment.subtitle && (
+                      <p className="text-admin-text-muted text-sm">{treatment.subtitle}</p>
+                    )}
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-sm font-medium text-admin-text">
+                        R$ {treatment.base_price.toFixed(2)}
+                        {treatment.is_promotional && treatment.promotional_price > 0 && (
+                          <span className="text-green-600 ml-2">
+                            (Promoção: R$ {treatment.promotional_price.toFixed(2)})
+                          </span>
+                        )}
+                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        {treatment.category}
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
+                
+                <div className="flex items-center space-x-2">
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    treatment.is_active 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {treatment.is_active ? 'Ativo' : 'Inativo'}
+                  </span>
+                  {treatment.is_promotional && (
+                    <Badge className="bg-yellow-100 text-yellow-800">
+                      Promoção
+                    </Badge>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
@@ -411,18 +534,6 @@ export const AdminTreatments = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-300 text-sm">{treatment.description}</p>
-              <div className="mt-2 flex items-center space-x-4">
-                <span className={`text-xs px-2 py-1 rounded ${treatment.is_active ? 'bg-green-600' : 'bg-red-600'}`}>
-                  {treatment.is_active ? 'Ativo' : 'Inativo'}
-                </span>
-                <div 
-                  className="w-4 h-4 rounded border"
-                  style={{ backgroundColor: treatment.button_color }}
-                />
-              </div>
-            </CardContent>
           </Card>
         ))}
       </div>

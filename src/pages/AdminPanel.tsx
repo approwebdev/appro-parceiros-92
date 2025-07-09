@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Search, Bell, Settings } from 'lucide-react';
 import { AdminTreatments } from '@/components/admin/AdminTreatments';
-import { AdminSalons } from '@/components/admin/AdminSalons';
+import { AdminPartners } from '@/components/admin/AdminPartners';
 import { AdminBanners } from '@/components/admin/AdminBanners';
 import { AdminCategories } from '@/components/admin/AdminCategories';
 import { AdminSidebarNew } from '@/components/admin/AdminSidebarNew';
@@ -35,7 +35,7 @@ const AdminPanel = () => {
       case 'treatments':
         return <AdminTreatments />;
       case 'salons':
-        return <AdminSalons />;
+        return <AdminPartners />;
       case 'categories':
         return <AdminCategories />;
       case 'banners':

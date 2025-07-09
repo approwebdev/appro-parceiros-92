@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Image } from 'lucide-react';
 
 interface Banner {
@@ -205,23 +206,34 @@ export const AdminBanners = () => {
 
       <div className="grid gap-4">
         {banners.map((banner) => (
-          <Card key={banner.id} className="bg-menu-gray">
+          <Card key={banner.id} className="bg-admin-card border-admin-border">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <div className="flex items-start space-x-4">
-                  {banner.image_url && (
-                    <img 
-                      src={banner.image_url} 
-                      alt={banner.title}
-                      className="w-20 h-12 rounded object-cover"
-                    />
-                  )}
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0">
+                    {banner.image_url ? (
+                      <img 
+                        src={banner.image_url} 
+                        alt={banner.title}
+                        className="w-20 h-12 rounded border object-cover"
+                      />
+                    ) : (
+                      <div className="w-20 h-12 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                        Sem imagem
+                      </div>
+                    )}
+                  </div>
                   <div>
-                    <CardTitle className="text-menu-white">{banner.title}</CardTitle>
-                    <p className="text-menu-gold">Posição: {banner.order_position}</p>
+                    <CardTitle className="text-admin-text">{banner.title}</CardTitle>
+                    <p className="text-admin-text-muted text-sm">Posição: {banner.order_position}</p>
                   </div>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex items-center space-x-2">
+                  <Badge 
+                    className={banner.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                  >
+                    {banner.is_active ? 'Ativo' : 'Inativo'}
+                  </Badge>
                   <Button
                     size="sm"
                     variant="outline"
@@ -239,17 +251,6 @@ export const AdminBanners = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center text-gray-300">
-                  <Image className="h-4 w-4 mr-1" />
-                  <span className="text-sm truncate max-w-xs">{banner.image_url}</span>
-                </div>
-                <span className={`px-2 py-1 rounded text-xs ${banner.is_active ? 'bg-green-600' : 'bg-red-600'}`}>
-                  {banner.is_active ? 'Ativo' : 'Inativo'}
-                </span>
-              </div>
-            </CardContent>
           </Card>
         ))}
       </div>
