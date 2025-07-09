@@ -187,7 +187,7 @@ const SalonFinder = () => {
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
         {/* Background Image div above the gray container */}
         <div className="h-64 bg-cover bg-center bg-no-repeat rounded-lg mb-4" style={{
-        backgroundImage: 'url(/lovable-uploads/1572fc57-750b-4248-a2aa-a7bf7e6da5a2.png)'
+        backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)'
       }}></div>
         
         <div className="text-center mb-6">
