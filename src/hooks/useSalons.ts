@@ -20,6 +20,9 @@ interface SalonFormData {
   slug: string;
   phone: string;
   address: string;
+  address_number: string;
+  address_complement: string;
+  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;

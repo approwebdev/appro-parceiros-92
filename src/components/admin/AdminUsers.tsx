@@ -68,15 +68,14 @@ export const AdminUsers = () => {
     
     try {
       if (editingUser) {
-        // Atualizar usuário existente
+        // Atualizar usuário existente - APENAS DADOS DO PERFIL
         const { error } = await supabase
           .from('profiles')
           .update({
             name: formData.name,
-            email: formData.email,
-            role: formData.role,
             phone: formData.phone,
             instagram: formData.instagram
+            // Removido role update para evitar problemas
           })
           .eq('id', editingUser.id);
         
@@ -215,30 +214,25 @@ export const AdminUsers = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email (somente leitura)</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
+                    disabled
+                    className="bg-gray-100"
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="role">Cargo</Label>
-                  <Select value={formData.role} onValueChange={(value: 'admin' | 'salon' | 'collaborator') => setFormData({ ...formData, role: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="collaborator">Colaborador</SelectItem>
-                      <SelectItem value="salon">Parceiro</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="role">Cargo (somente leitura)</Label>
+                  <Input
+                    value={editingUser ? editingUser.role : formData.role}
+                    disabled
+                    className="bg-gray-100"
+                  />
                 </div>
                 
                 <div className="space-y-2">

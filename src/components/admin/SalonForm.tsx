@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 interface Salon {
   id: string;
@@ -22,6 +25,9 @@ interface SalonFormData {
   slug: string;
   phone: string;
   address: string;
+  address_number: string;
+  address_complement: string;
+  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;
@@ -45,6 +51,42 @@ export const SalonForm = ({
   onCancel,
   generateSlug 
 }: SalonFormProps) => {
+  const [loadingAddress, setLoadingAddress] = useState(false);
+  const { toast } = useToast();
+
+  const handlePostalCodeBlur = async () => {
+    if (formData.postal_code && formData.postal_code.length === 8) {
+      setLoadingAddress(true);
+      try {
+        const response = await axios.get(`https://viacep.com.br/ws/${formData.postal_code}/json/`);
+        if (response.data && !response.data.erro) {
+          const addressData = response.data;
+          setFormData({ 
+            ...formData, 
+            address: `${addressData.logradouro}, ${addressData.bairro}, ${addressData.localidade} - ${addressData.uf}`
+          });
+          toast({
+            title: "CEP encontrado!",
+            description: "Endereço preenchido automaticamente.",
+          });
+        } else {
+          toast({
+            title: "CEP não encontrado",
+            description: "Verifique o CEP digitado.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Erro ao buscar CEP",
+          description: "Não foi possível buscar o endereço.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoadingAddress(false);
+      }
+    }
+  };
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -75,12 +117,48 @@ export const SalonForm = ({
         </div>
       </div>
       
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="postal_code">CEP</Label>
+          <Input
+            id="postal_code"
+            value={formData.postal_code}
+            onChange={(e) => setFormData({ ...formData, postal_code: e.target.value.replace(/\D/g, '') })}
+            onBlur={handlePostalCodeBlur}
+            maxLength={8}
+            placeholder="00000000"
+          />
+          {loadingAddress && <p className="text-sm text-muted-foreground">Buscando endereço...</p>}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="address_number">Número</Label>
+          <Input
+            id="address_number"
+            value={formData.address_number}
+            onChange={(e) => setFormData({ ...formData, address_number: e.target.value })}
+            placeholder="123"
+          />
+        </div>
+      </div>
+      
       <div className="space-y-2">
         <Label htmlFor="address">Endereço</Label>
         <Input
           id="address"
           value={formData.address}
           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          placeholder="Rua, bairro, cidade - UF"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="address_complement">Complemento</Label>
+        <Input
+          id="address_complement"
+          value={formData.address_complement}
+          onChange={(e) => setFormData({ ...formData, address_complement: e.target.value })}
+          placeholder="Apartamento, sala, andar..."
         />
       </div>
       

@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -41,11 +42,6 @@ const SalonPanelNew = () => {
   const [menuLink, setMenuLink] = useState('');
   const { toast } = useToast();
 
-  // Debug logs
-  console.log('SalonPanelNew - user:', user);
-  console.log('SalonPanelNew - profile:', profile);
-  console.log('SalonPanelNew - profile.has_salon:', profile?.has_salon);
-
   useEffect(() => {
     const fetchSalonData = async () => {
       if (user && profile?.has_salon) {
@@ -56,9 +52,6 @@ const SalonPanelNew = () => {
             .eq('user_id', user.id)
             .eq('is_active', true)
             .single();
-
-          console.log('Fetched salon data:', salon);
-          console.log('Salon fetch error:', error);
 
           if (salon && !error) {
             setSalonData(salon);
@@ -72,15 +65,11 @@ const SalonPanelNew = () => {
               `)
               .eq('salon_id', salon.id);
 
-            console.log('Fetched treatments data:', treatments);
-            console.log('Treatments fetch error:', treatmentsError);
-
             if (treatments && !treatmentsError) {
               setTreatmentsData(treatments);
             }
 
             // Gerar link do menu
-            const activetreatments = treatments?.filter(t => t.is_active) || [];
             setMenuLink(`${window.location.origin}/menu/${salon.slug}`);
           }
         } catch (error) {
@@ -118,11 +107,7 @@ const SalonPanelNew = () => {
     defaultValues: {
       name: profile?.name || '',
       phone: profile?.phone || '',
-      instagram: profile?.instagram || '',
-      address: profile?.address || '',
-      address_number: profile?.address_number || '',
-      address_complement: profile?.address_complement || '',
-      postal_code: profile?.postal_code || ''
+      instagram: profile?.instagram || ''
     }
   });
 
@@ -172,7 +157,6 @@ const SalonPanelNew = () => {
       });
 
       setCreateSalonOpen(false);
-      // Recarregar a página para atualizar o contexto
       window.location.reload();
     } catch (error) {
       console.error('Erro ao criar salão:', error);
@@ -194,12 +178,10 @@ const SalonPanelNew = () => {
         instagram: data.instagram
       };
 
-      // Se tem telefone, formatar apenas números
       if (data.phone) {
         updateData.phone = data.phone.replace(/\D/g, '');
       }
 
-      // Se tem photo_url, incluir
       if (data.photo_url) {
         updateData.photo_url = data.photo_url;
       }
@@ -216,7 +198,6 @@ const SalonPanelNew = () => {
         description: "As informações do salão foram salvas com sucesso.",
       });
 
-      // Atualizar dados locais
       setSalonData(prev => prev ? { ...prev, ...updateData } : prev);
     } catch (error) {
       console.error('Erro ao atualizar salão:', error);
@@ -235,11 +216,7 @@ const SalonPanelNew = () => {
         .update({
           name: data.name,
           phone: data.phone,
-          instagram: data.instagram,
-          address: data.address,
-          address_number: data.address_number,
-          address_complement: data.address_complement,
-          postal_code: data.postal_code
+          instagram: data.instagram
         })
         .eq('user_id', user.id);
 
@@ -293,8 +270,6 @@ const SalonPanelNew = () => {
         
         if (treatments) {
           setTreatmentsData(treatments);
-          // Atualizar link do menu
-          const activetreatments = treatments.filter(t => t.is_active);
           setMenuLink(`${window.location.origin}/menu/${salonData.slug}`);
         }
       }
@@ -334,9 +309,7 @@ const SalonPanelNew = () => {
                     </p>
                     <Dialog open={createSalonOpen} onOpenChange={setCreateSalonOpen}>
                       <DialogTrigger asChild>
-                        <Button 
-                          className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white"
-                        >
+                        <Button className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white">
                           Desbloquear Salão
                         </Button>
                       </DialogTrigger>
@@ -466,83 +439,12 @@ const SalonPanelNew = () => {
                             Seu salão está ativo e funcionando! 
                           </p>
                         </div>
-                        <Dialog open={editSalonOpen} onOpenChange={setEditSalonOpen}>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Edit className="h-4 w-4" />
-                              Editar Salão
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Editar Salão</DialogTitle>
-                            </DialogHeader>
-                            <Form {...salonEditForm}>
-                              <form onSubmit={salonEditForm.handleSubmit(handleUpdateSalon)} className="space-y-4">
-                                <FormField
-                                  control={salonEditForm.control}
-                                  name="name"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Nome do Salão</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="Nome do salão" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={salonEditForm.control}
-                                  name="address"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Endereço</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="Endereço completo" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={salonEditForm.control}
-                                  name="phone"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Telefone</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="(11) 99999-9999" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={salonEditForm.control}
-                                  name="instagram"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Instagram</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="@seuinstagram" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <div className="flex justify-end gap-2">
-                                  <Button type="button" variant="outline" onClick={() => setEditSalonOpen(false)}>
-                                    Cancelar
-                                  </Button>
-                                  <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700 text-white">
-                                    Salvar
-                                  </Button>
-                                </div>
-                              </form>
-                            </Form>
-                          </DialogContent>
-                        </Dialog>
+                        {salonData && (
+                          <SalonInfoForm
+                            salon={salonData}
+                            onUpdate={handleUpdateSalon}
+                          />
+                        )}
                       </div>
                       
                       {salonData && (
@@ -627,244 +529,108 @@ const SalonPanelNew = () => {
                         </CardContent>
                       </Card>
                     </div>
-
-                    {/* Seção de Tratamentos - Design igual ao Admin */}
-                    <Card className="bg-admin-card border-admin-border mt-6">
-                      <CardHeader>
-                        <CardTitle className="text-admin-text">Meus Tratamentos</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        {treatmentsData.length === 0 ? (
-                          <p className="text-admin-text-muted">Nenhum tratamento encontrado.</p>
-                        ) : (
-                          <div className="space-y-4">
-                            {treatmentsData.map((treatment) => (
-                              <Card key={treatment.id} className="bg-admin-card border-admin-border">
-                                <CardHeader>
-                                  <div className="flex justify-between items-start">
-                                    <div className="flex items-center gap-4">
-                                      <div className="flex-shrink-0">
-                                        {treatment.treatment?.images && treatment.treatment.images.length > 0 ? (
-                                          <img 
-                                            src={treatment.treatment.images[0]} 
-                                            alt={treatment.treatment.name}
-                                            className="w-20 h-16 rounded border object-cover"
-                                          />
-                                        ) : (
-                                          <div className="w-20 h-16 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                                            Sem imagem
-                                          </div>
-                                        )}
-                                      </div>
-                                      <div className="flex-1">
-                                        <h4 className="font-medium text-admin-text">
-                                          {treatment.treatment?.name || 'Tratamento sem nome'}
-                                        </h4>
-                                        <p className="text-admin-text-muted text-sm">
-                                          {treatment.treatment?.description || 'Sem descrição'}
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                          <span className="text-admin-success font-bold">
-                                            R$ {treatment.custom_price?.toFixed(2) || '0.00'}
-                                          </span>
-                                          {treatment.treatment?.base_price && (
-                                            <span className="text-xs text-admin-text-muted">
-                                              (Base: R$ {treatment.treatment.base_price.toFixed(2)})
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <div className={`px-2 py-1 text-xs rounded ${
-                                        treatment.is_active 
-                                          ? 'bg-green-100 text-green-800' 
-                                          : 'bg-red-100 text-red-800'
-                                      }`}>
-                                        {treatment.is_active ? 'Ativo' : 'Inativo'}
-                                      </div>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => openEditTreatment(treatment)}
-                                      >
-                                        <Edit className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="flex items-center gap-4 text-sm text-admin-text-muted">
-                                    <span>Categoria: {treatment.treatment?.category || 'Sem categoria'}</span>
-                                    {treatment.treatment?.duration_minutes && (
-                                      <span>Duração: {treatment.treatment.duration_minutes}min</span>
-                                    )}
-                                    {treatment.treatment?.rating && (
-                                      <span>Avaliação: {treatment.treatment.rating}⭐</span>
-                                    )}
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-
-                    {/* Dialog para editar tratamento */}
-                    <Dialog open={editTreatmentOpen} onOpenChange={setEditTreatmentOpen}>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Editar Tratamento</DialogTitle>
-                        </DialogHeader>
-                        {editingTreatment && (
-                          <form onSubmit={(e) => {
-                            e.preventDefault();
-                            const formData = new FormData(e.target as HTMLFormElement);
-                            handleUpdateTreatment({
-                              custom_price: formData.get('custom_price'),
-                              is_active: formData.get('is_active') === 'on'
-                            });
-                          }} className="space-y-4">
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium">Nome do Tratamento</label>
-                              <div className="text-sm text-gray-600 p-2 bg-gray-50 rounded">
-                                {editingTreatment.treatment?.name}
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <label htmlFor="custom_price" className="text-sm font-medium">Preço Personalizado (R$)</label>
-                              <Input
-                                id="custom_price"
-                                name="custom_price"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                defaultValue={editingTreatment.custom_price || editingTreatment.treatment?.base_price || 0}
-                                required
-                              />
-                              <div className="text-xs text-gray-500">
-                                Preço base: R$ {editingTreatment.treatment?.base_price?.toFixed(2) || '0.00'}
-                              </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              <Switch
-                                id="is_active"
-                                name="is_active"
-                                defaultChecked={editingTreatment.is_active}
-                              />
-                              <label htmlFor="is_active" className="text-sm font-medium">
-                                Ativo (visível no menu)
-                              </label>
-                            </div>
-
-                            <div className="flex justify-end gap-2">
-                              <Button type="button" variant="outline" onClick={() => setEditTreatmentOpen(false)}>
-                                Cancelar
-                              </Button>
-                              <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700 text-white">
-                                Salvar Alterações
-                              </Button>
-                            </div>
-                          </form>
-                        )}
-                      </DialogContent>
-                    </Dialog>
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
         );
+
       case 'treatments':
-        if (!profile.has_salon) {
-          return (
-            <div className="space-y-6">
-              <Card className="bg-admin-card border-admin-border">
-                <CardHeader>
-                  <CardTitle className="text-admin-text">Tratamentos</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <p className="text-admin-text-muted mb-4">
-                      Você precisa desbloquear seu salão para acessar os tratamentos.
-                    </p>
-                    <Button 
-                      className="bg-yellow-600 hover:bg-yellow-700 text-white"
-                      onClick={() => setActiveTab('dashboard')}
-                    >
-                      Ir para Dashboard
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          );
-        }
         return (
-          <div className="space-y-6">
-            <Card className="bg-admin-card border-admin-border">
-              <CardHeader>
-                <CardTitle className="text-admin-text">Tratamentos</CardTitle>
-              </CardHeader>
-              <CardContent>
+          <Card className="bg-admin-card border-admin-border">
+            <CardHeader>
+              <CardTitle className="text-admin-text">Gerenciar Tratamentos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {treatmentsData.length === 0 ? (
+                <p className="text-admin-text-muted">Nenhum tratamento encontrado.</p>
+              ) : (
                 <div className="space-y-4">
-                  <p className="text-admin-text-muted">
-                    Gerencie os tratamentos do seu salão. Total: {treatmentsData.length} tratamentos ativos
-                  </p>
-                  
-                  {treatmentsData.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {treatmentsData.map((salonTreatment) => (
-                        <Card key={salonTreatment.id} className="border">
-                          <CardContent className="p-4">
-                            <h4 className="font-medium text-admin-text">{salonTreatment.treatment.name}</h4>
-                            <p className="text-sm text-admin-text-muted mt-1 line-clamp-2">
-                              {salonTreatment.treatment.description}
-                            </p>
-                            <div className="mt-3 flex items-center justify-between">
-                              <p className="text-lg font-bold text-green-600">
-                                R$ {salonTreatment.custom_price}
-                              </p>
-                              <Button size="sm" variant="outline">
-                                Editar
-                              </Button>
+                  {treatmentsData.map((treatment) => (
+                    <Card key={treatment.id} className="bg-admin-card border-admin-border">
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-shrink-0">
+                              {treatment.treatment?.images && treatment.treatment.images.length > 0 ? (
+                                <img 
+                                  src={treatment.treatment.images[0]} 
+                                  alt={treatment.treatment.name}
+                                  className="w-16 h-16 object-cover rounded-lg border border-admin-border"
+                                />
+                              ) : (
+                                <div className="w-16 h-16 bg-admin-bg rounded-lg border border-admin-border flex items-center justify-center">
+                                  <Package className="h-8 w-8 text-admin-text-muted" />
+                                </div>
+                              )}
                             </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-admin-text-muted">
-                        Nenhum tratamento encontrado. Os tratamentos são criados automaticamente quando o salão é desbloqueado.
-                      </p>
-                    </div>
-                  )}
+                            <div>
+                              <CardTitle className="text-admin-text">{treatment.treatment?.name}</CardTitle>
+                              <p className="text-admin-text-muted text-sm">
+                                Preço: R$ {Number(treatment.custom_price).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {treatment.is_active ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Ativo
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                Inativo
+                              </span>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => openEditTreatment(treatment)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </CardContent>
+          </Card>
         );
+
       case 'profile':
         return (
-          <div className="space-y-6">
-            {salonData && (
-              <SalonInfoForm 
-                salon={salonData} 
-                onUpdate={handleUpdateSalon}
-              />
-            )}
-            <Card className="bg-admin-card border-admin-border">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-admin-text">Meu Perfil</CardTitle>
+          <Card className="bg-admin-card border-admin-border">
+            <CardHeader>
+              <CardTitle className="text-admin-text">Meu Perfil</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-admin-text-muted">Nome</Label>
+                    <p className="text-admin-text font-medium">{profile.name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-admin-text-muted">Email</Label>
+                    <p className="text-admin-text font-medium">{profile.email}</p>
+                  </div>
+                  <div>
+                    <Label className="text-admin-text-muted">Telefone</Label>
+                    <p className="text-admin-text font-medium">{profile.phone || 'Não informado'}</p>
+                  </div>
+                  <div>
+                    <Label className="text-admin-text-muted">Instagram</Label>
+                    <p className="text-admin-text font-medium">{profile.instagram || 'Não informado'}</p>
+                  </div>
+                </div>
+
                 <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Edit className="h-4 w-4" />
+                    <Button className="bg-admin-success hover:bg-admin-success-hover text-white">
+                      <Edit className="h-4 w-4 mr-2" />
                       Editar Perfil
                     </Button>
                   </DialogTrigger>
@@ -913,65 +679,11 @@ const SalonPanelNew = () => {
                             </FormItem>
                           )}
                         />
-                        <FormField
-                          control={profileForm.control}
-                          name="address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Endereço</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Rua, Avenida..." {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <div className="flex gap-2">
-                          <FormField
-                            control={profileForm.control}
-                            name="address_number"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>Número</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="123" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={profileForm.control}
-                            name="postal_code"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>CEP</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="00000-000" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <FormField
-                          control={profileForm.control}
-                          name="address_complement"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Complemento</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Apartamento, sala..." {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
                         <div className="flex justify-end gap-2">
                           <Button type="button" variant="outline" onClick={() => setEditProfileOpen(false)}>
                             Cancelar
                           </Button>
-                          <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                          <Button type="submit" className="bg-admin-success hover:bg-admin-success-hover text-white">
                             Salvar
                           </Button>
                         </div>
@@ -979,148 +691,100 @@ const SalonPanelNew = () => {
                     </Form>
                   </DialogContent>
                 </Dialog>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-admin-text-muted">
-                    <strong>Nome:</strong> {profile.name}
-                  </p>
-                  <p className="text-admin-text-muted">
-                    <strong>Email:</strong> {profile.email}
-                  </p>
-                  {profile.phone && (
-                    <p className="text-admin-text-muted">
-                      <strong>Telefone:</strong> {profile.phone}
-                    </p>
-                  )}
-                  {profile.instagram && (
-                    <p className="text-admin-text-muted">
-                      <strong>Instagram:</strong> {profile.instagram}
-                    </p>
-                  )}
-                  {profile.address && (
-                    <p className="text-admin-text-muted">
-                      <strong>Endereço:</strong> {profile.address}{profile.address_number && `, ${profile.address_number}`}
-                      {profile.address_complement && ` - ${profile.address_complement}`}
-                    </p>
-                  )}
-                  {profile.postal_code && (
-                    <p className="text-admin-text-muted">
-                      <strong>CEP:</strong> {profile.postal_code}
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         );
+
       default:
-        return (
-          <div className="space-y-6">
-            <Card className="bg-admin-card border-admin-border">
-              <CardHeader>
-                <CardTitle className="text-admin-text">Dashboard</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-admin-text-muted">Selecione uma opção no menu lateral.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return null;
     }
   };
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-admin-content flex w-full">
+      <div className="min-h-screen flex w-full bg-admin-content">
         {/* Desktop Sidebar */}
-        <div className="hidden md:block">
-          <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-        
-        {/* Main Content */}
-        <SidebarInset className="flex-1 flex flex-col">
-          {/* Top Header - Desktop */}
-          <header className="hidden md:block bg-admin-card border-b border-admin-border px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger className="text-admin-text" />
-                <div>
-                  <h1 className="text-2xl font-bold text-admin-text">
-                    {activeTab === 'dashboard' && 'Dashboard'}
-                    {activeTab === 'treatments' && 'Tratamentos'}
-                    {activeTab === 'profile' && 'Meu Perfil'}
-                  </h1>
-                  <p className="text-admin-text-muted">
-                    {activeTab === 'dashboard' && 'Visão geral do seu salão'}
-                    {activeTab === 'treatments' && 'Gerencie seus tratamentos'}
-                    {activeTab === 'profile' && 'Gerencie suas informações pessoais'}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-admin-text-muted" />
-                  <Input 
-                    placeholder="Buscar..."
-                    className="pl-10 w-80 bg-admin-card border-admin-border"
-                  />
-                </div>
-              </div>
-            </div>
-          </header>
+        <SalonSidebar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          salonData={salonData}
+          profile={profile}
+        />
 
-          {/* Mobile Header */}
-          <header className="md:hidden bg-admin-card border-b border-admin-border px-4 py-3">
-            <div className="flex items-center justify-between">
-              <h1 className="text-lg font-bold text-admin-text">
+        {/* Main Content */}
+        <SidebarInset className="flex-1">
+          <div className="flex flex-col">
+            {/* Mobile Header */}
+            <div className="flex h-16 items-center border-b border-admin-border px-4 lg:hidden">
+              <SidebarTrigger />
+              <h1 className="ml-4 text-lg font-semibold text-admin-text">
                 {activeTab === 'dashboard' && 'Dashboard'}
                 {activeTab === 'treatments' && 'Tratamentos'}
-                {activeTab === 'profile' && 'Perfil'}
+                {activeTab === 'profile' && 'Meu Perfil'}
               </h1>
-              <div className="relative">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-admin-text-muted" />
-                <Input 
-                  placeholder="Buscar..."
-                  className="pl-8 w-32 bg-admin-card border-admin-border text-sm"
-                />
-              </div>
             </div>
-          </header>
 
-          {/* Content */}
-          <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
-            {renderContent()}
-          </main>
+            {/* Content */}
+            <main className="flex-1 p-6">
+              {renderContent()}
+            </main>
+          </div>
         </SidebarInset>
 
-        {/* Mobile Bottom Navigation */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-admin-sidebar border-t border-admin-border z-50">
-          <div className="flex items-center justify-around py-2">
-            {[
-              { id: 'dashboard', label: 'Dashboard', icon: Home },
-              { id: 'treatments', label: 'Tratamentos', icon: Package },
-              { id: 'profile', label: 'Perfil', icon: User }
-            ].map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center justify-center p-3 rounded-lg transition-colors ${
-                    isActive 
-                      ? 'text-admin-sidebar-active' 
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Icon className="h-6 w-6" />
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Edit Treatment Dialog */}
+        <Dialog open={editTreatmentOpen} onOpenChange={setEditTreatmentOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Editar Tratamento</DialogTitle>
+            </DialogHeader>
+            {editingTreatment && (
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  handleUpdateTreatment({
+                    custom_price: formData.get('custom_price'),
+                    is_active: formData.get('is_active') === 'on'
+                  });
+                }}
+                className="space-y-4"
+              >
+                <div className="space-y-2">
+                  <Label>Nome do Tratamento</Label>
+                  <Input value={editingTreatment.treatment?.name || ''} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="custom_price">Preço (R$)</Label>
+                  <Input
+                    id="custom_price"
+                    name="custom_price"
+                    type="number"
+                    step="0.01"
+                    defaultValue={editingTreatment.custom_price}
+                    required
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_active"
+                    name="is_active"
+                    defaultChecked={editingTreatment.is_active}
+                  />
+                  <Label htmlFor="is_active">Ativo no menu</Label>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setEditTreatmentOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="bg-admin-success hover:bg-admin-success-hover text-white">
+                    Salvar
+                  </Button>
+                </div>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </SidebarProvider>
   );
