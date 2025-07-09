@@ -11,12 +11,12 @@ serve(async (req) => {
   }
 
   try {
-    const mapTilerKey = 'bC55peR1KGcjYHWppadW';
-    console.log('MapTiler Key configurada: SIM');
+    const googleMapsKey = 'AIzaSyCRcp6YTJs_02afKJFRkpqOPmXk2eA7mUI';
+    console.log('Google Maps Key configurada: SIM');
     
-    console.log('Retornando chave MapTiler com sucesso');
+    console.log('Retornando chave Google Maps com sucesso');
     return new Response(
-      JSON.stringify({ key: mapTilerKey }),
+      JSON.stringify({ key: googleMapsKey }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }

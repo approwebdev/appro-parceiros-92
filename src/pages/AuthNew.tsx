@@ -23,6 +23,7 @@ const AuthNew = () => {
   const [phone, setPhone] = useState('');
   const [instagram, setInstagram] = useState('');
   const [wantsSalon, setWantsSalon] = useState(false);
+  const [salonName, setSalonName] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [address, setAddress] = useState('');
   const [addressNumber, setAddressNumber] = useState('');
@@ -93,6 +94,7 @@ const AuthNew = () => {
           phone,
           instagram,
           wants_salon: wantsSalon,
+          salon_name: wantsSalon ? salonName : undefined,
           postal_code: wantsSalon ? postalCode : undefined,
           address: wantsSalon ? address : undefined,
           address_number: wantsSalon ? addressNumber : undefined,
@@ -129,11 +131,11 @@ const AuthNew = () => {
       {/* Lado esquerdo - Imagem */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
         <img 
-          src="/lovable-uploads/f5c1b56b-2cb9-470a-8b4c-7640e6b2ac64.png"
-          alt="Salon"
-          className="w-full h-full object-cover opacity-60"
+          src="/lovable-uploads/c3cd9e4a-b3d4-4156-a87a-797c0fcb0e19.png"
+          alt="Salon Professionals"
+          className="w-full h-full object-cover opacity-90"
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-8 left-8 text-white">
           <h2 className="text-3xl font-bold mb-2">Bem-vindo ao ARO</h2>
           <p className="text-lg opacity-90">Conectando salões e clientes</p>
@@ -226,6 +228,18 @@ const AuthNew = () => {
                 {wantsSalon && (
                   <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
                     <h4 className="font-medium">Dados do Salão</h4>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="salon-name">Nome do Salão</Label>
+                      <Input
+                        id="salon-name"
+                        type="text"
+                        value={salonName}
+                        onChange={(e) => setSalonName(e.target.value)}
+                        required
+                        placeholder="Ex: Salão Beleza & Cia"
+                      />
+                    </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="postal-code">CEP</Label>
