@@ -12,7 +12,13 @@ serve(async (req) => {
 
   try {
     console.log('Tentando acessar GOOGLE_MAPS_API_KEY...');
-    const googleMapsKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
+    let googleMapsKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
+    
+    // Fallback temporário para teste
+    if (!googleMapsKey) {
+      googleMapsKey = 'AIzaSyBCuU-wIEg9F4IWhAOyz0iW573ftQzVf6M';
+    }
+    
     console.log('Valor encontrado:', googleMapsKey ? 'KEY ENCONTRADA' : 'KEY NÃO ENCONTRADA');
     
     if (!googleMapsKey) {
