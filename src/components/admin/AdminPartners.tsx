@@ -2,10 +2,45 @@ import { usePartners } from '@/hooks/usePartners';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Phone, Instagram, MapPin } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Eye, Phone, Instagram, MapPin, Edit, Trash2 } from 'lucide-react';
 
 export const AdminPartners = () => {
-  const { partners, loading } = usePartners();
+  const { partners, loading, refetch } = usePartners();
+  const { toast } = useToast();
+
+  const handleDeletePartner = async (partnerId: string) => {
+    if (!confirm('Tem certeza que deseja excluir este parceiro?')) return;
+
+    try {
+      // Buscar o user_id do partner
+      const partner = partners.find(p => p.id === partnerId);
+      if (!partner) return;
+
+      // Excluir o usuário da autenticação (isso também excluirá o profile via trigger)
+      const { error } = await supabase.auth.admin.deleteUser(partner.user_id);
+      
+      if (error) throw error;
+      
+      toast({ title: "Parceiro excluído com sucesso!" });
+      refetch();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao excluir parceiro",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditPartner = (partnerId: string) => {
+    // Por enquanto, apenas um placeholder - você pode implementar um modal de edição
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A edição de parceiros será implementada em breve.",
+    });
+  };
 
   if (loading) {
     return <div>Carregando...</div>;
@@ -90,9 +125,16 @@ export const AdminPartners = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => {}}
+                    onClick={() => handleEditPartner(partner.id)}
                   >
-                    <Eye className="h-4 w-4" />
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDeletePartner(partner.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

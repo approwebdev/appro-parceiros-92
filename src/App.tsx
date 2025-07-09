@@ -9,7 +9,7 @@ import MenuApp from "./pages/MenuApp";
 import SalonFinder from "./pages/SalonFinder";
 import Auth from "./pages/AuthNew";
 import AdminPanel from "./pages/AdminPanel";
-import SalonPanel from "./pages/SalonPanel";
+import SalonPanel from "./pages/SalonPanelNew";
 import Navigation from "./pages/Navigation";
 import NotFound from "./pages/NotFound";
 

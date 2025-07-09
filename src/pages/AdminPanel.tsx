@@ -8,6 +8,7 @@ import { AdminTreatments } from '@/components/admin/AdminTreatments';
 import { AdminPartners } from '@/components/admin/AdminPartners';
 import { AdminBanners } from '@/components/admin/AdminBanners';
 import { AdminCategories } from '@/components/admin/AdminCategories';
+import { AdminUsers } from '@/components/admin/AdminUsers';
 import { AdminSidebarNew } from '@/components/admin/AdminSidebarNew';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -26,7 +27,7 @@ const AdminPanel = () => {
     );
   }
 
-  if (!user || !profile || profile.role !== 'admin') {
+  if (!user || !profile || !['admin', 'collaborator'].includes(profile.role)) {
     return <Navigate to="/auth" replace />;
   }
 
@@ -40,6 +41,8 @@ const AdminPanel = () => {
         return <AdminCategories />;
       case 'banners':
         return <AdminBanners />;
+      case 'users':
+        return profile?.role === 'admin' ? <AdminUsers /> : <AdminTreatments />;
       default:
         return <AdminTreatments />;
     }
@@ -64,12 +67,14 @@ const AdminPanel = () => {
                     {activeTab === 'salons' && 'Salões Parceiros'}
                     {activeTab === 'categories' && 'Categorias'}
                     {activeTab === 'banners' && 'Banners'}
+                    {activeTab === 'users' && 'Usuários'}
                   </h1>
                   <p className="text-admin-text-muted">
                     {activeTab === 'treatments' && 'Gerencie todos os tratamentos cadastrados'}
                     {activeTab === 'salons' && 'Visualize e gerencie todos os salões parceiros'}
                     {activeTab === 'categories' && 'Gerencie as categorias do carrossel do menu'}
                     {activeTab === 'banners' && 'Gerencie os banners promocionais'}
+                    {activeTab === 'users' && 'Gerencie todos os usuários do sistema'}
                   </p>
                 </div>
               </div>

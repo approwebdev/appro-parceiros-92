@@ -1,4 +1,4 @@
-import { Package, Users, Grid3x3, Image, LogOut } from 'lucide-react';
+import { Package, Users, Grid3x3, Image, LogOut, UserCog } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -20,7 +20,7 @@ export const AdminSidebarNew = ({
     state
   } = useSidebar();
   const isCollapsed = state === 'collapsed';
-  const menuItems = [{
+  const baseMenuItems = [{
     id: 'treatments',
     label: 'Tratamentos',
     icon: Package
@@ -37,6 +37,16 @@ export const AdminSidebarNew = ({
     label: 'Banners',
     icon: Image
   }];
+
+  const adminOnlyItems = [{
+    id: 'users',
+    label: 'Usuários',
+    icon: UserCog
+  }];
+
+  const menuItems = profile?.role === 'admin' 
+    ? [...baseMenuItems, ...adminOnlyItems] 
+    : baseMenuItems;
   return <Sidebar className="bg-admin-sidebar text-white border-r-0">
       <SidebarHeader className="p-6 border-b border-admin-sidebar-hover bg-black">
         <div className="flex items-center gap-3 bg-[#0bac00]/0">
@@ -83,7 +93,7 @@ export const AdminSidebarNew = ({
                 <p className="text-gray-400 text-xs truncate">{profile?.email}</p>
               </div>
               <Badge variant="outline" className="bg-admin-sidebar-active/20 text-admin-sidebar-active border-admin-sidebar-active">
-                Admin
+                {profile?.role === 'admin' ? 'Admin' : profile?.role === 'collaborator' ? 'Colaborador' : 'Parceiro'}
               </Badge>
             </>}
         </div>

@@ -7,7 +7,7 @@ interface Profile {
   user_id: string;
   name: string;
   email: string;
-  role: 'admin' | 'salon';
+  role: 'admin' | 'salon' | 'collaborator';
   has_salon: boolean;
   phone?: string;
   instagram?: string;
