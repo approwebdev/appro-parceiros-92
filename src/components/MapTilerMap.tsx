@@ -22,17 +22,18 @@ const MapTilerMap: React.FC<MapTilerMapProps> = ({ salons, userLocation }) => {
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // Configurar API key do MapTiler imediatamente  
+    maptilerSdk.config.apiKey = 'bC55peR1KGcjYHWppadW';
+
     // Timeout para evitar carregamento infinito
     const loadingTimeout = setTimeout(() => {
       console.warn('MapTiler: Timeout de carregamento, mostrando fallback');
       setHasError(true);
       setIsLoaded(true);
-    }, 10000); // 10 segundos timeout
+    }, 8000); // 8 segundos timeout
 
-    const initializeMap = async () => {
+    const initializeMap = () => {
       try {
-        // Configurar API key do MapTiler
-        maptilerSdk.config.apiKey = 'bC55peR1KGcjYHWppadW';
         console.log('MapTiler: Inicializando mapa...');
 
         const center: [number, number] = userLocation ? [userLocation.lng, userLocation.lat] : [-46.6333, -23.5505];
@@ -67,7 +68,7 @@ const MapTilerMap: React.FC<MapTilerMapProps> = ({ salons, userLocation }) => {
             // Adicionar marcadores dos salões
             salons.forEach((salon) => {
               if (salon.latitude && salon.longitude && mapInstance.current) {
-                const marker = new maptilerSdk.Marker({ 
+                new maptilerSdk.Marker({ 
                   color: '#d4af37',
                   scale: 1.2
                 })
@@ -85,7 +86,7 @@ const MapTilerMap: React.FC<MapTilerMapProps> = ({ salons, userLocation }) => {
             });
 
             // Ajustar visualização para mostrar todos os marcadores
-            if (salons.length > 0 || userLocation) {
+            if ((salons.length > 0 && salons.some(s => s.latitude && s.longitude)) || userLocation) {
               const bounds = new maptilerSdk.LngLatBounds();
               
               if (userLocation) {
@@ -111,14 +112,14 @@ const MapTilerMap: React.FC<MapTilerMapProps> = ({ salons, userLocation }) => {
         });
 
         mapInstance.current.on('error', (e) => {
-          console.error('MapTiler: Erro no mapa:', e.error);
+          console.error('MapTiler: Erro no mapa:', e);
           clearTimeout(loadingTimeout);
           setHasError(true);
           setIsLoaded(true);
         });
 
       } catch (error) {
-        console.error('MapTiler: Erro ao inicializar:', error);
+        console.error('MapTiler: Erro ao inicializar mapa:', error);
         clearTimeout(loadingTimeout);
         setHasError(true);
         setIsLoaded(true);
