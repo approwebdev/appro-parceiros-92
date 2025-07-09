@@ -186,6 +186,8 @@ export type Database = {
           id: string
           instagram: string | null
           is_active: boolean
+          latitude: number | null
+          longitude: number | null
           name: string
           phone: string | null
           photo_url: string | null
@@ -203,6 +205,8 @@ export type Database = {
           id?: string
           instagram?: string | null
           is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
           name: string
           phone?: string | null
           photo_url?: string | null
@@ -220,6 +224,8 @@ export type Database = {
           id?: string
           instagram?: string | null
           is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
           name?: string
           phone?: string | null
           photo_url?: string | null
@@ -351,6 +357,17 @@ export type Database = {
       }
     }
     Functions: {
+      get_address_from_cep: {
+        Args: { cep_input: string }
+        Returns: {
+          logradouro: string
+          bairro: string
+          cidade: string
+          uf: string
+          latitude: number
+          longitude: number
+        }[]
+      }
       is_admin_user: {
         Args: { user_uuid: string }
         Returns: boolean

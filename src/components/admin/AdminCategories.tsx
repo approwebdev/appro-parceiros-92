@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, GripVertical } from 'lucide-react';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface Category {
   id: string;
@@ -167,13 +168,11 @@ export const AdminCategories = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="cover_image_url">URL da Foto de Capa</Label>
-                  <Input
-                    id="cover_image_url"
-                    type="url"
+                  <ImageUpload
+                    label="Foto de Capa"
                     value={formData.cover_image_url}
-                    onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                    placeholder="https://exemplo.com/imagem.jpg"
+                    onChange={(url) => setFormData({ ...formData, cover_image_url: url })}
+                    bucket="treatment-images"
                   />
                 </div>
               </div>

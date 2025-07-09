@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Image } from 'lucide-react';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface Banner {
   id: string;
@@ -162,12 +163,11 @@ export const AdminBanners = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="image_url">URL da Imagem</Label>
-                <Input
-                  id="image_url"
+                <ImageUpload
+                  label="Imagem do Banner"
                   value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  required
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
+                  bucket="treatment-images"
                 />
               </div>
               

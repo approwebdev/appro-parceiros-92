@@ -18,91 +18,34 @@ interface MenuCategoriesProps {
 
 const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
   const { slug } = useParams<{ slug: string }>();
-  const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (slug) {
-      fetchTreatments();
-    }
-  }, [slug]);
+    fetchCategories();
+  }, []);
 
-  const fetchTreatments = async () => {
+  const fetchCategories = async () => {
     try {
-      const { data: salonData, error: salonError } = await supabase
-        .from('salons')
-        .select('id')
-        .eq('slug', slug)
-        .single();
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_position');
 
-      if (salonError) {
-        console.error('Erro ao buscar salão:', salonError);
+      if (error) {
+        console.error('Erro ao buscar categorias:', error);
         return;
       }
 
-      const { data: treatmentsData, error: treatmentsError } = await supabase
-        .from('salon_treatments')
-        .select(`
-          *,
-          treatments (
-            id,
-            name,
-            category
-          )
-        `)
-        .eq('salon_id', salonData.id)
-        .eq('is_active', true);
-
-      if (treatmentsError) {
-        console.error('Erro ao buscar tratamentos:', treatmentsError);
-        return;
-      }
-
-      const formattedTreatments = treatmentsData?.map(item => ({
-        id: item.treatments.id,
-        name: item.treatments.name,
-        category: item.treatments.category,
-        custom_price: item.custom_price
-      })) || [];
-
-      setTreatments(formattedTreatments);
+      setCategories(data || []);
     } catch (error) {
-      console.error('Erro ao buscar tratamentos:', error);
+      console.error('Erro ao buscar categorias:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const categories = [
-    {
-      id: 'treatment',
-      name: 'Treatment',
-      image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-treatment',
-      treatmentId: 'liso-lambido'
-    },
-    {
-      id: 'transformation', 
-      name: 'Transformation',
-      image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-transformation',
-      treatmentId: 'coloracao-premium'
-    },
-    {
-      id: 'combos',
-      name: 'Combos', 
-      image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png',
-      gradient: 'category-combos',
-      treatmentId: 'combo-liso-hidratacao'
-    },
-    {
-      id: 'home_care',
-      name: 'Home Care',
-      image: '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png', 
-      gradient: 'category-homecare',
-      treatmentId: 'kit-manutencao'
-    }
-  ];
 
   if (loading) {
     return (
@@ -121,12 +64,12 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
           {categories.map((category) => (
             <div
               key={category.id}
-              className={`relative overflow-hidden cursor-pointer transition-transform hover:scale-105 ${category.gradient} h-full`}
-              onClick={() => onCategorySelect(category.id, category.treatmentId)}
+              className={`relative overflow-hidden cursor-pointer transition-transform hover:scale-105 bg-gradient-to-br from-blue-600 to-purple-700 h-full`}
+              onClick={() => onCategorySelect(category.name, category.id)}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40"></div>
               <img 
-                src={category.image}
+                src={category.cover_image_url || '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png'}
                 alt={category.name}
                 className="w-full h-full object-cover"
               />

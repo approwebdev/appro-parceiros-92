@@ -15,6 +15,7 @@ interface Treatment {
   video_url: string;
   rating: number;
   rating_count: number;
+  salon_phone?: string;
 }
 
 interface MenuTreatmentProps {
@@ -40,71 +41,112 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
 
   const fetchTreatment = async () => {
     try {
-      // Dados fictícios baseados no treatmentId para demonstração
-      const treatmentData = {
-        'liso-lambido': {
-          id: 'liso-lambido',
-          name: 'Liso Lambido',
-          subtitle: 'Realinhamento capilar de alto desempenho',
-          description: 'Apresentamos o Liso Lambido, a solução perfeita para quem busca um realinhamento capilar impecável e duradouro. Este produto inovador foi desenvolvido para proporcionar um efeito liso e sedoso, eliminando o frizz e disciplinando até os fios mais rebeldes. Formulado com ingredientes de alta qualidade, o Liso Lambido hidrata profundamente e nutre os cabelos.',
-          custom_price: 150.00,
-          images: ['/lovable-uploads/f5c1b56b-2cb9-470a-8b4c-7640e6b2ac64.png'],
-          video_url: '',
-          rating: 5.0,
-          rating_count: 56
-        },
-        'coloracao-premium': {
-          id: 'coloracao-premium',
-          name: 'Coloração Premium',
-          subtitle: 'Transformação completa da cor',
-          description: 'Serviço completo de coloração com produtos de alta qualidade que proporcionam cobertura perfeita e durabilidade excepcional. Inclui análise de fios e tratamento pré-coloração para resultados profissionais.',
-          custom_price: 200.00,
-          images: ['/lovable-uploads/f5c1b56b-2cb9-470a-8b4c-7640e6b2ac64.png'],
-          video_url: '',
-          rating: 4.8,
-          rating_count: 32
-        },
-        'combo-liso-hidratacao': {
-          id: 'combo-liso-hidratacao',
-          name: 'Combo Liso + Hidratação',
-          subtitle: 'Realinhamento + nutrição em um só serviço',
-          description: 'Combinação perfeita do tratamento Liso Lambido com hidratação profunda, garantindo fios lisos, nutridos e com brilho intenso por mais tempo. O melhor dos dois mundos em uma única sessão.',
-          custom_price: 220.00,
-          images: ['/lovable-uploads/f5c1b56b-2cb9-470a-8b4c-7640e6b2ac64.png'],
-          video_url: '',
-          rating: 4.9,
-          rating_count: 28
-        },
-        'kit-manutencao': {
-          id: 'kit-manutencao',
-          name: 'Kit Manutenção Liso',
-          subtitle: 'Produtos para manter o liso em casa',
-          description: 'Kit completo com shampoo, condicionador e leave-in específicos para manter o efeito do tratamento Liso Lambido por mais tempo em casa. Desenvolvido especialmente para prolongar os resultados.',
-          custom_price: 120.00,
-          images: ['/lovable-uploads/f5c1b56b-2cb9-470a-8b4c-7640e6b2ac64.png'],
-          video_url: '',
-          rating: 4.7,
-          rating_count: 45
-        }
+      // Buscar salão pelo slug
+      const { data: salonData, error: salonError } = await supabase
+        .from('salons')
+        .select('id, phone')
+        .eq('slug', slug)
+        .single();
+
+      if (salonError) {
+        console.error('Erro ao buscar salão:', salonError);
+        return;
+      }
+
+      // Buscar tratamento específico
+      const { data: treatmentData, error: treatmentError } = await supabase
+        .from('treatments')
+        .select('*')
+        .eq('id', treatmentId)
+        .single();
+
+      if (treatmentError) {
+        console.error('Erro ao buscar tratamento:', treatmentError);
+        return;
+      }
+
+      // Buscar preço personalizado do salão
+      const { data: salonTreatmentData, error: salonTreatmentError } = await supabase
+        .from('salon_treatments')
+        .select('custom_price, is_active')
+        .eq('salon_id', salonData.id)
+        .eq('treatment_id', treatmentId)
+        .single();
+
+      if (salonTreatmentError) {
+        console.error('Erro ao buscar preço do tratamento:', salonTreatmentError);
+        return;
+      }
+
+      // Buscar tratamentos relacionados
+      const { data: relatedData, error: relatedError } = await supabase
+        .from('salon_treatments')
+        .select(`
+          custom_price,
+          treatments (
+            id,
+            name,
+            subtitle,
+            description,
+            images,
+            video_url,
+            rating,
+            rating_count
+          )
+        `)
+        .eq('salon_id', salonData.id)
+        .eq('is_active', true)
+        .neq('treatment_id', treatmentId)
+        .limit(3);
+
+      if (relatedError) {
+        console.error('Erro ao buscar tratamentos relacionados:', relatedError);
+      }
+
+      // Montar dados do tratamento
+      const fullTreatment = {
+        ...treatmentData,
+        custom_price: salonTreatmentData.custom_price,
+        salon_phone: salonData.phone
       };
 
-      const selectedTreatment = treatmentData[treatmentId as keyof typeof treatmentData];
-      
-      const allTreatmentsList = Object.values(treatmentData);
-      setAllTreatments(allTreatmentsList);
-      
-      if (selectedTreatment) {
-        setTreatment(selectedTreatment);
+      const relatedTreatments = relatedData?.map(item => ({
+        ...item.treatments,
+        custom_price: item.custom_price
+      })) || [];
+
+      setTreatment(fullTreatment);
+      setRelatedTreatments(relatedTreatments);
+
+      // Buscar todos os tratamentos do salão para navegação
+      const { data: allTreatmentsData, error: allTreatmentsError } = await supabase
+        .from('salon_treatments')
+        .select(`
+          treatments (
+            id,
+            name,
+            subtitle,
+            description,
+            images,
+            video_url,
+            rating,
+            rating_count
+          ),
+          custom_price
+        `)
+        .eq('salon_id', salonData.id)
+        .eq('is_active', true);
+
+      if (!allTreatmentsError) {
+        const allFormattedTreatments = allTreatmentsData?.map(item => ({
+          ...item.treatments,
+          custom_price: item.custom_price,
+          salon_phone: salonData.phone
+        })) || [];
         
-        // Encontrar o índice do tratamento atual
-        const currentIndex = allTreatmentsList.findIndex(t => t.id === treatmentId);
+        setAllTreatments(allFormattedTreatments);
+        const currentIndex = allFormattedTreatments.findIndex(t => t.id === treatmentId);
         setCurrentTreatmentIndex(currentIndex !== -1 ? currentIndex : 0);
-        
-        // Produtos relacionados fictícios
-        const related = allTreatmentsList
-          .filter(t => t.id !== treatmentId)
-          .slice(0, 3);
-        setRelatedTreatments(related);
       }
     } catch (error) {
       console.error('Erro ao buscar tratamento:', error);
@@ -196,9 +238,17 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="text-black">
+          <button 
+            className="text-black hover:text-gray-600 transition-colors"
+            onClick={() => {
+              if (treatment.salon_phone) {
+                const cleanPhone = treatment.salon_phone.replace(/\D/g, '');
+                window.open(`https://wa.me/55${cleanPhone}`, '_blank');
+              }
+            }}
+          >
             <Phone className="h-6 w-6" />
-          </div>
+          </button>
           <div className="text-black">
             <div className="h-6 w-6 rounded-full bg-black/20 flex items-center justify-center">
               <div className="h-3 w-3 rounded-full bg-black"></div>

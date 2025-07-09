@@ -118,8 +118,8 @@ export const SalonForm = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="basico">Básico</SelectItem>
-              <SelectItem value="premium">Premium</SelectItem>
-              <SelectItem value="enterprise">Enterprise</SelectItem>
+              <SelectItem value="verificado_azul">Verificado Azul</SelectItem>
+              <SelectItem value="verificado_dourado">Verificado Dourado</SelectItem>
             </SelectContent>
           </Select>
         </div>
