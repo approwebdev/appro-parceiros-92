@@ -186,13 +186,13 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
         {/* Background Image div above the gray container */}
-        <div className="h-64 bg-cover bg-center bg-no-repeat rounded-lg mb-4" style={{
+        <div className="h-80 md:h-96 bg-cover bg-center bg-no-repeat rounded-lg -mb-8" style={{
         backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)'
       }}></div>
         
         <div className="text-center mb-6">
           {/* Search Container with dark gray background */}
-          <div className="rounded-lg p-6 mb-6 md:p-8" style={{
+          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{
           backgroundColor: '#242424'
         }}>
             <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
@@ -217,30 +217,38 @@ const SalonFinder = () => {
             {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
           </Button>
 
-          {/* Distance Filters - Collapsible, but show one by default */}
-          {userLocation && <Collapsible open={isLocationFilterOpen} onOpenChange={setIsLocationFilterOpen}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50">
-                  <Navigation className="h-4 w-4 mr-2" />
-                  Filtros de Distância
-                  {isLocationFilterOpen ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+          {/* Distance Filters - Compact version */}
+          {userLocation && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Distância:</p>
+              <div className="flex gap-2">
+                <Button 
+                  variant={distanceFilter === '50' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('50')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === '50' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                >
+                  50km
                 </Button>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent className="space-y-3 mb-4">
-                <div className="flex gap-2">
-                  <Button variant={distanceFilter === '50' ? 'default' : 'outline'} onClick={() => setDistanceFilter('50')} size="sm" className="flex-1">
-                    50km
-                  </Button>
-                  <Button variant={distanceFilter === '100' ? 'default' : 'outline'} onClick={() => setDistanceFilter('100')} size="sm" className="flex-1">
-                    100km
-                  </Button>
-                  <Button variant={distanceFilter === 'all' ? 'default' : 'outline'} onClick={() => setDistanceFilter('all')} size="sm" className="flex-1">
-                    Todos
-                  </Button>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>}
+                <Button 
+                  variant={distanceFilter === '100' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('100')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === '100' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                >
+                  100km
+                </Button>
+                <Button 
+                  variant={distanceFilter === 'all' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('all')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                >
+                  Todos
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
@@ -291,8 +299,10 @@ const SalonFinder = () => {
             </div>
             
             {filteredSalons.map((salon, index) => {
-              const shouldShowBanner = index === Math.floor(filteredSalons.length / 2); // Banner no meio
-              const isLastSalon = index === filteredSalons.length - 1; // Último salão
+              const midPoint = Math.floor(filteredSalons.length / 2);
+              const showMidBanner = index === midPoint && banners.length > 0;
+              const isLastSalon = index === filteredSalons.length - 1;
+              const showEndBanner = isLastSalon && banners.length > 1;
               
               return (
                 <div key={salon.id}>
@@ -334,7 +344,7 @@ const SalonFinder = () => {
                   </Card>
                   
                   {/* Banner no meio dos salões */}
-                  {shouldShowBanner && banners.length > 0 && (
+                  {showMidBanner && (
                     <div className="my-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative h-48 md:h-64">
@@ -357,7 +367,7 @@ const SalonFinder = () => {
                   )}
                   
                   {/* Banner no final */}
-                  {isLastSalon && banners.length > 1 && (
+                  {showEndBanner && (
                     <div className="mt-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative h-48 md:h-64">
