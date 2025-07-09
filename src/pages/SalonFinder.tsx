@@ -187,13 +187,13 @@ const SalonFinder = () => {
     <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Dialog de Localização */}
       <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
-        <DialogContent className="max-w-md mx-auto">
+        <DialogContent className="max-w-md mx-auto" aria-describedby="location-dialog-description">
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-bold">
               🎯 Encontre salões próximos!
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4" id="location-dialog-description">
             <p className="text-center text-gray-600">
               Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
             </p>
@@ -201,7 +201,7 @@ const SalonFinder = () => {
               <Button 
                 onClick={getUserLocation} 
                 disabled={gettingLocation}
-                className="flex-1 bg-[#242424] text-white hover:bg-[#1a1a1a]"
+                className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
               >
                 <Navigation className="h-4 w-4 mr-2" />
                 {gettingLocation ? 'Obtendo...' : 'Usar localização'}
@@ -267,7 +267,7 @@ const SalonFinder = () => {
                   variant={distanceFilter === '50' ? 'default' : 'outline'} 
                   onClick={() => setDistanceFilter('50')} 
                   size="sm" 
-                  className={`flex-1 ${distanceFilter === '50' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                  className={`flex-1 ${distanceFilter === '50' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
                 >
                   50km
                 </Button>
@@ -275,7 +275,7 @@ const SalonFinder = () => {
                   variant={distanceFilter === '100' ? 'default' : 'outline'} 
                   onClick={() => setDistanceFilter('100')} 
                   size="sm" 
-                  className={`flex-1 ${distanceFilter === '100' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                  className={`flex-1 ${distanceFilter === '100' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
                 >
                   100km
                 </Button>
@@ -283,7 +283,7 @@ const SalonFinder = () => {
                   variant={distanceFilter === 'all' ? 'default' : 'outline'} 
                   onClick={() => setDistanceFilter('all')} 
                   size="sm" 
-                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
                 >
                   Todos
                 </Button>
@@ -298,7 +298,7 @@ const SalonFinder = () => {
               onClick={() => setViewType('list')} 
               className={`flex items-center gap-2 flex-1 ${
                 viewType === 'list' 
-                  ? 'bg-[#242424] text-white hover:bg-[#1a1a1a] border-[#242424]' 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' 
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -310,7 +310,7 @@ const SalonFinder = () => {
               onClick={() => setViewType('map')} 
               className={`flex items-center gap-2 flex-1 ${
                 viewType === 'map' 
-                  ? 'bg-[#242424] text-white hover:bg-[#1a1a1a] border-[#242424]' 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' 
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >

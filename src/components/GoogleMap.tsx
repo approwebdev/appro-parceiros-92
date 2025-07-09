@@ -129,8 +129,8 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-2">Mapa indisponível</p>
-          <p className="text-xs text-gray-500">Configure a API do Google Maps</p>
+          <p className="text-gray-600 mb-2">Carregando mapa...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
         </div>
       </div>
     );
