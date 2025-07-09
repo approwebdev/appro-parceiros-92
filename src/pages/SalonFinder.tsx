@@ -178,13 +178,13 @@ const SalonFinder = () => {
   return <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Header */}
       <header className="bg-black border-b border-gray-200 px-4 py-4">
-        <div className="max-w-md mx-auto flex items-center justify-center">
+        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
           <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="px-4 py-8 max-w-md mx-auto">
+      <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
         {/* Background Image div above the gray container */}
         <div className="h-64 bg-cover bg-center bg-no-repeat rounded-lg mb-4" style={{
         backgroundImage: 'url(/lovable-uploads/1572fc57-750b-4248-a2aa-a7bf7e6da5a2.png)'
@@ -192,21 +192,21 @@ const SalonFinder = () => {
         
         <div className="text-center mb-6">
           {/* Search Container with dark gray background */}
-          <div className="rounded-lg p-6 mb-6" style={{
+          <div className="rounded-lg p-6 mb-6 md:p-8" style={{
           backgroundColor: '#242424'
         }}>
-            <h1 className="font-bold mb-1 text-white text-4xl">
+            <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
               Encontre o Salão mais
             </h1>
             <h2 style={{
             color: '#F8E7BF'
-          }} className="font-bold mb-6 text-4xl text-yellow-100">
+          }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
               próximo de você.
             </h2>
             
             {/* Search */}
             <div className="relative mb-4">
-              <Input type="text" placeholder="Buscar salão ou endereço..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full border border-gray-300" />
+              <Input type="text" placeholder="Buscar salão ou endereço..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
             </div>
           </div>
@@ -278,54 +278,109 @@ const SalonFinder = () => {
           </div>}
 
         {/* Salons List */}
-        {viewType === 'list' && <div className="space-y-4 mb-8">
+        {viewType === 'list' && <div className="space-y-4 md:space-y-6 mb-8">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
                 {userLocation ? <span>Salões <span style={{
                 color: '#F8E7BF'
               }}>próximos de você</span></span> : 'Todos os salões'}
               </h3>
-              {userLocation && filteredSalons.length > 0 && <Badge variant="outline" className="border-gray-300 text-gray-600">
+              {userLocation && filteredSalons.length > 0 && <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
                   {filteredSalons.length} encontrados
                 </Badge>}
             </div>
             
-            {filteredSalons.map(salon => <Card key={salon.id} className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    {/* Avatar */}
-                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl">
-                      {salon.name.charAt(0)}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-xl text-gray-900">{salon.name}</h4>
-                          <CheckCircle className="h-6 w-6 text-blue-500" />
+            {filteredSalons.map((salon, index) => {
+              const shouldShowBanner = index === Math.floor(filteredSalons.length / 2); // Banner no meio
+              const isLastSalon = index === filteredSalons.length - 1; // Último salão
+              
+              return (
+                <div key={salon.id}>
+                  <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex items-start gap-4 md:gap-6">
+                        {/* Avatar */}
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl">
+                          {salon.name.charAt(0)}
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
+                              <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                            </div>
+                          </div>
+                          
+                          {salon.phone && <div className="flex items-center gap-2 mb-2">
+                              <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                              <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline text-base md:text-xl">
+                                {formatPhone(salon.phone)}
+                              </button>
+                            </div>}
+                          
+                          {salon.address && <div className="flex items-start gap-2 mb-3">
+                              <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
+                            </div>}
+                          
+                          <div className="text-base md:text-xl text-gray-500 font-medium">
+                            {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
+                          </div>
                         </div>
                       </div>
-                      
-                      {salon.phone && <div className="flex items-center gap-2 mb-2">
-                          <Phone className="h-5 w-5 text-green-600" />
-                          <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline text-base">
-                            {formatPhone(salon.phone)}
-                          </button>
-                        </div>}
-                      
-                      {salon.address && <div className="flex items-start gap-2 mb-3">
-                          <MapPin className="h-5 w-5 text-gray-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-base text-gray-600">{salon.address}</span>
-                        </div>}
-                      
-                      <div className="text-base text-gray-500 font-medium">
-                        {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
-                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Banner no meio dos salões */}
+                  {shouldShowBanner && banners.length > 0 && (
+                    <div className="my-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative h-48 md:h-64">
+                          <img 
+                            src={banners[0].image_url} 
+                            alt={banners[0].title} 
+                            className="w-full h-full object-cover" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                            <div className="p-4 md:p-6 text-white">
+                              <h4 className="font-bold text-lg md:text-2xl">{banners[0].title}</h4>
+                              {banners[0].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>)}
+                  )}
+                  
+                  {/* Banner no final */}
+                  {isLastSalon && banners.length > 1 && (
+                    <div className="mt-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative h-48 md:h-64">
+                          <img 
+                            src={banners[1].image_url} 
+                            alt={banners[1].title} 
+                            className="w-full h-full object-cover" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                            <div className="p-4 md:p-6 text-white">
+                              <h4 className="font-bold text-lg md:text-2xl">{banners[1].title}</h4>
+                              {banners[1].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[1].description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             {filteredSalons.length === 0 && <Card className="bg-white text-black border border-gray-200">
                 <CardContent className="p-8 text-center">
@@ -368,9 +423,9 @@ const SalonFinder = () => {
 
         {/* Informativo Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">Informativo para você</h3>
+          <h3 className="text-lg md:text-2xl font-semibold mb-4 text-gray-900">Informativo para você</h3>
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
-            <CardContent className="p-0 relative h-48 bg-black rounded-lg">
+            <CardContent className="p-0 relative h-48 md:h-64 bg-black rounded-lg">
               {/* Espaço para vídeo */}
               <div className="w-full h-full flex items-center justify-center">
                 <div className="text-white text-center">
