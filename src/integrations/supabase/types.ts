@@ -49,31 +49,55 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
+          address_complement: string | null
+          address_number: string | null
           created_at: string
           email: string
+          has_salon: boolean | null
           id: string
+          instagram: string | null
           name: string
+          phone: string | null
+          postal_code: string | null
           role: string
           updated_at: string
           user_id: string
+          wants_salon: boolean | null
         }
         Insert: {
+          address?: string | null
+          address_complement?: string | null
+          address_number?: string | null
           created_at?: string
           email: string
+          has_salon?: boolean | null
           id?: string
+          instagram?: string | null
           name: string
+          phone?: string | null
+          postal_code?: string | null
           role?: string
           updated_at?: string
           user_id: string
+          wants_salon?: boolean | null
         }
         Update: {
+          address?: string | null
+          address_complement?: string | null
+          address_number?: string | null
           created_at?: string
           email?: string
+          has_salon?: boolean | null
           id?: string
+          instagram?: string | null
           name?: string
+          phone?: string | null
+          postal_code?: string | null
           role?: string
           updated_at?: string
           user_id?: string
+          wants_salon?: boolean | null
         }
         Relationships: []
       }

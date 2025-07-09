@@ -8,6 +8,27 @@ interface Profile {
   name: string;
   email: string;
   role: 'admin' | 'salon';
+  has_salon: boolean;
+  phone?: string;
+  instagram?: string;
+  wants_salon: boolean;
+  address?: string;
+  address_number?: string;
+  address_complement?: string;
+  postal_code?: string;
+}
+
+interface SignUpData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  instagram: string;
+  wants_salon: boolean;
+  postal_code?: string;
+  address?: string;
+  address_number?: string;
+  address_complement?: string;
 }
 
 interface AuthContextType {
@@ -17,6 +38,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, name: string, role?: string) => Promise<{ error: any }>;
+  signUpWithDetails: (data: SignUpData) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -114,6 +136,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
+  const signUpWithDetails = async (data: SignUpData) => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          name: data.name,
+          role: 'salon',
+          phone: data.phone,
+          instagram: data.instagram,
+          wants_salon: data.wants_salon,
+          postal_code: data.postal_code,
+          address: data.address,
+          address_number: data.address_number,
+          address_complement: data.address_complement
+        }
+      }
+    });
+    return { error };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
@@ -125,6 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     signIn,
     signUp,
+    signUpWithDetails,
     signOut,
   };
 
