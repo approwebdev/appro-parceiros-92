@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Edit } from 'lucide-react';
+import { Plus, Search, Edit, Package, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { SalonSidebar } from '@/components/salon/SalonSidebarNew';
@@ -31,7 +31,39 @@ const SalonPanelNew = () => {
   const [isCreatingSalon, setIsCreatingSalon] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [createSalonOpen, setCreateSalonOpen] = useState(false);
+  const [salonData, setSalonData] = useState(null);
   const { toast } = useToast();
+
+  // Debug logs
+  console.log('SalonPanelNew - user:', user);
+  console.log('SalonPanelNew - profile:', profile);
+  console.log('SalonPanelNew - profile.has_salon:', profile?.has_salon);
+
+  useEffect(() => {
+    const fetchSalonData = async () => {
+      if (user && profile?.has_salon) {
+        try {
+          const { data: salon, error } = await supabase
+            .from('salons')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('is_active', true)
+            .single();
+
+          console.log('Fetched salon data:', salon);
+          console.log('Salon fetch error:', error);
+
+          if (salon && !error) {
+            setSalonData(salon);
+          }
+        } catch (error) {
+          console.error('Error fetching salon:', error);
+        }
+      }
+    };
+
+    fetchSalonData();
+  }, [user, profile]);
 
   const salonForm = useForm<z.infer<typeof salonSchema>>({
     resolver: zodResolver(salonSchema),
@@ -165,7 +197,7 @@ const SalonPanelNew = () => {
                 <p className="text-admin-text-muted">
                   Bem-vindo ao seu painel de controle! Aqui você pode gerenciar seu salão.
                 </p>
-                {!profile.has_salon && (
+                {!profile.has_salon ? (
                   <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <h4 className="font-medium text-yellow-800">Desbloqueie seu salão</h4>
                     <p className="text-yellow-700 text-sm mt-1">
@@ -294,6 +326,74 @@ const SalonPanelNew = () => {
                         </Form>
                       </DialogContent>
                     </Dialog>
+                  </div>
+                ) : (
+                  <div className="mt-6 space-y-4">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <h4 className="font-medium text-green-800">✅ Salão Ativo</h4>
+                      <p className="text-green-700 text-sm mt-1">
+                        Seu salão está ativo e funcionando! 
+                      </p>
+                      {salonData && (
+                        <div className="mt-3 space-y-2">
+                          <p className="text-green-700 text-sm">
+                            <strong>Nome:</strong> {salonData.name}
+                          </p>
+                          <p className="text-green-700 text-sm">
+                            <strong>Endereço:</strong> {salonData.address}
+                          </p>
+                          {salonData.phone && (
+                            <p className="text-green-700 text-sm">
+                              <strong>Telefone:</strong> {salonData.phone}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <Card className="bg-admin-card border-admin-border">
+                        <CardContent className="p-6">
+                          <div className="flex items-center">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                              <Package className="h-6 w-6 text-blue-600" />
+                            </div>
+                            <div className="ml-4">
+                              <p className="text-sm font-medium text-admin-text-muted">Tratamentos</p>
+                              <p className="text-2xl font-bold text-admin-text">0</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="bg-admin-card border-admin-border">
+                        <CardContent className="p-6">
+                          <div className="flex items-center">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <User className="h-6 w-6 text-green-600" />
+                            </div>
+                            <div className="ml-4">
+                              <p className="text-sm font-medium text-admin-text-muted">Clientes</p>
+                              <p className="text-2xl font-bold text-admin-text">0</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="bg-admin-card border-admin-border">
+                        <CardContent className="p-6">
+                          <div className="flex items-center">
+                            <div className="p-2 bg-yellow-100 rounded-lg">
+                              <Plus className="h-6 w-6 text-yellow-600" />
+                            </div>
+                            <div className="ml-4">
+                              <p className="text-sm font-medium text-admin-text-muted">Agendamentos</p>
+                              <p className="text-2xl font-bold text-admin-text">0</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
                   </div>
                 )}
               </CardContent>
