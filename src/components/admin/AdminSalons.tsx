@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Phone, MapPin, Instagram } from 'lucide-react';
@@ -17,6 +18,7 @@ interface Salon {
   address: string;
   instagram: string;
   photo_url: string;
+  plan_type: string;
   is_active: boolean;
   user_id: string;
 }
@@ -35,6 +37,7 @@ export const AdminSalons = () => {
     address: '',
     instagram: '',
     photo_url: '',
+    plan_type: 'basico',
     is_active: true
   });
 
@@ -135,6 +138,7 @@ export const AdminSalons = () => {
       address: salon.address || '',
       instagram: salon.instagram || '',
       photo_url: salon.photo_url || '',
+      plan_type: salon.plan_type || 'basico',
       is_active: salon.is_active
     });
     setIsDialogOpen(true);
@@ -149,6 +153,7 @@ export const AdminSalons = () => {
       address: '',
       instagram: '',
       photo_url: '',
+      plan_type: 'basico',
       is_active: true
     });
   };
@@ -235,14 +240,34 @@ export const AdminSalons = () => {
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="photo_url">URL da Foto</Label>
-                <Input
-                  id="photo_url"
-                  value={formData.photo_url}
-                  onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="plan_type">Plano</Label>
+                  <Select
+                    value={formData.plan_type}
+                    onValueChange={(value) => setFormData({ ...formData, plan_type: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="basico">Básico</SelectItem>
+                      <SelectItem value="premium">Premium</SelectItem>
+                      <SelectItem value="enterprise">Enterprise</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="photo_url">URL da Foto</Label>
+                  <Input
+                    id="photo_url"
+                    value={formData.photo_url}
+                    onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
+                  />
+                </div>
               </div>
+              
               
               <div className="flex items-center space-x-2">
                 <Switch
@@ -282,6 +307,7 @@ export const AdminSalons = () => {
                   <div>
                     <CardTitle className="text-menu-white">{salon.name}</CardTitle>
                     <p className="text-menu-gold">/{salon.slug}</p>
+                    <p className="text-blue-400 text-sm">Plano: {salon.plan_type}</p>
                     {salon.address && (
                       <div className="flex items-center mt-1 text-gray-400">
                         <MapPin className="h-4 w-4 mr-1" />

@@ -1,4 +1,4 @@
-import { Home, Package, Users, Image, LogOut, Settings, Search } from 'lucide-react';
+import { Home, Package, Users, Image, LogOut, Settings, Search, Grid3x3 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
   const menuItems = [
     { id: 'treatments', label: 'Tratamentos', icon: Package },
     { id: 'salons', label: 'Salões', icon: Users },
+    { id: 'categories', label: 'Categorias', icon: Grid3x3 },
     { id: 'banners', label: 'Banners', icon: Image },
   ];
 
@@ -25,7 +26,11 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
       <div className="p-6 border-b border-admin-sidebar-hover">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-admin-sidebar-active rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">ARO</span>
+            <img 
+              src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" 
+              alt="Logo" 
+              className="w-6 h-6 object-contain"
+            />
           </div>
           <h1 className="text-xl font-semibold">Admin Panel</h1>
         </div>

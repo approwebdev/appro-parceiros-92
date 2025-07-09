@@ -7,6 +7,7 @@ import { Plus, Search, Bell, Settings } from 'lucide-react';
 import { AdminTreatments } from '@/components/admin/AdminTreatments';
 import { AdminSalons } from '@/components/admin/AdminSalons';
 import { AdminBanners } from '@/components/admin/AdminBanners';
+import { AdminCategories } from '@/components/admin/AdminCategories';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -34,6 +35,8 @@ const AdminPanel = () => {
         return <AdminTreatments />;
       case 'salons':
         return <AdminSalons />;
+      case 'categories':
+        return <AdminCategories />;
       case 'banners':
         return <AdminBanners />;
       default:
@@ -55,11 +58,13 @@ const AdminPanel = () => {
               <h1 className="text-2xl font-bold text-admin-text">
                 {activeTab === 'treatments' && 'Tratamentos'}
                 {activeTab === 'salons' && 'Salões Parceiros'}
+                {activeTab === 'categories' && 'Categorias'}
                 {activeTab === 'banners' && 'Banners'}
               </h1>
               <p className="text-admin-text-muted">
                 {activeTab === 'treatments' && 'Gerencie todos os tratamentos cadastrados'}
                 {activeTab === 'salons' && 'Visualize e gerencie todos os salões parceiros'}
+                {activeTab === 'categories' && 'Gerencie as categorias do carrossel do menu'}
                 {activeTab === 'banners' && 'Gerencie os banners promocionais'}
               </p>
             </div>

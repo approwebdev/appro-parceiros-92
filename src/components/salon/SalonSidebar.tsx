@@ -65,7 +65,11 @@ export const SalonSidebar = ({ activeTab, onTabChange }: SalonSidebarProps) => {
         <div className="p-6 border-b border-admin-sidebar-hover">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-admin-success rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">ARO</span>
+              <img 
+                src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" 
+                alt="Logo" 
+                className="w-6 h-6 object-contain"
+              />
             </div>
             <h1 className="text-xl font-semibold">Painel do Salão</h1>
           </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -324,7 +324,10 @@ const SalonFinder = () => {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
+                          <CheckCircle className="h-5 w-5 text-blue-500" />
+                        </div>
                         <div className="flex gap-2">
                           {salon.plan === 'verificado_azul' && (
                             <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">

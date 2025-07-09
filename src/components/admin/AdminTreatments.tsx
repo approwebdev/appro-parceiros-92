@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, X } from 'lucide-react';
 
 interface Treatment {
   id: string;
@@ -18,6 +18,8 @@ interface Treatment {
   subtitle: string;
   category: string;
   base_price: number;
+  promotional_price: number;
+  is_promotional: boolean;
   images: string[];
   video_url: string;
   button_color: string;
@@ -37,10 +39,15 @@ export const AdminTreatments = () => {
     subtitle: '',
     category: 'treatment',
     base_price: 0,
+    promotional_price: 0,
+    is_promotional: false,
     video_url: '',
     button_color: '#D4AF37',
     is_active: true
   });
+  
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreview, setImagePreview] = useState<string[]>([]);
 
   useEffect(() => {
     fetchTreatments();
@@ -125,6 +132,8 @@ export const AdminTreatments = () => {
       subtitle: treatment.subtitle || '',
       category: treatment.category,
       base_price: treatment.base_price,
+      promotional_price: treatment.promotional_price || 0,
+      is_promotional: treatment.is_promotional || false,
       video_url: treatment.video_url || '',
       button_color: treatment.button_color || '#D4AF37',
       is_active: treatment.is_active
@@ -140,10 +149,39 @@ export const AdminTreatments = () => {
       subtitle: '',
       category: 'treatment',
       base_price: 0,
+      promotional_price: 0,
+      is_promotional: false,
       video_url: '',
       button_color: '#D4AF37',
       is_active: true
     });
+    setSelectedImages([]);
+    setImagePreview([]);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length + selectedImages.length > 4) {
+      toast({
+        title: "Limite excedido",
+        description: "Você pode enviar no máximo 4 imagens",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setSelectedImages([...selectedImages, ...files]);
+    
+    // Create preview URLs
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setImagePreview([...imagePreview, ...newPreviews]);
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviews = imagePreview.filter((_, i) => i !== index);
+    setSelectedImages(newImages);
+    setImagePreview(newPreviews);
   };
 
   if (loading) {
@@ -220,7 +258,7 @@ export const AdminTreatments = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="base_price">Preço Sugerido (R$)</Label>
+                  <Label htmlFor="base_price">Preço Base (R$)</Label>
                   <Input
                     id="base_price"
                     type="number"
@@ -232,6 +270,20 @@ export const AdminTreatments = () => {
                 </div>
                 
                 <div className="space-y-2">
+                  <Label htmlFor="promotional_price">Preço Promocional (R$)</Label>
+                  <Input
+                    id="promotional_price"
+                    type="number"
+                    step="0.01"
+                    value={formData.promotional_price}
+                    onChange={(e) => setFormData({ ...formData, promotional_price: parseFloat(e.target.value) })}
+                    disabled={!formData.is_promotional}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
                   <Label htmlFor="button_color">Cor do Botão</Label>
                   <Input
                     id="button_color"
@@ -239,6 +291,15 @@ export const AdminTreatments = () => {
                     value={formData.button_color}
                     onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
                   />
+                </div>
+                
+                <div className="flex items-center space-x-2 mt-6">
+                  <Switch
+                    id="is_promotional"
+                    checked={formData.is_promotional}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_promotional: checked })}
+                  />
+                  <Label htmlFor="is_promotional">Está em promoção</Label>
                 </div>
               </div>
               
@@ -249,6 +310,48 @@ export const AdminTreatments = () => {
                   value={formData.video_url}
                   onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
                 />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Imagens do Tratamento (máximo 4)</Label>
+                <div className="border-2 border-dashed border-admin-border rounded-lg p-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="flex flex-col items-center justify-center cursor-pointer"
+                  >
+                    <Upload className="h-8 w-8 text-admin-text-muted mb-2" />
+                    <span className="text-admin-text-muted">Clique para enviar imagens</span>
+                  </label>
+                  
+                  {imagePreview.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                      {imagePreview.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-20 object-cover rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               
               <div className="flex items-center space-x-2">
@@ -283,6 +386,11 @@ export const AdminTreatments = () => {
                   <p className="text-menu-gold">{treatment.subtitle}</p>
                   <p className="text-sm text-gray-400">
                     Categoria: {treatment.category} | Preço: R$ {treatment.base_price.toFixed(2)}
+                    {treatment.is_promotional && treatment.promotional_price > 0 && (
+                      <span className="text-green-500 ml-2">
+                        Promoção: R$ {treatment.promotional_price.toFixed(2)}
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="flex space-x-2">

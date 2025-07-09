@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          order_position: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          order_position?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          order_position?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -130,6 +163,7 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           plan: string | null
+          plan_type: string | null
           responsible_email: string | null
           responsible_name: string | null
           slug: string
@@ -146,6 +180,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           plan?: string | null
+          plan_type?: string | null
           responsible_email?: string | null
           responsible_name?: string | null
           slug: string
@@ -162,6 +197,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           plan?: string | null
+          plan_type?: string | null
           responsible_email?: string | null
           responsible_name?: string | null
           slug?: string
@@ -181,7 +217,9 @@ export type Database = {
           id: string
           images: string[] | null
           is_active: boolean
+          is_promotional: boolean | null
           name: string
+          promotional_price: number | null
           rating: number | null
           rating_count: number | null
           subtitle: string | null
@@ -198,7 +236,9 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_promotional?: boolean | null
           name: string
+          promotional_price?: number | null
           rating?: number | null
           rating_count?: number | null
           subtitle?: string | null
@@ -215,7 +255,9 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_promotional?: boolean | null
           name?: string
+          promotional_price?: number | null
           rating?: number | null
           rating_count?: number | null
           subtitle?: string | null
