@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Edit, Package, MapPin, Building } from 'lucide-react';
+import { Plus, Search, Edit, Package, MapPin, Building, Home, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { SalonSidebar } from '@/components/salon/SalonSidebarNew';
@@ -585,21 +585,22 @@ const SalonPanelNew = () => {
                         </CardContent>
                       </Card>
 
-                      <Card className="bg-admin-card border-admin-border">
+                      <Card className="bg-admin-card border-admin-border md:col-span-2 lg:col-span-1">
                         <CardHeader>
                           <CardTitle className="text-admin-text flex items-center gap-2">
-                            <MapPin className="h-5 w-5" />
+                            <MapPin className="h-4 w-4" />
                             Link do Menu
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-2">
-                            <div className="text-xs text-admin-text-muted break-all bg-gray-50 p-2 rounded">
+                            <div className="text-xs text-admin-text-muted break-all bg-gray-50 p-2 rounded font-mono">
                               {menuLink}
                             </div>
                             <Button
                               size="sm"
                               variant="outline"
+                              className="w-full"
                               onClick={() => {
                                 navigator.clipboard.writeText(menuLink);
                                 toast({
@@ -615,7 +616,7 @@ const SalonPanelNew = () => {
                       </Card>
                     </div>
 
-                    {/* Seção de Tratamentos */}
+                    {/* Seção de Tratamentos - Design igual ao Admin */}
                     <Card className="bg-admin-card border-admin-border mt-6">
                       <CardHeader>
                         <CardTitle className="text-admin-text">Meus Tratamentos</CardTitle>
@@ -626,27 +627,29 @@ const SalonPanelNew = () => {
                         ) : (
                           <div className="space-y-4">
                             {treatmentsData.map((treatment) => (
-                              <div key={treatment.id} className="border border-admin-border rounded-lg p-4">
-                                <div className="flex justify-between items-start">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                      {treatment.treatment?.images && treatment.treatment.images.length > 0 ? (
-                                        <img 
-                                          src={treatment.treatment.images[0]} 
-                                          alt={treatment.treatment.name}
-                                          className="w-16 h-12 rounded border object-cover"
-                                        />
-                                      ) : (
-                                        <div className="w-16 h-12 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                                          Sem imagem
-                                        </div>
-                                      )}
-                                      <div>
+                              <Card key={treatment.id} className="bg-admin-card border-admin-border">
+                                <CardHeader>
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-4">
+                                      <div className="flex-shrink-0">
+                                        {treatment.treatment?.images && treatment.treatment.images.length > 0 ? (
+                                          <img 
+                                            src={treatment.treatment.images[0]} 
+                                            alt={treatment.treatment.name}
+                                            className="w-20 h-16 rounded border object-cover"
+                                          />
+                                        ) : (
+                                          <div className="w-20 h-16 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                                            Sem imagem
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="flex-1">
                                         <h4 className="font-medium text-admin-text">
                                           {treatment.treatment?.name || 'Tratamento sem nome'}
                                         </h4>
                                         <p className="text-admin-text-muted text-sm">
-                                          Categoria: {treatment.treatment?.category || 'Sem categoria'}
+                                          {treatment.treatment?.description || 'Sem descrição'}
                                         </p>
                                         <div className="flex items-center gap-2 mt-1">
                                           <span className="text-admin-success font-bold">
@@ -660,25 +663,36 @@ const SalonPanelNew = () => {
                                         </div>
                                       </div>
                                     </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className={`px-2 py-1 text-xs rounded ${
+                                        treatment.is_active 
+                                          ? 'bg-green-100 text-green-800' 
+                                          : 'bg-red-100 text-red-800'
+                                      }`}>
+                                        {treatment.is_active ? 'Ativo' : 'Inativo'}
+                                      </div>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => openEditTreatment(treatment)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                    </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 text-xs rounded ${
-                                      treatment.is_active 
-                                        ? 'bg-green-100 text-green-800' 
-                                        : 'bg-red-100 text-red-800'
-                                    }`}>
-                                      {treatment.is_active ? 'Ativo' : 'Inativo'}
-                                    </span>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => openEditTreatment(treatment)}
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="flex items-center gap-4 text-sm text-admin-text-muted">
+                                    <span>Categoria: {treatment.treatment?.category || 'Sem categoria'}</span>
+                                    {treatment.treatment?.duration_minutes && (
+                                      <span>Duração: {treatment.treatment.duration_minutes}min</span>
+                                    )}
+                                    {treatment.treatment?.rating && (
+                                      <span>Avaliação: {treatment.treatment.rating}⭐</span>
+                                    )}
                                   </div>
-                                </div>
-                              </div>
+                                </CardContent>
+                              </Card>
                             ))}
                           </div>
                         )}
@@ -1001,13 +1015,15 @@ const SalonPanelNew = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen bg-admin-content flex w-full">
-        {/* Sidebar */}
-        <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
+          <SalonSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
         
         {/* Main Content */}
         <SidebarInset className="flex-1 flex flex-col">
-          {/* Top Header */}
-          <header className="bg-admin-card border-b border-admin-border px-6 py-4">
+          {/* Top Header - Desktop */}
+          <header className="hidden md:block bg-admin-card border-b border-admin-border px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="text-admin-text" />
@@ -1018,8 +1034,8 @@ const SalonPanelNew = () => {
                     {activeTab === 'profile' && 'Meu Perfil'}
                   </h1>
                   <p className="text-admin-text-muted">
-                    {activeTab === 'dashboard' && 'Gerencie seu salão'}
-                    {activeTab === 'treatments' && 'Configure os tratamentos do seu salão'}
+                    {activeTab === 'dashboard' && 'Visão geral do seu salão'}
+                    {activeTab === 'treatments' && 'Gerencie seus tratamentos'}
                     {activeTab === 'profile' && 'Gerencie suas informações pessoais'}
                   </p>
                 </div>
@@ -1037,11 +1053,57 @@ const SalonPanelNew = () => {
             </div>
           </header>
 
+          {/* Mobile Header */}
+          <header className="md:hidden bg-admin-card border-b border-admin-border px-4 py-3">
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-bold text-admin-text">
+                {activeTab === 'dashboard' && 'Dashboard'}
+                {activeTab === 'treatments' && 'Tratamentos'}
+                {activeTab === 'profile' && 'Perfil'}
+              </h1>
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-admin-text-muted" />
+                <Input 
+                  placeholder="Buscar..."
+                  className="pl-8 w-32 bg-admin-card border-admin-border text-sm"
+                />
+              </div>
+            </div>
+          </header>
+
           {/* Content */}
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
             {renderContent()}
           </main>
         </SidebarInset>
+
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-admin-sidebar border-t border-admin-border z-50">
+          <div className="flex items-center justify-around py-2">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: Home },
+              { id: 'treatments', label: 'Tratamentos', icon: Package },
+              { id: 'profile', label: 'Perfil', icon: User }
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex flex-col items-center gap-1 px-3 py-1 rounded-lg transition-colors ${
+                    isActive 
+                      ? 'text-admin-sidebar-active' 
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </SidebarProvider>
   );

@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Bell, Settings } from 'lucide-react';
+import { Plus, Search, Bell, Settings, Package, Users, Grid3x3, Image, UserCog } from 'lucide-react';
 import { AdminTreatments } from '@/components/admin/AdminTreatments';
 import { AdminPartners } from '@/components/admin/AdminPartners';
 import { AdminBanners } from '@/components/admin/AdminBanners';
@@ -51,13 +51,15 @@ const AdminPanel = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen bg-admin-content flex w-full">
-        {/* Sidebar */}
-        <AdminSidebarNew activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
+          <AdminSidebarNew activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
         
         {/* Main Content */}
         <SidebarInset className="flex-1 flex flex-col">
-          {/* Top Header */}
-          <header className="bg-admin-card border-b border-admin-border px-6 py-4">
+          {/* Top Header - Desktop */}
+          <header className="hidden md:block bg-admin-card border-b border-admin-border px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="text-admin-text" />
@@ -91,11 +93,61 @@ const AdminPanel = () => {
             </div>
           </header>
 
+          {/* Mobile Header */}
+          <header className="md:hidden bg-admin-card border-b border-admin-border px-4 py-3">
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-bold text-admin-text">
+                {activeTab === 'treatments' && 'Tratamentos'}
+                {activeTab === 'salons' && 'Salões'}
+                {activeTab === 'categories' && 'Categorias'}
+                {activeTab === 'banners' && 'Banners'}
+                {activeTab === 'users' && 'Usuários'}
+              </h1>
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-admin-text-muted" />
+                <Input 
+                  placeholder="Buscar..."
+                  className="pl-8 w-32 bg-admin-card border-admin-border text-sm"
+                />
+              </div>
+            </div>
+          </header>
+
           {/* Content */}
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
             {renderContent()}
           </main>
         </SidebarInset>
+
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-admin-sidebar border-t border-admin-border z-50">
+          <div className="flex items-center justify-around py-2">
+            {[
+              { id: 'treatments', label: 'Tratamentos', icon: Package },
+              { id: 'salons', label: 'Salões', icon: Users },
+              { id: 'categories', label: 'Categorias', icon: Grid3x3 },
+              { id: 'banners', label: 'Banners', icon: Image },
+              ...(profile?.role === 'admin' ? [{ id: 'users', label: 'Usuários', icon: UserCog }] : [])
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex flex-col items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+                    isActive 
+                      ? 'text-admin-sidebar-active' 
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </SidebarProvider>
   );
