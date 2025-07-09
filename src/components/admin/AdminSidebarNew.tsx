@@ -35,7 +35,7 @@ export const AdminSidebarNew = ({ activeTab, onTabChange }: AdminSidebarNewProps
   ];
 
   return (
-    <Sidebar className="bg-admin-sidebar border-r-0">
+    <Sidebar className="bg-admin-sidebar text-white border-r-0">
       <SidebarHeader className="p-6 border-b border-admin-sidebar-hover">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-admin-sidebar-active rounded-lg flex items-center justify-center flex-shrink-0">
@@ -51,7 +51,7 @@ export const AdminSidebarNew = ({ activeTab, onTabChange }: AdminSidebarNewProps
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-admin-sidebar">
         <SidebarGroup>
           <SidebarGroupLabel className="text-gray-400 px-3">
             {!isCollapsed && 'Navegação'}
@@ -84,7 +84,7 @@ export const AdminSidebarNew = ({ activeTab, onTabChange }: AdminSidebarNewProps
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-admin-sidebar-hover">
+      <SidebarFooter className="p-4 border-t border-admin-sidebar-hover bg-admin-sidebar">
         <div className={`flex items-center gap-3 mb-3 ${isCollapsed ? 'justify-center' : ''}`}>
           <Avatar className="h-8 w-8 flex-shrink-0">
             <AvatarImage src="" />
