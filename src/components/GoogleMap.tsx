@@ -25,35 +25,44 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Carregar Google Maps API com chave do Supabase
-    if (!window.google) {
-      const loadGoogleMaps = async () => {
-        try {
-          const { data } = await supabase.functions.invoke('get-google-maps-key');
-          const apiKey = data?.key;
-          
-          if (!apiKey) {
-            console.error('Google Maps API key not configured');
-            setIsLoaded(false);
-            return;
-          }
+    // Fallback simples sem API do Google Maps
+    const loadSimpleMap = () => {
+      setIsLoaded(true);
+    };
 
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap&loading=async`;
-          script.async = true;
-          script.defer = true;
-          
-          window.initMap = () => {
-            setIsLoaded(true);
-          };
-          
-          document.head.appendChild(script);
-        } catch (error) {
-          console.error('Failed to load Google Maps API key:', error);
-          setIsLoaded(false);
+    // Tentar carregar Google Maps com chave do Supabase
+    const loadGoogleMaps = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-google-maps-key');
+        
+        if (error || !data?.key) {
+          console.log('Google Maps API key not available, using fallback');
+          loadSimpleMap();
+          return;
         }
-      };
-      
+
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&callback=initMap&loading=async`;
+        script.async = true;
+        script.defer = true;
+        
+        script.onerror = () => {
+          console.log('Failed to load Google Maps, using fallback');
+          loadSimpleMap();
+        };
+        
+        window.initMap = () => {
+          setIsLoaded(true);
+        };
+        
+        document.head.appendChild(script);
+      } catch (error) {
+        console.log('Error loading Google Maps, using fallback:', error);
+        loadSimpleMap();
+      }
+    };
+
+    if (!window.google) {
       loadGoogleMaps();
     } else {
       setIsLoaded(true);
@@ -63,9 +72,32 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
 
+    // Se o Google Maps não estiver disponível, mostrar mapa simples
+    if (!window.google) {
+      // Criar um mapa simples sem Google Maps
+      const mapElement = mapRef.current;
+      mapElement.innerHTML = `
+        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; box-sizing: border-box;">
+          <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+            <h3 style="margin: 0 0 10px 0; font-size: 18px;">📍 Localização dos Salões</h3>
+            <p style="margin: 0 0 15px 0; font-size: 14px; opacity: 0.9;">Mapa interativo indisponível</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+              ${salons.map(salon => `
+                <div style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 15px; font-size: 12px;">
+                  ${salon.name}
+                </div>
+              `).join('')}
+            </div>
+            ${userLocation ? `<p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.8;">📍 Sua localização: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}</p>` : ''}
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     const center = userLocation || { lat: -23.5505, lng: -46.6333 }; // São Paulo default
     
-    // Criar o mapa
+    // Criar o mapa do Google
     mapInstance.current = new window.google.maps.Map(mapRef.current, {
       center,
       zoom: 12,
