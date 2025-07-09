@@ -11,15 +11,8 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Tentando acessar GOOGLE_MAPS_API_KEY...');
-    let googleMapsKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
-    
-    // Fallback temporário para teste
-    if (!googleMapsKey) {
-      googleMapsKey = 'AIzaSyBCuU-wIEg9F4IWhAOyz0iW573ftQzVf6M';
-    }
-    
-    console.log('Valor encontrado:', googleMapsKey ? 'KEY ENCONTRADA' : 'KEY NÃO ENCONTRADA');
+    const googleMapsKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
+    console.log('Google Maps Key configurada:', googleMapsKey ? 'SIM' : 'NÃO');
     
     if (!googleMapsKey) {
       console.log('Retornando erro 400 - chave não configurada');
