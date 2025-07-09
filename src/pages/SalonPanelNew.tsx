@@ -12,13 +12,39 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const salonSchema = z.object({
+  name: z.string().min(1, 'Nome do salão é obrigatório'),
+  address: z.string().min(1, 'Endereço é obrigatório'),
+  address_number: z.string().min(1, 'Número é obrigatório'),
+  address_complement: z.string().optional(),
+  postal_code: z.string().optional(),
+  phone: z.string().optional(),
+  instagram: z.string().optional()
+});
 
 const SalonPanelNew = () => {
   const { user, profile, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isCreatingSalon, setIsCreatingSalon] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [createSalonOpen, setCreateSalonOpen] = useState(false);
   const { toast } = useToast();
+
+  const salonForm = useForm<z.infer<typeof salonSchema>>({
+    resolver: zodResolver(salonSchema),
+    defaultValues: {
+      name: `Salão ${profile?.name}` || '',
+      address: profile?.address || '',
+      address_number: profile?.address_number || '',
+      address_complement: profile?.address_complement || '',
+      postal_code: profile?.postal_code || '',
+      phone: profile?.phone || '',
+      instagram: profile?.instagram || ''
+    }
+  });
 
   const profileForm = useForm({
     defaultValues: {
@@ -44,19 +70,19 @@ const SalonPanelNew = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  const handleUnlockSalon = async () => {
+  const handleCreateSalon = async (data: z.infer<typeof salonSchema>) => {
     setIsCreatingSalon(true);
     try {
       const { data: salon, error } = await supabase
         .from('salons')
         .insert({
           user_id: user.id,
-          name: `Salão ${profile.name}`,
+          name: data.name,
           responsible_name: profile.name,
           responsible_email: profile.email,
-          slug: `salon-${profile.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
-          phone: profile.phone,
-          address: profile.address ? `${profile.address}, ${profile.address_number || ''}` : null,
+          slug: `${data.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+          phone: data.phone,
+          address: `${data.address}, ${data.address_number}${data.address_complement ? ` - ${data.address_complement}` : ''}`,
           is_active: true
         })
         .select()
@@ -77,6 +103,7 @@ const SalonPanelNew = () => {
         description: "Seu salão foi criado com sucesso. Agora você pode gerenciar seus tratamentos.",
       });
 
+      setCreateSalonOpen(false);
       // Recarregar a página para atualizar o contexto
       window.location.reload();
     } catch (error) {
@@ -144,13 +171,129 @@ const SalonPanelNew = () => {
                     <p className="text-yellow-700 text-sm mt-1">
                       Você ainda não tem um salão ativo. Clique no botão abaixo para cadastrar seu salão.
                     </p>
-                    <Button 
-                      className="mt-3 bg-admin-success hover:bg-admin-success-hover text-white"
-                      onClick={handleUnlockSalon}
-                      disabled={isCreatingSalon}
-                    >
-                      {isCreatingSalon ? 'Criando...' : 'Desbloquear Salão'}
-                    </Button>
+                    <Dialog open={createSalonOpen} onOpenChange={setCreateSalonOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white"
+                        >
+                          Desbloquear Salão
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>Cadastrar Salão</DialogTitle>
+                        </DialogHeader>
+                        <Form {...salonForm}>
+                          <form onSubmit={salonForm.handleSubmit(handleCreateSalon)} className="space-y-4">
+                            <FormField
+                              control={salonForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Nome do Salão *</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Nome do seu salão" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={salonForm.control}
+                              name="address"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Endereço *</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Rua, Avenida..." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="flex gap-2">
+                              <FormField
+                                control={salonForm.control}
+                                name="address_number"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Número *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="123" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={salonForm.control}
+                                name="postal_code"
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>CEP</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="00000-000" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <FormField
+                              control={salonForm.control}
+                              name="address_complement"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Complemento</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Apartamento, sala..." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={salonForm.control}
+                              name="phone"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Telefone</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="(11) 99999-9999" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={salonForm.control}
+                              name="instagram"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Instagram</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="@seuinstagram" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button type="button" variant="outline" onClick={() => setCreateSalonOpen(false)}>
+                                Cancelar
+                              </Button>
+                              <Button 
+                                type="submit" 
+                                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                                disabled={isCreatingSalon}
+                              >
+                                {isCreatingSalon ? 'Criando...' : 'Criar Salão'}
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
               </CardContent>
@@ -171,7 +314,7 @@ const SalonPanelNew = () => {
                       Você precisa desbloquear seu salão para acessar os tratamentos.
                     </p>
                     <Button 
-                      className="bg-admin-success hover:bg-admin-success-hover text-white"
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white"
                       onClick={() => setActiveTab('dashboard')}
                     >
                       Ir para Dashboard
@@ -312,7 +455,7 @@ const SalonPanelNew = () => {
                           <Button type="button" variant="outline" onClick={() => setEditProfileOpen(false)}>
                             Cancelar
                           </Button>
-                          <Button type="submit" className="bg-admin-success hover:bg-admin-success-hover">
+                          <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700 text-white">
                             Salvar
                           </Button>
                         </div>
