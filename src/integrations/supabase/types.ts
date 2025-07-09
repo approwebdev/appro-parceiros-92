@@ -295,7 +295,60 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_profile_access: {
+        Row: {
+          address: string | null
+          address_complement: string | null
+          address_number: string | null
+          created_at: string | null
+          email: string | null
+          has_salon: boolean | null
+          id: string | null
+          instagram: string | null
+          name: string | null
+          phone: string | null
+          postal_code: string | null
+          role: string | null
+          updated_at: string | null
+          user_id: string | null
+          wants_salon: boolean | null
+        }
+        Insert: {
+          address?: string | null
+          address_complement?: string | null
+          address_number?: string | null
+          created_at?: string | null
+          email?: string | null
+          has_salon?: boolean | null
+          id?: string | null
+          instagram?: string | null
+          name?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wants_salon?: boolean | null
+        }
+        Update: {
+          address?: string | null
+          address_complement?: string | null
+          address_number?: string | null
+          created_at?: string | null
+          email?: string | null
+          has_salon?: boolean | null
+          id?: string | null
+          instagram?: string | null
+          name?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wants_salon?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
