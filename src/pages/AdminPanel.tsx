@@ -82,13 +82,6 @@ const AdminPanel = () => {
                     className="pl-10 w-80 bg-admin-card border-admin-border"
                   />
                 </div>
-                <Button 
-                  size="sm" 
-                  className="bg-admin-success hover:bg-admin-success-hover text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar
-                </Button>
               </div>
             </div>
           </header>
