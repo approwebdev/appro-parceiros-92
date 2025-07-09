@@ -28,6 +28,8 @@ export const usePartners = () => {
 
   const fetchPartners = async () => {
     try {
+      console.log('Iniciando busca de parceiros...');
+      
       const { data, error } = await supabase
         .from('profiles')
         .select(`
@@ -38,35 +40,55 @@ export const usePartners = () => {
           phone,
           instagram,
           has_salon,
-          wants_salon,
-          salons:salons!user_id (
-            id,
-            name,
-            slug,
-            address,
-            is_active,
-            plan_type
-          )
+          wants_salon
         `)
         .eq('role', 'salon')
         .order('name');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro na query profiles:', error);
+        throw error;
+      }
 
-      const formattedPartners: Partner[] = data.map((profile: any) => ({
-        id: profile.id,
-        user_id: profile.user_id,
-        name: profile.name,
-        email: profile.email,
-        phone: profile.phone,
-        instagram: profile.instagram,
-        has_salon: profile.has_salon,
-        wants_salon: profile.wants_salon,
-        salon: profile.salons && profile.salons.length > 0 ? profile.salons[0] : undefined
-      }));
+      console.log('Dados dos profiles:', data);
 
+      // Buscar salões separadamente para cada usuário que tem salão
+      const formattedPartners: Partner[] = [];
+      
+      for (const profile of data || []) {
+        let salon = undefined;
+        
+        if (profile.has_salon) {
+          const { data: salonData, error: salonError } = await supabase
+            .from('salons')
+            .select('id, name, slug, address, is_active, plan_type')
+            .eq('user_id', profile.user_id)
+            .single();
+            
+          if (salonError) {
+            console.error(`Erro ao buscar salão para usuário ${profile.user_id}:`, salonError);
+          } else {
+            salon = salonData;
+          }
+        }
+        
+        formattedPartners.push({
+          id: profile.id,
+          user_id: profile.user_id,
+          name: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          instagram: profile.instagram,
+          has_salon: profile.has_salon,
+          wants_salon: profile.wants_salon,
+          salon
+        });
+      }
+
+      console.log('Parceiros formatados:', formattedPartners);
       setPartners(formattedPartners);
     } catch (error) {
+      console.error('Erro geral:', error);
       toast({
         title: "Erro",
         description: "Erro ao carregar parceiros",
