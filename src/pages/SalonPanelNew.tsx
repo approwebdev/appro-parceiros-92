@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Edit, Package, User } from 'lucide-react';
+import { Plus, Search, Edit, Package, MapPin, Building } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { SalonSidebar } from '@/components/salon/SalonSidebarNew';
@@ -31,7 +31,9 @@ const SalonPanelNew = () => {
   const [isCreatingSalon, setIsCreatingSalon] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [createSalonOpen, setCreateSalonOpen] = useState(false);
+  const [editSalonOpen, setEditSalonOpen] = useState(false);
   const [salonData, setSalonData] = useState(null);
+  const [treatmentsData, setTreatmentsData] = useState([]);
   const { toast } = useToast();
 
   // Debug logs
@@ -55,6 +57,23 @@ const SalonPanelNew = () => {
 
           if (salon && !error) {
             setSalonData(salon);
+            
+            // Buscar tratamentos do salão
+            const { data: treatments, error: treatmentsError } = await supabase
+              .from('salon_treatments')
+              .select(`
+                *,
+                treatment:treatments(*)
+              `)
+              .eq('salon_id', salon.id)
+              .eq('is_active', true);
+
+            console.log('Fetched treatments data:', treatments);
+            console.log('Treatments fetch error:', treatmentsError);
+
+            if (treatments && !treatmentsError) {
+              setTreatmentsData(treatments);
+            }
           }
         } catch (error) {
           console.error('Error fetching salon:', error);
@@ -64,6 +83,15 @@ const SalonPanelNew = () => {
 
     fetchSalonData();
   }, [user, profile]);
+
+  const salonEditForm = useForm({
+    defaultValues: {
+      name: salonData?.name || '',
+      address: salonData?.address || '',
+      phone: salonData?.phone || '',
+      instagram: salonData?.instagram || ''
+    }
+  });
 
   const salonForm = useForm<z.infer<typeof salonSchema>>({
     resolver: zodResolver(salonSchema),
@@ -147,6 +175,37 @@ const SalonPanelNew = () => {
       });
     } finally {
       setIsCreatingSalon(false);
+    }
+  };
+
+  const handleUpdateSalon = async (data: any) => {
+    try {
+      const { error } = await supabase
+        .from('salons')
+        .update({
+          name: data.name,
+          address: data.address,
+          phone: data.phone,
+          instagram: data.instagram
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Salão atualizado!",
+        description: "As informações do salão foram salvas com sucesso.",
+      });
+
+      setEditSalonOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Erro ao atualizar salão:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o salão. Tente novamente.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -330,10 +389,92 @@ const SalonPanelNew = () => {
                 ) : (
                   <div className="mt-6 space-y-4">
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h4 className="font-medium text-green-800">✅ Salão Ativo</h4>
-                      <p className="text-green-700 text-sm mt-1">
-                        Seu salão está ativo e funcionando! 
-                      </p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-green-800">✅ Salão Ativo</h4>
+                          <p className="text-green-700 text-sm mt-1">
+                            Seu salão está ativo e funcionando! 
+                          </p>
+                        </div>
+                        <Dialog open={editSalonOpen} onOpenChange={setEditSalonOpen}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <Edit className="h-4 w-4" />
+                              Editar Salão
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Editar Salão</DialogTitle>
+                            </DialogHeader>
+                            <Form {...salonEditForm}>
+                              <form onSubmit={salonEditForm.handleSubmit(handleUpdateSalon)} className="space-y-4">
+                                <FormField
+                                  control={salonEditForm.control}
+                                  name="name"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Nome do Salão</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="Nome do salão" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={salonEditForm.control}
+                                  name="address"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Endereço</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="Endereço completo" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={salonEditForm.control}
+                                  name="phone"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Telefone</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="(11) 99999-9999" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={salonEditForm.control}
+                                  name="instagram"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Instagram</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="@seuinstagram" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <div className="flex justify-end gap-2">
+                                  <Button type="button" variant="outline" onClick={() => setEditSalonOpen(false)}>
+                                    Cancelar
+                                  </Button>
+                                  <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                                    Salvar
+                                  </Button>
+                                </div>
+                              </form>
+                            </Form>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                      
                       {salonData && (
                         <div className="mt-3 space-y-2">
                           <p className="text-green-700 text-sm">
@@ -351,7 +492,7 @@ const SalonPanelNew = () => {
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Card className="bg-admin-card border-admin-border">
                         <CardContent className="p-6">
                           <div className="flex items-center">
@@ -359,22 +500,8 @@ const SalonPanelNew = () => {
                               <Package className="h-6 w-6 text-blue-600" />
                             </div>
                             <div className="ml-4">
-                              <p className="text-sm font-medium text-admin-text-muted">Tratamentos</p>
-                              <p className="text-2xl font-bold text-admin-text">0</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card className="bg-admin-card border-admin-border">
-                        <CardContent className="p-6">
-                          <div className="flex items-center">
-                            <div className="p-2 bg-green-100 rounded-lg">
-                              <User className="h-6 w-6 text-green-600" />
-                            </div>
-                            <div className="ml-4">
-                              <p className="text-sm font-medium text-admin-text-muted">Clientes</p>
-                              <p className="text-2xl font-bold text-admin-text">0</p>
+                              <p className="text-sm font-medium text-admin-text-muted">Tratamentos Ativos</p>
+                              <p className="text-2xl font-bold text-admin-text">{treatmentsData.length}</p>
                             </div>
                           </div>
                         </CardContent>
@@ -384,16 +511,37 @@ const SalonPanelNew = () => {
                         <CardContent className="p-6">
                           <div className="flex items-center">
                             <div className="p-2 bg-yellow-100 rounded-lg">
-                              <Plus className="h-6 w-6 text-yellow-600" />
+                              <Building className="h-6 w-6 text-yellow-600" />
                             </div>
                             <div className="ml-4">
-                              <p className="text-sm font-medium text-admin-text-muted">Agendamentos</p>
-                              <p className="text-2xl font-bold text-admin-text">0</p>
+                              <p className="text-sm font-medium text-admin-text-muted">Plano</p>
+                              <p className="text-lg font-bold text-admin-text capitalize">{salonData?.plan || 'Básico'}</p>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
                     </div>
+
+                    {treatmentsData.length > 0 && (
+                      <Card className="bg-admin-card border-admin-border">
+                        <CardHeader>
+                          <CardTitle className="text-admin-text">Seus Tratamentos</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {treatmentsData.map((salonTreatment) => (
+                              <div key={salonTreatment.id} className="border rounded-lg p-4">
+                                <h4 className="font-medium text-admin-text">{salonTreatment.treatment.name}</h4>
+                                <p className="text-sm text-admin-text-muted mt-1">{salonTreatment.treatment.description}</p>
+                                <p className="text-lg font-bold text-green-600 mt-2">
+                                  R$ {salonTreatment.custom_price}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -432,9 +580,41 @@ const SalonPanelNew = () => {
                 <CardTitle className="text-admin-text">Tratamentos</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-admin-text-muted">
-                  Gerencie os tratamentos do seu salão.
-                </p>
+                <div className="space-y-4">
+                  <p className="text-admin-text-muted">
+                    Gerencie os tratamentos do seu salão. Total: {treatmentsData.length} tratamentos ativos
+                  </p>
+                  
+                  {treatmentsData.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {treatmentsData.map((salonTreatment) => (
+                        <Card key={salonTreatment.id} className="border">
+                          <CardContent className="p-4">
+                            <h4 className="font-medium text-admin-text">{salonTreatment.treatment.name}</h4>
+                            <p className="text-sm text-admin-text-muted mt-1 line-clamp-2">
+                              {salonTreatment.treatment.description}
+                            </p>
+                            <div className="mt-3 flex items-center justify-between">
+                              <p className="text-lg font-bold text-green-600">
+                                R$ {salonTreatment.custom_price}
+                              </p>
+                              <Button size="sm" variant="outline">
+                                Editar
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-admin-text-muted">
+                        Nenhum tratamento encontrado. Os tratamentos são criados automaticamente quando o salão é desbloqueado.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
