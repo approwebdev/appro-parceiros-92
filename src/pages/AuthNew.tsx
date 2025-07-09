@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +36,17 @@ const AuthNew = () => {
   const {
     toast
   } = useToast();
+  const navigate = useNavigate();
+
+  // Effect to redirect user after successful signup
+  useEffect(() => {
+    if (user && !isLogin) {
+      // Small delay to ensure user data is properly set
+      setTimeout(() => {
+        navigate('/salon-panel', { replace: true });
+      }, 1000);
+    }
+  }, [user, isLogin, navigate]);
 
   // Redirect if already authenticated
   if (user && profile) {
