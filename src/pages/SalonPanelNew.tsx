@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { SalonSidebar } from '@/components/salon/SalonSidebar';
+import { SalonSidebar } from '@/components/salon/SalonSidebarNew';
 
 const SalonPanelNew = () => {
   const { user, profile, loading } = useAuth();
