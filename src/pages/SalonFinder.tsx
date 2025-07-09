@@ -179,7 +179,7 @@ const SalonFinder = () => {
       {/* Header */}
       <header className="bg-black border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto flex items-center justify-center">
-          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
       </header>
 
