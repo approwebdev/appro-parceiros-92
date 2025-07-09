@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
 interface Salon {
@@ -43,12 +44,17 @@ const SalonFinder = () => {
   const [distanceFilter, setDistanceFilter] = useState<'50' | '100' | 'all'>('all');
   const [gettingLocation, setGettingLocation] = useState(false);
   const [isLocationFilterOpen, setIsLocationFilterOpen] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const { toast } = useToast();
+  
   useEffect(() => {
     fetchSalons();
     fetchBanners();
+    // Mostrar popup de localização após um pequeno delay
+    const timer = setTimeout(() => {
+      setShowLocationDialog(true);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   // Função para calcular distância entre dois pontos
@@ -96,6 +102,7 @@ const SalonFinder = () => {
         description: "Mostrando salões próximos a você."
       });
       setGettingLocation(false);
+      setShowLocationDialog(false);
     }, error => {
       toast({
         title: "Erro ao obter localização",
@@ -103,6 +110,7 @@ const SalonFinder = () => {
         variant: "destructive"
       });
       setGettingLocation(false);
+      setShowLocationDialog(false);
     });
   };
   const fetchSalons = async () => {
@@ -175,7 +183,40 @@ const SalonFinder = () => {
       }}></div>
       </div>;
   }
-  return <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
+  return (
+    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
+      {/* Dialog de Localização */}
+      <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold">
+              🎯 Encontre salões próximos!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-center text-gray-600">
+              Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={getUserLocation} 
+                disabled={gettingLocation}
+                className="flex-1 bg-[#242424] text-white hover:bg-[#1a1a1a]"
+              >
+                <Navigation className="h-4 w-4 mr-2" />
+                {gettingLocation ? 'Obtendo...' : 'Usar localização'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowLocationDialog(false)}
+                className="flex-1"
+              >
+                Agora não
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Header */}
       <header className="bg-black border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
@@ -498,6 +539,8 @@ const SalonFinder = () => {
           </p>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default SalonFinder;

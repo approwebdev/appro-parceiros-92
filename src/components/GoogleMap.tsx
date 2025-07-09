@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GoogleMapProps {
   salons: Array<{
@@ -24,18 +25,36 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Carregar Google Maps API
+    // Carregar Google Maps API com chave do Supabase
     if (!window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCuU-wlEg9F4IWhAOyz0iW573ftQzVf6M&libraries=places&callback=initMap`;
-      script.async = true;
-      script.defer = true;
-      
-      window.initMap = () => {
-        setIsLoaded(true);
+      const loadGoogleMaps = async () => {
+        try {
+          const { data } = await supabase.functions.invoke('get-google-maps-key');
+          const apiKey = data?.key;
+          
+          if (!apiKey) {
+            console.error('Google Maps API key not configured');
+            setIsLoaded(false);
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap&loading=async`;
+          script.async = true;
+          script.defer = true;
+          
+          window.initMap = () => {
+            setIsLoaded(true);
+          };
+          
+          document.head.appendChild(script);
+        } catch (error) {
+          console.error('Failed to load Google Maps API key:', error);
+          setIsLoaded(false);
+        }
       };
       
-      document.head.appendChild(script);
+      loadGoogleMaps();
     } else {
       setIsLoaded(true);
     }
