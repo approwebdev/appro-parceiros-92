@@ -11,23 +11,12 @@ serve(async (req) => {
   }
 
   try {
-    const googleMapsKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
-    console.log('Google Maps Key configurada:', googleMapsKey ? 'SIM' : 'NÃO');
+    const mapTilerKey = 'bC55peR1KGcjYHWppadW';
+    console.log('MapTiler Key configurada: SIM');
     
-    if (!googleMapsKey) {
-      console.log('Retornando erro 400 - chave não configurada');
-      return new Response(
-        JSON.stringify({ error: 'Google Maps API key not configured' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
-    }
-
-    console.log('Retornando chave com sucesso');
+    console.log('Retornando chave MapTiler com sucesso');
     return new Response(
-      JSON.stringify({ key: googleMapsKey }),
+      JSON.stringify({ key: mapTilerKey }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
