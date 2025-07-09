@@ -14,7 +14,7 @@ interface Category {
   id: string;
   name: string;
   description: string;
-  color: string;
+  cover_image_url: string;
   order_position: number;
   is_active: boolean;
 }
@@ -29,7 +29,7 @@ export const AdminCategories = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    color: '#D4AF37',
+    cover_image_url: '',
     order_position: 0,
     is_active: true
   });
@@ -114,7 +114,7 @@ export const AdminCategories = () => {
     setFormData({
       name: category.name,
       description: category.description || '',
-      color: category.color || '#D4AF37',
+      cover_image_url: category.cover_image_url || '',
       order_position: category.order_position,
       is_active: category.is_active
     });
@@ -126,7 +126,7 @@ export const AdminCategories = () => {
     setFormData({
       name: '',
       description: '',
-      color: '#D4AF37',
+      cover_image_url: '',
       order_position: 0,
       is_active: true
     });
@@ -167,12 +167,13 @@ export const AdminCategories = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="color">Cor</Label>
+                  <Label htmlFor="cover_image_url">URL da Foto de Capa</Label>
                   <Input
-                    id="color"
-                    type="color"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    id="cover_image_url"
+                    type="url"
+                    value={formData.cover_image_url}
+                    onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
+                    placeholder="https://exemplo.com/imagem.jpg"
                   />
                 </div>
               </div>
@@ -233,10 +234,17 @@ export const AdminCategories = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div 
-                    className="w-6 h-6 rounded border"
-                    style={{ backgroundColor: category.color }}
-                  />
+                  {category.cover_image_url ? (
+                    <img 
+                      src={category.cover_image_url} 
+                      alt={category.name}
+                      className="w-12 h-8 rounded border object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-8 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                      Sem foto
+                    </div>
+                  )}
                   <span className={`text-xs px-2 py-1 rounded ${category.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {category.is_active ? 'Ativo' : 'Inativo'}
                   </span>

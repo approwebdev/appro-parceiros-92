@@ -16,7 +16,7 @@ export type Database = {
     Tables: {
       categories: {
         Row: {
-          color: string | null
+          cover_image_url: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -26,7 +26,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          color?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -36,7 +36,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          color?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
