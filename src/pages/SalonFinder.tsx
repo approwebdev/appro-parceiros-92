@@ -20,8 +20,19 @@ interface Salon {
   distance?: number;
   plan?: string;
 }
+
+interface Banner {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  is_active: boolean;
+  order_position: number;
+}
+
 const SalonFinder = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewType, setViewType] = useState<'list' | 'map'>('list');
@@ -37,6 +48,7 @@ const SalonFinder = () => {
   } = useToast();
   useEffect(() => {
     fetchSalons();
+    fetchBanners();
   }, []);
 
   // Função para calcular distância entre dois pontos
@@ -119,6 +131,25 @@ const SalonFinder = () => {
     }
   };
 
+  const fetchBanners = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('salon_banners')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_position');
+
+      if (error) {
+        console.error('Erro ao buscar banners:', error);
+        return;
+      }
+
+      setBanners(data || []);
+    } catch (error) {
+      console.error('Erro ao buscar banners:', error);
+    }
+  };
+
   // Filtrar salões por busca e distância
   const filteredSalons = salons.filter(salon => salon.name.toLowerCase().includes(searchTerm.toLowerCase()) || salon.address?.toLowerCase().includes(searchTerm.toLowerCase())).filter(salon => {
     if (distanceFilter === 'all' || !salon.distance) return true;
@@ -146,39 +177,36 @@ const SalonFinder = () => {
   }
   return <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
-          <Button variant="ghost" size="icon" className="text-gray-900">
-            <Menu className="h-6 w-6" />
-          </Button>
+      <header className="bg-black border-b border-gray-200 px-4 py-4">
+        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="px-4 py-8 max-w-md mx-auto">
+      <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
         {/* Background Image div above the gray container */}
-        <div className="h-64 bg-cover bg-center bg-no-repeat rounded-lg mb-4" style={{
-        backgroundImage: 'url(/lovable-uploads/1572fc57-750b-4248-a2aa-a7bf7e6da5a2.png)'
+        <div className="h-80 md:h-96 bg-cover bg-center bg-no-repeat rounded-lg -mb-8" style={{
+        backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)'
       }}></div>
         
         <div className="text-center mb-6">
           {/* Search Container with dark gray background */}
-          <div className="rounded-lg p-6 mb-6" style={{
+          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{
           backgroundColor: '#242424'
         }}>
-            <h1 className="font-bold mb-1 text-white text-4xl">
+            <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
               Encontre o Salão mais
             </h1>
             <h2 style={{
             color: '#F8E7BF'
-          }} className="font-bold mb-6 text-4xl text-yellow-100">
+          }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
               próximo de você.
             </h2>
             
             {/* Search */}
             <div className="relative mb-4">
-              <Input type="text" placeholder="Buscar salão ou endereço..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-black pl-4 pr-12 py-3 rounded-lg w-full border border-gray-300" />
+              <Input type="text" placeholder="Buscar salão ou endereço..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
             </div>
           </div>
@@ -189,38 +217,62 @@ const SalonFinder = () => {
             {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
           </Button>
 
-          {/* Distance Filters - Collapsible, but show one by default */}
-          {userLocation && <Collapsible open={isLocationFilterOpen} onOpenChange={setIsLocationFilterOpen}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50">
-                  <Navigation className="h-4 w-4 mr-2" />
-                  Filtros de Distância
-                  {isLocationFilterOpen ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+          {/* Distance Filters - Compact version */}
+          {userLocation && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Distância:</p>
+              <div className="flex gap-2">
+                <Button 
+                  variant={distanceFilter === '50' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('50')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === '50' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                >
+                  50km
                 </Button>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent className="space-y-3 mb-4">
-                <div className="flex gap-2">
-                  <Button variant={distanceFilter === '50' ? 'default' : 'outline'} onClick={() => setDistanceFilter('50')} size="sm" className="flex-1">
-                    50km
-                  </Button>
-                  <Button variant={distanceFilter === '100' ? 'default' : 'outline'} onClick={() => setDistanceFilter('100')} size="sm" className="flex-1">
-                    100km
-                  </Button>
-                  <Button variant={distanceFilter === 'all' ? 'default' : 'outline'} onClick={() => setDistanceFilter('all')} size="sm" className="flex-1">
-                    Todos
-                  </Button>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>}
+                <Button 
+                  variant={distanceFilter === '100' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('100')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === '100' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                >
+                  100km
+                </Button>
+                <Button 
+                  variant={distanceFilter === 'all' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('all')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-[#242424] text-white hover:bg-[#1a1a1a]' : ''}`}
+                >
+                  Todos
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
-            <Button variant={viewType === 'list' ? 'default' : 'outline'} onClick={() => setViewType('list')} className="flex items-center gap-2 flex-1">
+            <Button 
+              variant={viewType === 'list' ? 'default' : 'outline'} 
+              onClick={() => setViewType('list')} 
+              className={`flex items-center gap-2 flex-1 ${
+                viewType === 'list' 
+                  ? 'bg-[#242424] text-white hover:bg-[#1a1a1a] border-[#242424]' 
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
               <List className="h-4 w-4" />
               Lista
             </Button>
-            <Button variant={viewType === 'map' ? 'default' : 'outline'} onClick={() => setViewType('map')} className="flex items-center gap-2 flex-1">
+            <Button 
+              variant={viewType === 'map' ? 'default' : 'outline'} 
+              onClick={() => setViewType('map')} 
+              className={`flex items-center gap-2 flex-1 ${
+                viewType === 'map' 
+                  ? 'bg-[#242424] text-white hover:bg-[#1a1a1a] border-[#242424]' 
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
               <Map className="h-4 w-4" />
               Mapa
             </Button>
@@ -234,86 +286,165 @@ const SalonFinder = () => {
           </div>}
 
         {/* Salons List */}
-        {viewType === 'list' && <div className="space-y-4 mb-8">
+        {viewType === 'list' && <div className="space-y-4 md:space-y-6 mb-8">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
                 {userLocation ? <span>Salões <span style={{
                 color: '#F8E7BF'
               }}>próximos de você</span></span> : 'Todos os salões'}
               </h3>
-              {userLocation && filteredSalons.length > 0 && <Badge variant="outline" className="border-gray-300 text-gray-600">
+              {userLocation && filteredSalons.length > 0 && <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
                   {filteredSalons.length} encontrados
                 </Badge>}
             </div>
             
-            {filteredSalons.map(salon => <Card key={salon.id} className="bg-white text-black border border-gray-200">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    {/* Avatar */}
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
-                      {salon.name.charAt(0)}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
-                          <CheckCircle className="h-5 w-5 text-blue-500" />
+            {filteredSalons.map((salon, index) => {
+              const midPoint = Math.floor(filteredSalons.length / 2);
+              const showMidBanner = index === midPoint && banners.length > 0;
+              const isLastSalon = index === filteredSalons.length - 1;
+              const showEndBanner = isLastSalon && banners.length > 1;
+              
+              return (
+                <div key={salon.id}>
+                  <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex items-start gap-4 md:gap-6">
+                        {/* Avatar */}
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl">
+                          {salon.name.charAt(0)}
                         </div>
-                        <div className="flex gap-2">
-                          {salon.plan === 'verificado_azul' && <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                              Verificado
-                            </span>}
-                          {salon.plan === 'verificado_dourado' && <span className="text-white px-2 py-1 rounded text-xs whitespace-nowrap" style={{
-                      backgroundColor: '#F8E7BF',
-                      color: '#000'
-                    }}>
-                              Verificado
-                            </span>}
-                          <span className="bg-gray-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                            Parceiro
-                          </span>
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
+                              <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                            </div>
+                          </div>
+                          
+                          {salon.phone && <div className="flex items-center gap-2 mb-2">
+                              <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                              <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline text-base md:text-xl">
+                                {formatPhone(salon.phone)}
+                              </button>
+                            </div>}
+                          
+                          {salon.address && <div className="flex items-start gap-2 mb-3">
+                              <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
+                            </div>}
+                          
+                          <div className="text-base md:text-xl text-gray-500 font-medium">
+                            {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
+                          </div>
                         </div>
                       </div>
-                      
-                      {salon.phone && <div className="flex items-center gap-2 mb-1">
-                          <Phone className="h-4 w-4 text-green-600" />
-                          <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline">
-                            {formatPhone(salon.phone)}
-                          </button>
-                        </div>}
-                      
-                      {salon.address && <div className="flex items-start gap-2 mb-2">
-                          <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-600">{salon.address}</span>
-                        </div>}
-                      
-                      <div className="text-base text-blue-700">
-                        {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
-                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Banner no meio dos salões */}
+                  {showMidBanner && (
+                    <div className="my-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative h-48 md:h-64">
+                          <img 
+                            src={banners[0].image_url} 
+                            alt={banners[0].title} 
+                            className="w-full h-full object-cover" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                            <div className="p-4 md:p-6 text-white">
+                              <h4 className="font-bold text-lg md:text-2xl">{banners[0].title}</h4>
+                              {banners[0].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>)}
+                  )}
+                  
+                  {/* Banner no final */}
+                  {showEndBanner && (
+                    <div className="mt-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative h-48 md:h-64">
+                          <img 
+                            src={banners[1].image_url} 
+                            alt={banners[1].title} 
+                            className="w-full h-full object-cover" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                            <div className="p-4 md:p-6 text-white">
+                              <h4 className="font-bold text-lg md:text-2xl">{banners[1].title}</h4>
+                              {banners[1].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[1].description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             {filteredSalons.length === 0 && <Card className="bg-white text-black border border-gray-200">
                 <CardContent className="p-8 text-center">
-                  <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h4 className="font-semibold text-lg mb-2 text-gray-900">Nenhum salão encontrado</h4>
-                  <p className="text-gray-600 text-sm">
+                  <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h4 className="font-semibold text-xl mb-3 text-gray-900">Nenhum salão encontrado</h4>
+                  <p className="text-gray-600 text-base">
                     {userLocation ? 'Tente aumentar o raio de busca ou alterar os filtros.' : 'Use sua localização para encontrar salões próximos.'}
                   </p>
                 </CardContent>
               </Card>}
           </div>}
 
+        {/* Banners */}
+        {banners.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
+            <div className="space-y-4">
+              {banners.map(banner => (
+                <Card key={banner.id} className="overflow-hidden">
+                  <CardContent className="p-0 relative h-48">
+                    <img 
+                      src={banner.image_url} 
+                      alt={banner.title} 
+                      className="w-full h-full object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                      <div className="p-4 text-white">
+                        <h4 className="font-bold text-lg">{banner.title}</h4>
+                        {banner.description && (
+                          <p className="text-sm opacity-90">{banner.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Informativo Section */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">Informativo para você</h3>
+          <h3 className="text-lg md:text-2xl font-semibold mb-4 text-gray-900">Informativo para você</h3>
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
-            <CardContent className="p-0 relative h-48">
-              <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Ana Paula - Profissional de beleza" className="w-full h-full object-cover" />
+            <CardContent className="p-0 relative h-48 md:h-64 bg-black rounded-lg">
+              {/* Espaço para vídeo */}
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+                  </div>
+                  <p className="text-sm">Clique para reproduzir o vídeo</p>
+                </div>
+              </div>
               <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded">
                 <span className="text-2xl font-bold">02</span>
                 <br />
