@@ -708,8 +708,6 @@ const SalonPanelNew = () => {
         <SalonSidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          salonData={salonData}
-          profile={profile}
         />
 
         {/* Main Content */}
