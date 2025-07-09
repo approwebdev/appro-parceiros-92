@@ -28,37 +28,6 @@ const Auth = () => {
     }
   }
 
-  const createTestUser = async (email: string, password: string, name: string, role: string) => {
-    try {
-      const { error } = await signUp(email, password, name, role);
-      if (error) {
-        if (error.message.includes('already registered')) {
-          toast({
-            title: "Usuário já existe",
-            description: "Este usuário já foi criado. Tente fazer login.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Erro ao criar usuário",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-      } else {
-        toast({
-          title: "Usuário criado com sucesso!",
-          description: `${name} foi criado. Confirme o email se necessário.`,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao criar usuário de teste.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,20 +119,6 @@ const Auth = () => {
               />
             </div>
             
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="role">Tipo de Conta</Label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="salon">Salão</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
             
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Carregando...' : (isLogin ? 'Entrar' : 'Cadastrar')}
@@ -180,26 +135,6 @@ const Auth = () => {
             </Button>
           </div>
           
-          {/* Usuários de teste */}
-          <div className="mt-6 p-4 bg-muted rounded-lg">
-            <h4 className="font-semibold mb-2">Criar Usuários de Teste:</h4>
-            <div className="space-y-2">
-              <Button
-                onClick={() => createTestUser('admin@teste.com', '123456', 'Admin Teste', 'admin')}
-                variant="outline"
-                className="w-full text-sm"
-              >
-                Criar Admin (admin@teste.com / 123456)
-              </Button>
-              <Button
-                onClick={() => createTestUser('salao@teste.com', '123456', 'Salão Teste', 'salon')}
-                variant="outline"
-                className="w-full text-sm"
-              >
-                Criar Salão (salao@teste.com / 123456)
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
