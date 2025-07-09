@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import MenuApp from "./pages/MenuApp";
 import SalonFinder from "./pages/SalonFinder";
-import Auth from "./pages/Auth";
+import Auth from "./pages/AuthNew";
 import AdminPanel from "./pages/AdminPanel";
 import SalonPanel from "./pages/SalonPanel";
 import Navigation from "./pages/Navigation";
