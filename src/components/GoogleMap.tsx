@@ -33,25 +33,30 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     // Tentar carregar Google Maps com chave do Supabase
     const loadGoogleMaps = async () => {
       try {
+        console.log('Tentando carregar Google Maps API...');
         const { data, error } = await supabase.functions.invoke('get-google-maps-key');
         
+        console.log('Resposta do edge function:', { data, error });
+        
         if (error || !data?.key) {
-          console.log('Google Maps API key not available, using fallback');
+          console.log('Google Maps API key not available, using fallback', error);
           loadSimpleMap();
           return;
         }
 
+        console.log('Chave API encontrada, carregando script...');
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&callback=initMap&loading=async`;
         script.async = true;
         script.defer = true;
         
-        script.onerror = () => {
-          console.log('Failed to load Google Maps, using fallback');
+        script.onerror = (e) => {
+          console.log('Failed to load Google Maps script:', e);
           loadSimpleMap();
         };
         
         window.initMap = () => {
+          console.log('Google Maps script loaded successfully');
           setIsLoaded(true);
         };
         
