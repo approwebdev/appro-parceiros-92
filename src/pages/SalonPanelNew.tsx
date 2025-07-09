@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -34,6 +35,9 @@ const SalonPanelNew = () => {
   const [editSalonOpen, setEditSalonOpen] = useState(false);
   const [salonData, setSalonData] = useState(null);
   const [treatmentsData, setTreatmentsData] = useState([]);
+  const [editingTreatment, setEditingTreatment] = useState(null);
+  const [editTreatmentOpen, setEditTreatmentOpen] = useState(false);
+  const [menuLink, setMenuLink] = useState('');
   const { toast } = useToast();
 
   // Debug logs
@@ -65,8 +69,7 @@ const SalonPanelNew = () => {
                 *,
                 treatment:treatments(*)
               `)
-              .eq('salon_id', salon.id)
-              .eq('is_active', true);
+              .eq('salon_id', salon.id);
 
             console.log('Fetched treatments data:', treatments);
             console.log('Treatments fetch error:', treatmentsError);
@@ -74,6 +77,10 @@ const SalonPanelNew = () => {
             if (treatments && !treatmentsError) {
               setTreatmentsData(treatments);
             }
+
+            // Gerar link do menu
+            const activetreatments = treatments?.filter(t => t.is_active) || [];
+            setMenuLink(`${window.location.origin}/menu/${salon.slug}`);
           }
         } catch (error) {
           console.error('Error fetching salon:', error);
@@ -241,6 +248,57 @@ const SalonPanelNew = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleUpdateTreatment = async (data: any) => {
+    try {
+      const { error } = await supabase
+        .from('salon_treatments')
+        .update({
+          custom_price: parseFloat(data.custom_price),
+          is_active: data.is_active
+        })
+        .eq('id', editingTreatment.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Tratamento atualizado!",
+        description: "As informações do tratamento foram salvas com sucesso.",
+      });
+
+      setEditTreatmentOpen(false);
+      
+      // Recarregar dados
+      if (salonData) {
+        const { data: treatments } = await supabase
+          .from('salon_treatments')
+          .select(`
+            *,
+            treatment:treatments(*)
+          `)
+          .eq('salon_id', salonData.id);
+        
+        if (treatments) {
+          setTreatmentsData(treatments);
+          // Atualizar link do menu
+          const activetreatments = treatments.filter(t => t.is_active);
+          setMenuLink(`${window.location.origin}/menu/${salonData.slug}`);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar tratamento:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o tratamento. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const openEditTreatment = (treatment: any) => {
+    setEditingTreatment(treatment);
+    setEditTreatmentOpen(true);
   };
 
   const renderContent = () => {
@@ -491,57 +549,203 @@ const SalonPanelNew = () => {
                         </div>
                       )}
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <Card className="bg-admin-card border-admin-border">
-                        <CardContent className="p-6">
-                          <div className="flex items-center">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                              <Package className="h-6 w-6 text-blue-600" />
-                            </div>
-                            <div className="ml-4">
-                              <p className="text-sm font-medium text-admin-text-muted">Tratamentos Ativos</p>
-                              <p className="text-2xl font-bold text-admin-text">{treatmentsData.length}</p>
-                            </div>
-                          </div>
+                        <CardHeader>
+                          <CardTitle className="text-admin-text flex items-center gap-2">
+                            <Package className="h-5 w-5" />
+                            Total de Tratamentos
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-2xl font-bold text-admin-success">
+                            {treatmentsData.length}
+                          </p>
+                          <p className="text-admin-text-muted text-sm">
+                            Tratamentos disponíveis
+                          </p>
                         </CardContent>
                       </Card>
-                      
+
                       <Card className="bg-admin-card border-admin-border">
-                        <CardContent className="p-6">
-                          <div className="flex items-center">
-                            <div className="p-2 bg-yellow-100 rounded-lg">
-                              <Building className="h-6 w-6 text-yellow-600" />
+                        <CardHeader>
+                          <CardTitle className="text-admin-text flex items-center gap-2">
+                            <Building className="h-5 w-5" />
+                            Tratamentos Ativos
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-2xl font-bold text-green-600">
+                            {treatmentsData.filter(t => t.is_active).length}
+                          </p>
+                          <p className="text-admin-text-muted text-sm">
+                            Visíveis no menu
+                          </p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="bg-admin-card border-admin-border">
+                        <CardHeader>
+                          <CardTitle className="text-admin-text flex items-center gap-2">
+                            <MapPin className="h-5 w-5" />
+                            Link do Menu
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="text-xs text-admin-text-muted break-all bg-gray-50 p-2 rounded">
+                              {menuLink}
                             </div>
-                            <div className="ml-4">
-                              <p className="text-sm font-medium text-admin-text-muted">Plano</p>
-                              <p className="text-lg font-bold text-admin-text capitalize">{salonData?.plan || 'Básico'}</p>
-                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(menuLink);
+                                toast({
+                                  title: "Link copiado!",
+                                  description: "O link do menu foi copiado para a área de transferência.",
+                                });
+                              }}
+                            >
+                              Copiar Link
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
                     </div>
 
-                    {treatmentsData.length > 0 && (
-                      <Card className="bg-admin-card border-admin-border">
-                        <CardHeader>
-                          <CardTitle className="text-admin-text">Seus Tratamentos</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {treatmentsData.map((salonTreatment) => (
-                              <div key={salonTreatment.id} className="border rounded-lg p-4">
-                                <h4 className="font-medium text-admin-text">{salonTreatment.treatment.name}</h4>
-                                <p className="text-sm text-admin-text-muted mt-1">{salonTreatment.treatment.description}</p>
-                                <p className="text-lg font-bold text-green-600 mt-2">
-                                  R$ {salonTreatment.custom_price}
-                                </p>
+                    {/* Seção de Tratamentos */}
+                    <Card className="bg-admin-card border-admin-border mt-6">
+                      <CardHeader>
+                        <CardTitle className="text-admin-text">Meus Tratamentos</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {treatmentsData.length === 0 ? (
+                          <p className="text-admin-text-muted">Nenhum tratamento encontrado.</p>
+                        ) : (
+                          <div className="space-y-4">
+                            {treatmentsData.map((treatment) => (
+                              <div key={treatment.id} className="border border-admin-border rounded-lg p-4">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      {treatment.treatment?.images && treatment.treatment.images.length > 0 ? (
+                                        <img 
+                                          src={treatment.treatment.images[0]} 
+                                          alt={treatment.treatment.name}
+                                          className="w-16 h-12 rounded border object-cover"
+                                        />
+                                      ) : (
+                                        <div className="w-16 h-12 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                                          Sem imagem
+                                        </div>
+                                      )}
+                                      <div>
+                                        <h4 className="font-medium text-admin-text">
+                                          {treatment.treatment?.name || 'Tratamento sem nome'}
+                                        </h4>
+                                        <p className="text-admin-text-muted text-sm">
+                                          Categoria: {treatment.treatment?.category || 'Sem categoria'}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <span className="text-admin-success font-bold">
+                                            R$ {treatment.custom_price?.toFixed(2) || '0.00'}
+                                          </span>
+                                          {treatment.treatment?.base_price && (
+                                            <span className="text-xs text-admin-text-muted">
+                                              (Base: R$ {treatment.treatment.base_price.toFixed(2)})
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`px-2 py-1 text-xs rounded ${
+                                      treatment.is_active 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                    }`}>
+                                      {treatment.is_active ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => openEditTreatment(treatment)}
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                             ))}
                           </div>
-                        </CardContent>
-                      </Card>
-                    )}
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Dialog para editar tratamento */}
+                    <Dialog open={editTreatmentOpen} onOpenChange={setEditTreatmentOpen}>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Editar Tratamento</DialogTitle>
+                        </DialogHeader>
+                        {editingTreatment && (
+                          <form onSubmit={(e) => {
+                            e.preventDefault();
+                            const formData = new FormData(e.target as HTMLFormElement);
+                            handleUpdateTreatment({
+                              custom_price: formData.get('custom_price'),
+                              is_active: formData.get('is_active') === 'on'
+                            });
+                          }} className="space-y-4">
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Nome do Tratamento</label>
+                              <div className="text-sm text-gray-600 p-2 bg-gray-50 rounded">
+                                {editingTreatment.treatment?.name}
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <label htmlFor="custom_price" className="text-sm font-medium">Preço Personalizado (R$)</label>
+                              <Input
+                                id="custom_price"
+                                name="custom_price"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                defaultValue={editingTreatment.custom_price || editingTreatment.treatment?.base_price || 0}
+                                required
+                              />
+                              <div className="text-xs text-gray-500">
+                                Preço base: R$ {editingTreatment.treatment?.base_price?.toFixed(2) || '0.00'}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Switch
+                                id="is_active"
+                                name="is_active"
+                                defaultChecked={editingTreatment.is_active}
+                              />
+                              <label htmlFor="is_active" className="text-sm font-medium">
+                                Ativo (visível no menu)
+                              </label>
+                            </div>
+
+                            <div className="flex justify-end gap-2">
+                              <Button type="button" variant="outline" onClick={() => setEditTreatmentOpen(false)}>
+                                Cancelar
+                              </Button>
+                              <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                                Salvar Alterações
+                              </Button>
+                            </div>
+                          </form>
+                        )}
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
               </CardContent>
