@@ -206,48 +206,57 @@ export const AdminBanners = () => {
 
       <div className="grid gap-4">
         {banners.map((banner) => (
-          <Card key={banner.id} className="bg-admin-card border-admin-border">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0">
-                    {banner.image_url ? (
-                      <img 
-                        src={banner.image_url} 
-                        alt={banner.title}
-                        className="w-20 h-12 rounded border object-cover"
-                      />
-                    ) : (
-                      <div className="w-20 h-12 rounded border bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                        Sem imagem
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <CardTitle className="text-admin-text">{banner.title}</CardTitle>
-                    <p className="text-admin-text-muted text-sm">Posição: {banner.order_position}</p>
+          <Card key={banner.id} className="bg-admin-card border-admin-border overflow-hidden">
+            <CardHeader className="p-0">
+              <div className="flex h-32">
+                {/* Lado esquerdo - Fundo preto com título */}
+                <div className="w-1/2 bg-black flex items-center justify-center p-4">
+                  <div className="text-center">
+                    <CardTitle className="text-white text-lg mb-2">{banner.title}</CardTitle>
+                    <p className="text-gray-300 text-sm">Posição: {banner.order_position}</p>
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <Badge 
+                        className={banner.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                      >
+                        {banner.is_active ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Badge 
-                    className={banner.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
-                  >
-                    {banner.is_active ? 'Ativo' : 'Inativo'}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openEditDialog(banner)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(banner.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                
+                {/* Lado direito - Imagem */}
+                <div className="w-1/2 relative">
+                  {banner.image_url ? (
+                    <img 
+                      src={banner.image_url} 
+                      alt={banner.title}
+                      className="w-full h-32 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-32 bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                      Sem imagem
+                    </div>
+                  )}
+                  
+                  {/* Botões flutuantes sobre a imagem */}
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openEditDialog(banner)}
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDelete(banner.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardHeader>

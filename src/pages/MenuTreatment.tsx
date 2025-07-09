@@ -180,7 +180,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   }
 
   return (
-    <div className="menu-container bg-white relative">
+    <div className="menu-container bg-white relative min-h-screen">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-white border-b">
         <div className="flex items-center gap-4">
@@ -208,7 +208,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full pt-20 overflow-hidden bg-black">
+      <div className="h-full pt-20 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-6 py-8 relative">
           {/* Controles do Carrossel - Mais afastados */}
           <div className="absolute -left-16 top-1/2 transform -translate-y-1/2 z-20">
@@ -268,7 +268,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
               
               {/* Produtos Relacionados - Responsivo */}
               <div>
-                <h3 className="text-lg font-semibold mb-4 text-white">Produtos Relacionados</h3>
+                <h3 className="text-lg font-semibold mb-4 text-black">Produtos Relacionados</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                   {relatedTreatments.slice(0, 4).map((related, i) => (
                     <div key={i} className="group cursor-pointer">
@@ -282,7 +282,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
                       </div>
-                      <h4 className="text-sm font-medium text-white truncate">{related.name}</h4>
+                      <h4 className="text-sm font-medium text-black truncate">{related.name}</h4>
                       <p className="text-xs text-gray-400">R$ {related.custom_price?.toFixed(2)}</p>
                     </div>
                   ))}
@@ -296,12 +296,12 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                 <span className="text-sm text-gray-400 uppercase tracking-wide">Categoria</span>
               </div>
               
-              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-white">{treatment.name}</h1>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black">{treatment.name}</h1>
               
-              <p className="text-lg text-gray-300 mb-6 leading-relaxed">{treatment.subtitle}</p>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed">{treatment.subtitle}</p>
               
               <div className="mb-6">
-                <p className="text-gray-300 leading-relaxed text-base">
+                <p className="text-gray-700 leading-relaxed text-base">
                   {truncateDescription(treatment.description, 330)}
                 </p>
                 {treatment.description.length > 330 && (
@@ -348,7 +348,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="text-3xl font-bold text-white">
+                    <div className="text-3xl font-bold text-black">
                       {showPrice ? formatPrice(treatment.custom_price) : 'R$ ********'}
                     </div>
                     <Button

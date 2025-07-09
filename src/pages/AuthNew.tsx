@@ -125,15 +125,34 @@ const AuthNew = () => {
   };
 
   return (
-    <div className="min-h-screen bg-menu-dark flex items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center">
-            {isLogin ? 'Login' : 'Cadastro'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-black flex">
+      {/* Lado esquerdo - Imagem */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
+        <img 
+          src="/lovable-uploads/f5c1b56b-2cb9-470a-8b4c-7640e6b2ac64.png"
+          alt="Salon"
+          className="w-full h-full object-cover opacity-60"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute bottom-8 left-8 text-white">
+          <h2 className="text-3xl font-bold mb-2">Bem-vindo ao ARO</h2>
+          <p className="text-lg opacity-90">Conectando salões e clientes</p>
+        </div>
+      </div>
+      
+      {/* Lado direito - Formulário */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 bg-white">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900">
+              {isLogin ? 'Entrar na sua conta' : 'Criar nova conta'}
+            </h1>
+            <p className="text-gray-600 mt-2">
+              {isLogin ? 'Bem-vindo de volta!' : 'Junte-se à nossa plataforma'}
+            </p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="name">Nome completo</Label>
@@ -267,22 +286,26 @@ const AuthNew = () => {
               </>
             )}
             
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg text-base font-medium" 
+              disabled={loading}
+            >
               {loading ? 'Carregando...' : (isLogin ? 'Entrar' : 'Cadastrar')}
             </Button>
           </form>
           
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <Button
               variant="link"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm"
+              className="text-gray-600 hover:text-gray-900"
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

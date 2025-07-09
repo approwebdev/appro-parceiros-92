@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Search, Bell, Settings, Package, Users, Grid3x3, Image, UserCog } from 'lucide-react';
 import { AdminTreatments } from '@/components/admin/AdminTreatments';
 import { AdminPartners } from '@/components/admin/AdminPartners';
+import { AdminSalons } from '@/components/admin/AdminSalons';
 import { AdminBanners } from '@/components/admin/AdminBanners';
 import { AdminCategories } from '@/components/admin/AdminCategories';
 import { AdminUsers } from '@/components/admin/AdminUsers';
@@ -36,7 +37,7 @@ const AdminPanel = () => {
       case 'treatments':
         return <AdminTreatments />;
       case 'salons':
-        return <AdminPartners />;
+        return <AdminSalons />;
       case 'categories':
         return <AdminCategories />;
       case 'banners':
