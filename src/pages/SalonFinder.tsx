@@ -244,11 +244,27 @@ const SalonFinder = () => {
 
           {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
-            <Button variant={viewType === 'list' ? 'default' : 'outline'} onClick={() => setViewType('list')} className="flex items-center gap-2 flex-1">
+            <Button 
+              variant={viewType === 'list' ? 'default' : 'outline'} 
+              onClick={() => setViewType('list')} 
+              className={`flex items-center gap-2 flex-1 ${
+                viewType === 'list' 
+                  ? 'bg-[#242424] text-white hover:bg-[#1a1a1a] border-[#242424]' 
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
               <List className="h-4 w-4" />
               Lista
             </Button>
-            <Button variant={viewType === 'map' ? 'default' : 'outline'} onClick={() => setViewType('map')} className="flex items-center gap-2 flex-1">
+            <Button 
+              variant={viewType === 'map' ? 'default' : 'outline'} 
+              onClick={() => setViewType('map')} 
+              className={`flex items-center gap-2 flex-1 ${
+                viewType === 'map' 
+                  ? 'bg-[#242424] text-white hover:bg-[#1a1a1a] border-[#242424]' 
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
               <Map className="h-4 w-4" />
               Mapa
             </Button>
