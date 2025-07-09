@@ -80,6 +80,7 @@ export type Database = {
       salon_banners: {
         Row: {
           created_at: string
+          description: string | null
           id: string
           image_url: string
           is_active: boolean
@@ -89,6 +90,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
           image_url: string
           is_active?: boolean
@@ -98,6 +100,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string
           is_active?: boolean

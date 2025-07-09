@@ -39,21 +39,21 @@ All colors MUST be HSL.
     
     /* Cores específicas do Menu Digital */
     --menu-dark: 0 0% 8%;
-    --menu-gold: 45 100% 70%;
+    --menu-gold: 41 58% 67%;
     --menu-white: 0 0% 100%;
     --menu-gray: 0 0% 50%;
     
     /* Admin Panel Design System */
     --admin-sidebar: 0 0% 0%;
     --admin-sidebar-hover: 0 0% 6%;
-    --admin-sidebar-active: 48 36 15%;
+    --admin-sidebar-active: 41 58% 67%;
     --admin-content: 0 0% 98%;
     --admin-card: 0 0% 100%;
     --admin-text: 210 11% 15%;
     --admin-text-muted: 215 16% 47%;
     --admin-border: 214 32% 91%;
-    --admin-success: 48 36 15%;
-    --admin-success-hover: 38 29 12%;
+    --admin-success: 41 58% 67%;
+    --admin-success-hover: 41 58% 60%;
     
     /* Gradientes para categorias */
     --gradient-treatment: linear-gradient(135deg, #ff6b35 0%, #ff8e53 100%);
@@ -151,7 +151,7 @@ All colors MUST be HSL.
 
   /* Cores específicas */
   .text-gold {
-    color: #d4af37;
+    color: #DEBD75;
   }
 
   .bg-menu-dark {
@@ -159,15 +159,15 @@ All colors MUST be HSL.
   }
 
   .border-gold {
-    border-color: #d4af37;
+    border-color: #DEBD75;
   }
 
   .hover\:text-gold:hover {
-    color: #d4af37;
+    color: #DEBD75;
   }
 
   .hover\:border-gold:hover {
-    border-color: #d4af37;
+    border-color: #DEBD75;
   }
 
   /* Animações suaves */
