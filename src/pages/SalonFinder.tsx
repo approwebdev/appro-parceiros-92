@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -319,7 +319,9 @@ const SalonFinder = () => {
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
-                              <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                              {salon.plan && salon.plan !== 'basico' && (
+                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                              )}
                             </div>
                           </div>
                           
@@ -333,6 +335,18 @@ const SalonFinder = () => {
                           {salon.address && <div className="flex items-start gap-2 mb-3">
                               <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
                               <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
+                            </div>}
+                          
+                          {salon.instagram && <div className="flex items-center gap-2 mb-3">
+                              <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                              <a 
+                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-purple-600 hover:underline text-base md:text-xl"
+                              >
+                                {salon.instagram}
+                              </a>
                             </div>}
                           
                           <div className="text-base md:text-xl text-gray-500 font-medium">

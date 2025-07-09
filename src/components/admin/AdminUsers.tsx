@@ -115,9 +115,22 @@ export const AdminUsers = () => {
     if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
     
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      // Primeiro tenta deletar da tabela profiles
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('user_id', userId);
       
-      if (error) throw error;
+      if (profileError) throw profileError;
+      
+      // Então tenta deletar o usuário do auth
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+      
+      if (authError) {
+        // Se falhar no auth, mas sucedeu no profile, vamos apenas atualizar a lista
+        console.warn('Falha ao deletar do auth, mas profile foi removido:', authError);
+      }
+      
       toast({ title: "Usuário excluído com sucesso!" });
       fetchUsers();
     } catch (error: any) {

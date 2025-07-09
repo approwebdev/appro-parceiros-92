@@ -111,10 +111,39 @@ export const AdminTreatments = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let imageUrls: string[] = [];
+      
+      // Upload das imagens se houver
+      if (selectedImages.length > 0) {
+        const uploadPromises = selectedImages.map(async (file, index) => {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}-${index}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('treatment-images')
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+          
+          const { data: { publicUrl } } = supabase.storage
+            .from('treatment-images')
+            .getPublicUrl(fileName);
+            
+          return publicUrl;
+        });
+        
+        imageUrls = await Promise.all(uploadPromises);
+      }
+
+      const dataToSave = {
+        ...formData,
+        images: imageUrls.length > 0 ? imageUrls : (editingTreatment?.images || [])
+      };
+      
       if (editingTreatment) {
         const { error } = await supabase
           .from('treatments')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', editingTreatment.id);
         
         if (error) throw error;
@@ -122,7 +151,7 @@ export const AdminTreatments = () => {
       } else {
         const { error } = await supabase
           .from('treatments')
-          .insert([formData]);
+          .insert([dataToSave]);
         
         if (error) throw error;
         toast({ title: "Tratamento criado com sucesso!" });
@@ -234,7 +263,7 @@ export const AdminTreatments = () => {
               Novo Tratamento
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingTreatment ? 'Editar Tratamento' : 'Novo Tratamento'}
