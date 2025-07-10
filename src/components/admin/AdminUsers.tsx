@@ -69,8 +69,8 @@ export const AdminUsers = () => {
     
     try {
       if (editingUser) {
-        // Atualizar usuário existente - APENAS DADOS DO PERFIL
-        const { error } = await supabase
+        // Atualizar usuário existente - DADOS DO PERFIL
+        const { error: profileError } = await supabase
           .from('profiles')
           .update({
             name: formData.name,
@@ -81,7 +81,20 @@ export const AdminUsers = () => {
           })
           .eq('id', editingUser.id);
         
-        if (error) throw error;
+        if (profileError) throw profileError;
+
+        // Se for usuário do tipo salon, atualizar também o plan_type do salão
+        if (formData.role === 'salon') {
+          const { error: salonError } = await supabase
+            .from('salons')
+            .update({ plan_type: formData.plan_type })
+            .eq('user_id', editingUser.user_id);
+          
+          if (salonError) {
+            console.warn('Erro ao atualizar plano do salão:', salonError);
+          }
+        }
+        
         toast({ title: "Usuário atualizado com sucesso!" });
       } else {
         // Criar novo usuário usando signUp
@@ -146,8 +159,27 @@ export const AdminUsers = () => {
     }
   };
 
-  const openEditDialog = (user: User) => {
+  const openEditDialog = async (user: User) => {
     setEditingUser(user);
+    
+    // Buscar o plano atual do salão se o usuário for do tipo salon
+    let currentPlan = 'verificado_azul';
+    if (user.role === 'salon') {
+      try {
+        const { data: salonData } = await supabase
+          .from('salons')
+          .select('plan_type')
+          .eq('user_id', user.user_id)
+          .single();
+        
+        if (salonData?.plan_type) {
+          currentPlan = salonData.plan_type;
+        }
+      } catch (error) {
+        console.warn('Erro ao buscar plano do salão:', error);
+      }
+    }
+    
     setFormData({
       name: user.name,
       email: user.email,
@@ -155,7 +187,7 @@ export const AdminUsers = () => {
       phone: user.phone || '',
       instagram: user.instagram || '',
       password: '',
-      plan_type: 'verificado_azul'
+      plan_type: currentPlan
     });
     setIsDialogOpen(true);
   };
