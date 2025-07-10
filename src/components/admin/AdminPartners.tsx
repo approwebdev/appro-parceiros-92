@@ -163,7 +163,10 @@ export const AdminPartners = () => {
                             {partner.salon.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>
                           <Badge variant="outline" className="text-xs">
-                            {partner.salon.plan_type || 'Básico'}
+                            {partner.salon.plan_type === 'basico' ? 'Básico' :
+                             partner.salon.plan_type === 'verificado_azul' ? 'Verificado Azul' :
+                             partner.salon.plan_type === 'verificado_dourado' ? 'Verificado Dourado' :
+                             'Básico'}
                           </Badge>
                         </div>
                       </div>

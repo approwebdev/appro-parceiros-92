@@ -20,6 +20,7 @@ interface Salon {
   responsible_name: string;
   responsible_email: string;
   plan: string;
+  plan_type: string;
   slug: string;
   is_active: boolean;
 }
@@ -100,7 +101,7 @@ const SalonPanel = () => {
           photo_url: data.photo_url || '',
           responsible_name: data.responsible_name || '',
           responsible_email: data.responsible_email || '',
-          plan: data.plan || 'basico',
+          plan: data.plan_type || 'basico',
           is_active: data.is_active
         });
       }
@@ -136,7 +137,7 @@ const SalonPanel = () => {
       if (salon) {
         const { error } = await supabase
           .from('salons')
-          .update(salonForm)
+          .update({ ...salonForm, plan_type: salonForm.plan })
           .eq('id', salon.id);
         
         if (error) throw error;
@@ -145,6 +146,7 @@ const SalonPanel = () => {
           .from('salons')
           .insert([{
             ...salonForm,
+            plan_type: salonForm.plan,
             user_id: user?.id,
             slug: salonForm.name.toLowerCase().replace(/\s+/g, '-')
           }])
@@ -362,13 +364,13 @@ const SalonPanel = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="plan" className="text-admin-text">Plano</Label>
-                <select
+                 <select
                   id="plan"
                   value={salonForm.plan}
                   onChange={(e) => setSalonForm({ ...salonForm, plan: e.target.value })}
                   className="flex h-10 w-full rounded-md border border-admin-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="basico">Plano Básico</option>
+                  <option value="basico">Básico</option>
                   <option value="verificado_azul">Verificado Azul</option>
                   <option value="verificado_dourado">Verificado Dourado</option>
                 </select>
@@ -455,9 +457,9 @@ const SalonPanel = () => {
             <p><strong>Telefone:</strong> {salon?.phone || 'Não informado'}</p>
             <p><strong>Endereço:</strong> {salon?.address || 'Não informado'}</p>
             <p><strong>Plano:</strong> {
-              salon?.plan === 'basico' ? 'Plano Básico' :
-              salon?.plan === 'verificado_azul' ? 'Verificado Azul' :
-              salon?.plan === 'verificado_dourado' ? 'Verificado Dourado' :
+              salon?.plan_type === 'basico' ? 'Básico' :
+              salon?.plan_type === 'verificado_azul' ? 'Verificado Azul' :
+              salon?.plan_type === 'verificado_dourado' ? 'Verificado Dourado' :
               'Não informado'
             }</p>
             <p><strong>Status:</strong> {salon?.is_active ? 'Ativo' : 'Inativo'}</p>

@@ -24,9 +24,9 @@ interface SalonCardProps {
 export const SalonCard = ({ salon, onEdit, onDelete }: SalonCardProps) => {
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'premium':
-        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white';
-      case 'pro':
+      case 'verificado_dourado':
+        return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white';
+      case 'verificado_azul':
         return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
       case 'basico':
       default:
@@ -36,10 +36,10 @@ export const SalonCard = ({ salon, onEdit, onDelete }: SalonCardProps) => {
 
   const getPlanLabel = (plan: string) => {
     switch (plan) {
-      case 'premium':
-        return 'Premium';
-      case 'pro':
-        return 'Pro';
+      case 'verificado_dourado':
+        return 'Verificado Dourado';
+      case 'verificado_azul':
+        return 'Verificado Azul';
       case 'basico':
       default:
         return 'Básico';
