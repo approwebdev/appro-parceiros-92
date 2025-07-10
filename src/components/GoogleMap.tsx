@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 declare global {
   interface Window {
-    google: typeof google;
+    google: any;
     initGoogleMap: () => void;
   }
 }
@@ -21,8 +21,84 @@ interface GoogleMapProps {
 
 const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const updateMapMarkers = () => {
+    if (!mapInstanceRef.current || !window.google) return;
+
+    const map = mapInstanceRef.current;
+
+    // Marcador do usuário
+    if (userLocation) {
+      new window.google.maps.Marker({
+        position: { lat: userLocation.lat, lng: userLocation.lng },
+        map: map,
+        title: 'Sua localização',
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: '#4285F4',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        }
+      });
+    }
+
+    // Marcadores dos salões
+    const bounds = new window.google.maps.LatLngBounds();
+    let hasMarkers = false;
+
+    if (userLocation) {
+      bounds.extend(new window.google.maps.LatLng(userLocation.lat, userLocation.lng));
+      hasMarkers = true;
+    }
+
+    salons.forEach((salon) => {
+      if (salon.latitude && salon.longitude) {
+        const marker = new window.google.maps.Marker({
+          position: { lat: salon.latitude, lng: salon.longitude },
+          map: map,
+          title: salon.name,
+          icon: {
+            path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            scale: 6,
+            fillColor: '#d4af37',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 1,
+          }
+        });
+
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 8px; max-width: 200px;">
+              <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
+              <p style="margin: 0; color: #666; font-size: 14px;">${salon.address || ''}</p>
+            </div>
+          `
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+
+        bounds.extend(new window.google.maps.LatLng(salon.latitude, salon.longitude));
+        hasMarkers = true;
+      }
+    });
+
+    if (hasMarkers) {
+      map.fitBounds(bounds);
+      window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+        if (map.getZoom()! > 15) {
+          map.setZoom(15);
+        }
+      });
+    }
+  };
 
   useEffect(() => {
     const loadGoogleMaps = async () => {
@@ -30,9 +106,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         console.log('Google Maps: Iniciando carregamento...');
         
         // Verificar se já está carregado
-        if (window.google && window.google.maps) {
+        if (window.google && window.google.maps && mapRef.current && !mapInstanceRef.current) {
           console.log('Google Maps: Já carregado, criando mapa...');
           createMap();
+          return;
+        }
+
+        // Se já tem instância do mapa, não recarregar
+        if (mapInstanceRef.current) {
+          console.log('Google Maps: Mapa já existe, atualizando...');
+          updateMapMarkers();
           return;
         }
 
@@ -48,28 +131,32 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
         console.log('Google Maps: Chave obtida, carregando script...');
 
-        // Limpar callback anterior se existir
-        if (window.initGoogleMap) {
-          delete window.initGoogleMap;
+        // Verificar se script já existe
+        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        if (existingScript && window.google && window.google.maps) {
+          console.log('Google Maps: Script já carregado, criando mapa...');
+          createMap();
+          return;
         }
 
-        // Callback global para quando o script carregar
-        window.initGoogleMap = () => {
+        // Callback global único
+        const callbackName = `initGoogleMap_${Date.now()}`;
+        (window as any)[callbackName] = () => {
           console.log('Google Maps: Callback executado');
-          setTimeout(() => {
+          delete (window as any)[callbackName];
+          if (mapRef.current) {
             createMap();
-          }, 100); // Pequeno delay para garantir que tudo carregou
+          }
         };
 
         // Remover script anterior se existir
-        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
         if (existingScript) {
           existingScript.remove();
         }
 
         // Carregar script
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=initGoogleMap&libraries=places&loading=async`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=${callbackName}&libraries=places&loading=async`;
         script.async = true;
         script.defer = true;
         
@@ -77,6 +164,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           console.error('Google Maps: Erro ao carregar script');
           setHasError(true);
           setIsLoaded(true);
+          delete (window as any)[callbackName];
         };
 
         document.head.appendChild(script);
@@ -91,7 +179,17 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     const createMap = () => {
       try {
         if (!mapRef.current) {
-          console.log('Google Maps: Ref do mapa não encontrado');
+          console.log('Google Maps: Ref do mapa não encontrado, aguardando...');
+          setTimeout(() => {
+            if (mapRef.current) {
+              createMap();
+            }
+          }, 100);
+          return;
+        }
+
+        if (!window.google || !window.google.maps) {
+          console.log('Google Maps: API não carregada ainda');
           return;
         }
 
@@ -109,74 +207,9 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           streetViewControl: false,
         });
 
-        // Marcador do usuário
-        if (userLocation) {
-          new window.google.maps.Marker({
-            position: { lat: userLocation.lat, lng: userLocation.lng },
-            map: map,
-            title: 'Sua localização',
-            icon: {
-              path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: '#4285F4',
-              fillOpacity: 1,
-              strokeColor: '#ffffff',
-              strokeWeight: 2,
-            }
-          });
-        }
+        mapInstanceRef.current = map;
 
-        // Marcadores dos salões
-        const bounds = new window.google.maps.LatLngBounds();
-        let hasMarkers = false;
-
-        if (userLocation) {
-          bounds.extend(new window.google.maps.LatLng(userLocation.lat, userLocation.lng));
-          hasMarkers = true;
-        }
-
-        salons.forEach((salon) => {
-          if (salon.latitude && salon.longitude) {
-            const marker = new window.google.maps.Marker({
-              position: { lat: salon.latitude, lng: salon.longitude },
-              map: map,
-              title: salon.name,
-              icon: {
-                path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 6,
-                fillColor: '#d4af37',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 1,
-              }
-            });
-
-            const infoWindow = new window.google.maps.InfoWindow({
-              content: `
-                <div style="padding: 8px; max-width: 200px;">
-                  <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
-                  <p style="margin: 0; color: #666; font-size: 14px;">${salon.address || ''}</p>
-                </div>
-              `
-            });
-
-            marker.addListener('click', () => {
-              infoWindow.open(map, marker);
-            });
-
-            bounds.extend(new window.google.maps.LatLng(salon.latitude, salon.longitude));
-            hasMarkers = true;
-          }
-        });
-
-        if (hasMarkers) {
-          map.fitBounds(bounds);
-          window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-            if (map.getZoom()! > 15) {
-              map.setZoom(15);
-            }
-          });
-        }
+        updateMapMarkers();
 
         console.log('Google Maps: Mapa criado com sucesso');
         setIsLoaded(true);
@@ -188,14 +221,20 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
       }
     };
 
+
     loadGoogleMaps();
 
     return () => {
-      // Cleanup
-      if (window.initGoogleMap) {
-        delete window.initGoogleMap;
-      }
+      // Cleanup apenas quando componente desmonta
+      mapInstanceRef.current = null;
     };
+  }, []);
+
+  // Atualizar marcadores quando dados mudarem
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      updateMapMarkers();
+    }
   }, [salons, userLocation]);
 
   if (!isLoaded && !hasError) {
