@@ -48,15 +48,28 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
         console.log('Google Maps: Chave obtida, carregando script...');
 
+        // Limpar callback anterior se existir
+        if (window.initGoogleMap) {
+          delete window.initGoogleMap;
+        }
+
         // Callback global para quando o script carregar
         window.initGoogleMap = () => {
           console.log('Google Maps: Callback executado');
-          createMap();
+          setTimeout(() => {
+            createMap();
+          }, 100); // Pequeno delay para garantir que tudo carregou
         };
+
+        // Remover script anterior se existir
+        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        if (existingScript) {
+          existingScript.remove();
+        }
 
         // Carregar script
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=initGoogleMap&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=initGoogleMap&libraries=places&loading=async`;
         script.async = true;
         script.defer = true;
         
