@@ -485,7 +485,7 @@ const SalonFinder = () => {
                           <img 
                             src={banners[0].image_url} 
                             alt={banners[0].title} 
-                            className="w-full h-full object-cover object-center" 
+                            className="w-full h-full object-contain bg-gray-100" 
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
@@ -508,7 +508,7 @@ const SalonFinder = () => {
                           <img 
                             src={banners[1].image_url} 
                             alt={banners[1].title} 
-                            className="w-full h-full object-cover object-center" 
+                            className="w-full h-full object-contain bg-gray-100" 
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
