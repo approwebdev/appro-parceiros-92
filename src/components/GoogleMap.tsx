@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 
+declare global {
+  interface Window {
+    google: typeof google;
+    initGoogleMap: () => void;
+  }
+}
+
 interface GoogleMapProps {
   salons: Array<{
     id: string;
@@ -16,86 +23,72 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const initMap = async () => {
+    const loadGoogleMaps = async () => {
       try {
-        if (!mapRef.current) return;
-
-        console.log('Iniciando carregamento do Google Maps...');
+        console.log('Google Maps: Iniciando carregamento...');
+        
+        // Verificar se já está carregado
+        if (window.google && window.google.maps) {
+          console.log('Google Maps: Já carregado, criando mapa...');
+          createMap();
+          return;
+        }
 
         // Buscar chave da API
         const { data: keyData, error: keyError } = await supabase.functions.invoke('get-google-maps-key');
         
         if (keyError || !keyData?.key) {
-          console.error('Erro ao obter chave:', keyError);
-          if (isMounted) {
-            setHasError(true);
-            setIsLoaded(true);
-          }
+          console.error('Google Maps: Erro ao obter chave:', keyError);
+          setHasError(true);
+          setIsLoaded(true);
           return;
         }
 
-        console.log('Chave obtida, carregando script...');
+        console.log('Google Maps: Chave obtida, carregando script...');
 
-        // Verificar se o Google Maps já foi carregado
-        if (typeof google !== 'undefined' && google.maps) {
-          console.log('Google Maps já está carregado');
+        // Callback global para quando o script carregar
+        window.initGoogleMap = () => {
+          console.log('Google Maps: Callback executado');
           createMap();
-          return;
-        }
+        };
 
-        // Carregar script do Google Maps
+        // Carregar script
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=initGoogleMap&libraries=places`;
         script.async = true;
         script.defer = true;
         
-        script.onload = () => {
-          console.log('Script do Google Maps carregado');
-          if (isMounted) {
-            createMap();
-          }
-        };
-
         script.onerror = () => {
-          console.error('Erro ao carregar script do Google Maps');
-          if (isMounted) {
-            setHasError(true);
-            setIsLoaded(true);
-          }
+          console.error('Google Maps: Erro ao carregar script');
+          setHasError(true);
+          setIsLoaded(true);
         };
 
         document.head.appendChild(script);
 
-        // Cleanup function
-        return () => {
-          isMounted = false;
-        };
-
       } catch (error) {
-        console.error('Erro na inicialização:', error);
-        if (isMounted) {
-          setHasError(true);
-          setIsLoaded(true);
-        }
+        console.error('Google Maps: Erro geral:', error);
+        setHasError(true);
+        setIsLoaded(true);
       }
     };
 
     const createMap = () => {
       try {
-        if (!mapRef.current || !isMounted) return;
+        if (!mapRef.current) {
+          console.log('Google Maps: Ref do mapa não encontrado');
+          return;
+        }
 
-        console.log('Criando mapa...');
+        console.log('Google Maps: Criando mapa...');
 
         const center = userLocation 
           ? { lat: userLocation.lat, lng: userLocation.lng }
-          : { lat: -23.5505, lng: -46.6333 }; // São Paulo
+          : { lat: -23.5505, lng: -46.6333 };
 
-        const map = new google.maps.Map(mapRef.current, {
+        const map = new window.google.maps.Map(mapRef.current, {
           center: center,
           zoom: 12,
           mapTypeControl: false,
@@ -103,16 +96,14 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           streetViewControl: false,
         });
 
-        setMapInstance(map);
-
-        // Adicionar marcador do usuário
+        // Marcador do usuário
         if (userLocation) {
-          new google.maps.Marker({
+          new window.google.maps.Marker({
             position: { lat: userLocation.lat, lng: userLocation.lng },
             map: map,
             title: 'Sua localização',
             icon: {
-              path: google.maps.SymbolPath.CIRCLE,
+              path: window.google.maps.SymbolPath.CIRCLE,
               scale: 8,
               fillColor: '#4285F4',
               fillOpacity: 1,
@@ -122,23 +113,23 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           });
         }
 
-        // Adicionar marcadores dos salões
-        const bounds = new google.maps.LatLngBounds();
+        // Marcadores dos salões
+        const bounds = new window.google.maps.LatLngBounds();
         let hasMarkers = false;
 
         if (userLocation) {
-          bounds.extend(new google.maps.LatLng(userLocation.lat, userLocation.lng));
+          bounds.extend(new window.google.maps.LatLng(userLocation.lat, userLocation.lng));
           hasMarkers = true;
         }
 
         salons.forEach((salon) => {
           if (salon.latitude && salon.longitude) {
-            const marker = new google.maps.Marker({
+            const marker = new window.google.maps.Marker({
               position: { lat: salon.latitude, lng: salon.longitude },
               map: map,
               title: salon.name,
               icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                 scale: 6,
                 fillColor: '#d4af37',
                 fillOpacity: 1,
@@ -147,7 +138,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
               }
             });
 
-            const infoWindow = new google.maps.InfoWindow({
+            const infoWindow = new window.google.maps.InfoWindow({
               content: `
                 <div style="padding: 8px; max-width: 200px;">
                   <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
@@ -160,41 +151,41 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
               infoWindow.open(map, marker);
             });
 
-            bounds.extend(new google.maps.LatLng(salon.latitude, salon.longitude));
+            bounds.extend(new window.google.maps.LatLng(salon.latitude, salon.longitude));
             hasMarkers = true;
           }
         });
 
-        // Ajustar zoom para mostrar todos os marcadores
         if (hasMarkers) {
           map.fitBounds(bounds);
-          
-          // Limitar zoom máximo
-          google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+          window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
             if (map.getZoom()! > 15) {
               map.setZoom(15);
             }
           });
         }
 
-        console.log('Mapa criado com sucesso');
+        console.log('Google Maps: Mapa criado com sucesso');
         setIsLoaded(true);
 
       } catch (error) {
-        console.error('Erro ao criar mapa:', error);
+        console.error('Google Maps: Erro ao criar mapa:', error);
         setHasError(true);
         setIsLoaded(true);
       }
     };
 
-    initMap();
+    loadGoogleMaps();
 
     return () => {
-      isMounted = false;
+      // Cleanup
+      if (window.initGoogleMap) {
+        delete window.initGoogleMap;
+      }
     };
   }, [salons, userLocation]);
 
-  if (!isLoaded) {
+  if (!isLoaded && !hasError) {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
@@ -205,7 +196,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     );
   }
 
-  if (hasError || !mapInstance) {
+  if (hasError) {
     return (
       <div className="w-full h-64 rounded-lg overflow-hidden shadow-lg border">
         <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex flex-col items-center justify-center p-4">

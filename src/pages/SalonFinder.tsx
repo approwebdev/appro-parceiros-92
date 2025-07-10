@@ -144,51 +144,73 @@ const SalonFinder = () => {
 
   const fetchSalons = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('salons').select('*').eq('is_active', true).order('name');
+      const { data, error } = await supabase.from('salons').select('*').eq('is_active', true).order('name');
       if (error) {
         console.error('Erro ao buscar salões:', error);
         return;
       }
 
-      console.log('Salões do banco:', data);
+      console.log('Salões do banco de dados:', data);
 
-      // Geocodificar endereços dos salões que não têm coordenadas
+      // Processar salões e geocodificar endereços quando necessário
       const salonsWithCoords = await Promise.all((data || []).map(async (salon) => {
-        // Se já tem coordenadas, usar elas
-        if (salon.latitude && salon.longitude) {
-          console.log(`Salon ${salon.name} já tem coordenadas:`, { lat: salon.latitude, lng: salon.longitude });
+        console.log(`Processando salon: ${salon.name}`);
+        console.log(`Coordenadas do banco: lat=${salon.latitude}, lng=${salon.longitude}`);
+        console.log(`Endereço do banco: ${salon.address}`);
+
+        // Se já tem coordenadas válidas no banco, usar elas
+        if (salon.latitude && salon.longitude && 
+            typeof salon.latitude === 'number' && typeof salon.longitude === 'number' &&
+            salon.latitude !== 0 && salon.longitude !== 0) {
+          console.log(`✓ Usando coordenadas do banco para ${salon.name}`);
           return salon;
         }
 
-        // Se tem endereço, geocodificar
-        if (salon.address) {
-          console.log(`Geocodificando endereço do salon ${salon.name}: ${salon.address}`);
-          const coords = await geocodeAddress(salon.address);
-          if (coords) {
-            console.log(`Coordenadas obtidas para ${salon.name}:`, coords);
-            return {
-              ...salon,
-              latitude: coords.lat,
-              longitude: coords.lng
-            };
+        // Se tem endereço, tentar geocodificar
+        if (salon.address && salon.address.trim()) {
+          console.log(`🔍 Geocodificando endereço: "${salon.address}"`);
+          try {
+            const { data: keyData } = await supabase.functions.invoke('get-google-maps-key');
+            if (keyData?.key) {
+              const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(salon.address + ', Brasil')}&key=${keyData.key}`;
+              const response = await fetch(geocodeUrl);
+              const geocodeData = await response.json();
+              
+              console.log(`Resposta do geocoding para ${salon.name}:`, geocodeData.status);
+              
+              if (geocodeData.status === 'OK' && geocodeData.results.length > 0) {
+                const location = geocodeData.results[0].geometry.location;
+                const geocodedCoords = {
+                  latitude: location.lat,
+                  longitude: location.lng
+                };
+                console.log(`✓ Coordenadas geocodificadas para ${salon.name}:`, geocodedCoords);
+                return {
+                  ...salon,
+                  ...geocodedCoords
+                };
+              } else {
+                console.log(`❌ Geocoding falhou para ${salon.name}: ${geocodeData.status}`);
+              }
+            }
+          } catch (geocodeError) {
+            console.error(`Erro no geocoding para ${salon.name}:`, geocodeError);
           }
         }
 
-        // Fallback para São Paulo com variação
+        // Fallback: coordenadas aleatórias em São Paulo
         const fallbackCoords = {
-          latitude: -23.5505 + (Math.random() - 0.5) * 0.2,
-          longitude: -46.6333 + (Math.random() - 0.5) * 0.2
+          latitude: -23.5505 + (Math.random() - 0.5) * 0.1, // Menor variação
+          longitude: -46.6333 + (Math.random() - 0.5) * 0.1
         };
-        console.log(`Usando coordenadas fallback para ${salon.name}:`, fallbackCoords);
+        console.log(`⚠️  Usando coordenadas fallback para ${salon.name}:`, fallbackCoords);
         return {
           ...salon,
           ...fallbackCoords
         };
       }));
 
+      console.log('Salões processados:', salonsWithCoords.length);
       setSalons(salonsWithCoords);
     } catch (error) {
       console.error('Erro ao buscar salões:', error);
