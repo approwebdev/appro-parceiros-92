@@ -79,16 +79,6 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
 
         {/* Ícones superiores */}
         <div className="flex items-center gap-4">
-          {salon.phone && (
-            <a 
-              href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-gold transition-colors"
-            >
-              <Phone className="h-6 w-6" />
-            </a>
-          )}
           {salon.instagram && (
             <a 
               href={`https://instagram.com/${salon.instagram.replace('@', '')}`}
@@ -97,6 +87,16 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
               className="text-white hover:text-gold transition-colors"
             >
               <Instagram className="h-6 w-6" />
+            </a>
+          )}
+          {salon.phone && (
+            <a 
+              href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-gold transition-colors"
+            >
+              <Phone className="h-6 w-6" />
             </a>
           )}
           <div className="text-white">

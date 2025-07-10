@@ -359,7 +359,26 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 <h3 className="text-lg font-semibold mb-4 text-black">Produtos Relacionados</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                   {relatedTreatments.slice(0, 4).map((related, i) => (
-                    <div key={i} className="group cursor-pointer">
+                    <div 
+                      key={i} 
+                      className="group cursor-pointer"
+                      onClick={() => {
+                        // Navegar para o tratamento relacionado
+                        const relatedIndex = allTreatments.findIndex(t => t.id === related.id);
+                        if (relatedIndex !== -1) {
+                          setCurrentTreatmentIndex(relatedIndex);
+                          setTreatment(allTreatments[relatedIndex]);
+                          setShowPrice(false);
+                          setCurrentImageIndex(0);
+                          
+                          // Atualizar tratamentos relacionados
+                          const newRelated = allTreatments
+                            .filter(t => t.id !== related.id)
+                            .slice(0, 3);
+                          setRelatedTreatments(newRelated);
+                        }
+                      }}
+                    >
                       <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
                         <img 
                           src={related.images && related.images.length > 0 
@@ -451,7 +470,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   
                   {/* Botão Saiba Mais */}
                   <Button 
-                    className="text-white px-8 py-3 rounded-full text-base font-medium"
+                    className="text-white px-8 py-3 rounded-full text-base font-medium hover:opacity-90 transition-opacity"
                     style={{ backgroundColor: buttonColor }}
                   >
                     Saiba mais...

@@ -38,11 +38,11 @@ const AuthNew = () => {
   } = useToast();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated and approved
   if (user && profile) {
     if (profile.role === 'admin') {
       return <Navigate to="/admin" replace />;
-    } else {
+    } else if (profile.role === 'salon') {
       return <Navigate to="/salon-panel" replace />;
     }
   }
