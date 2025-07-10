@@ -70,7 +70,7 @@ const MenuDigital = ({
         {/* Ícones superiores */}
         <div className="flex items-center gap-4">
           {salon.phone && <a href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-              
+              <Phone className="h-6 w-6" />
             </a>}
           <div className="text-white">
             <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
