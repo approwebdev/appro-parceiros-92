@@ -40,6 +40,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         
         if (keyError || !keyData?.key) {
           console.error('Erro ao obter chave do Google Maps:', keyError);
+          clearTimeout(loadingTimeout);
           setHasError(true);
           setIsLoaded(true);
           return;
@@ -76,6 +77,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           ]
         });
 
+        console.log('Google Maps: Mapa inicializado com sucesso');
         clearTimeout(loadingTimeout);
         setIsLoaded(true);
 

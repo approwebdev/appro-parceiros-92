@@ -124,12 +124,11 @@ const SalonFinder = () => {
         return;
       }
 
-      // Adicionar coordenadas simuladas para demonstração
-      const salonsWithCoords = (data || []).map((salon, index) => ({
+      // Usar coordenadas reais dos salões ou São Paulo como fallback se não existirem
+      const salonsWithCoords = (data || []).map((salon) => ({
         ...salon,
-        latitude: -23.5505 + (Math.random() - 0.5) * 0.2,
-        // São Paulo +/- variação
-        longitude: -46.6333 + (Math.random() - 0.5) * 0.2
+        latitude: salon.latitude || (-23.5505 + (Math.random() - 0.5) * 0.2),
+        longitude: salon.longitude || (-46.6333 + (Math.random() - 0.5) * 0.2)
       }));
       setSalons(salonsWithCoords);
     } catch (error) {
