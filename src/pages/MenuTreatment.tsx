@@ -254,24 +254,25 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   }
 
   return (
-    <div className="menu-container bg-white relative min-h-screen">
+    <div className="menu-container bg-white relative min-h-screen overflow-y-auto">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6 bg-white border-b">
-        <div className="flex items-center gap-4">
-          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-8" />
+      <div className="sticky top-0 left-0 right-0 z-30 flex justify-between items-center p-4 md:p-6 bg-white border-b shadow-sm">
+        <div className="flex items-center gap-2 md:gap-4">
+          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-6 md:h-8" />
           <Button 
             onClick={onBack}
             variant="ghost"
-            className="text-black hover:text-gray-600"
+            size="sm"
+            className="text-black hover:text-gray-600 p-1 md:p-2"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
+            <ArrowLeft className="h-4 w-4 mr-1 md:mr-2" />
+            <span className="hidden sm:inline">Voltar</span>
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           <button 
-            className="text-black hover:text-gray-600 transition-colors"
+            className="text-black hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100"
             onClick={() => {
               if (treatment.salon_phone) {
                 const cleanPhone = treatment.salon_phone.replace(/\D/g, '');
@@ -279,21 +280,21 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               }
             }}
           >
-            <Phone className="h-6 w-6" />
+            <Phone className="h-5 w-5 md:h-6 md:w-6" />
           </button>
           <div className="text-black">
-            <div className="h-6 w-6 rounded-full bg-black/20 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-black"></div>
+            <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-black/20 flex items-center justify-center">
+              <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-black"></div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full pt-20 overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-8 relative">
-          {/* Controles do Carrossel - Mais afastados */}
-          <div className="absolute -left-16 top-1/2 transform -translate-y-1/2 z-20">
+      <div className="bg-white pb-20 md:pb-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8 relative">
+          {/* Controles do Carrossel - Mobile responsivo */}
+          <div className="hidden lg:block absolute -left-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
               onClick={prevTreatment}
               variant="outline"
@@ -304,7 +305,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
             </Button>
           </div>
           
-          <div className="absolute -right-16 top-1/2 transform -translate-y-1/2 z-20">
+          <div className="hidden lg:block absolute -right-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
               onClick={nextTreatment}
               variant="outline"
@@ -315,12 +316,34 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+          {/* Controles Mobile */}
+          <div className="flex lg:hidden justify-center gap-4 mb-6">
+            <Button
+              onClick={prevTreatment}
+              variant="outline"
+              size="sm"
+              className="rounded-full bg-white border-gray-300 hover:bg-gray-50"
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Anterior
+            </Button>
+            <Button
+              onClick={nextTreatment}
+              variant="outline"
+              size="sm"
+              className="rounded-full bg-white border-gray-300 hover:bg-gray-50"
+            >
+              Próximo
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             
             {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-4 md:space-y-6">
               {/* Imagem Principal */}
-              <div className="h-96 bg-gray-100 rounded-2xl overflow-hidden">
+              <div className="h-64 md:h-80 lg:h-96 bg-gray-100 rounded-xl md:rounded-2xl overflow-hidden">
                 <img 
                   src={treatment.images && treatment.images.length > 0 
                     ? treatment.images[currentImageIndex] 
@@ -331,8 +354,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 />
               </div>
               
-              {/* Galeria de Miniaturas - Máximo 3 imagens */}
-              <div className="grid grid-cols-3 gap-3">
+              {/* Galeria de Miniaturas */}
+              <div className="grid grid-cols-3 gap-2 md:gap-3">
                 {(treatment.images && treatment.images.length > 0 ? treatment.images : [
                   "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
                   "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
@@ -340,7 +363,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 ]).slice(0, 3).map((img, i) => (
                   <div 
                     key={i} 
-                    className={`aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-pointer ${
+                    className={`aspect-square bg-gray-100 rounded-lg md:rounded-xl overflow-hidden cursor-pointer transition-all ${
                       i === currentImageIndex ? 'ring-2 ring-blue-500' : ''
                     }`}
                     onClick={() => setCurrentImageIndex(i)}
@@ -354,16 +377,15 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 ))}
               </div>
               
-              {/* Produtos Relacionados - Responsivo */}
-              <div>
+              {/* Produtos Relacionados */}
+              <div className="hidden lg:block">
                 <h3 className="text-lg font-semibold mb-4 text-black">Produtos Relacionados</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {relatedTreatments.slice(0, 4).map((related, i) => (
                     <div 
                       key={i} 
                       className="group cursor-pointer"
                       onClick={() => {
-                        // Navegar para o tratamento relacionado
                         const relatedIndex = allTreatments.findIndex(t => t.id === related.id);
                         if (relatedIndex !== -1) {
                           setCurrentTreatmentIndex(relatedIndex);
@@ -371,7 +393,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           setShowPrice(false);
                           setCurrentImageIndex(0);
                           
-                          // Atualizar tratamentos relacionados
                           const newRelated = allTreatments
                             .filter(t => t.id !== related.id)
                             .slice(0, 3);
@@ -522,6 +543,47 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               </div>
             </div>
 
+          </div>
+          
+          {/* Produtos Relacionados - Mobile */}
+          <div className="lg:hidden mt-8 px-4">
+            <h3 className="text-lg font-semibold mb-4 text-black">Produtos Relacionados</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-x-auto">
+              {relatedTreatments.slice(0, 6).map((related, i) => (
+                <div 
+                  key={i} 
+                  className="group cursor-pointer flex-shrink-0"
+                  onClick={() => {
+                    const relatedIndex = allTreatments.findIndex(t => t.id === related.id);
+                    if (relatedIndex !== -1) {
+                      setCurrentTreatmentIndex(relatedIndex);
+                      setTreatment(allTreatments[relatedIndex]);
+                      setShowPrice(false);
+                      setCurrentImageIndex(0);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      
+                      const newRelated = allTreatments
+                        .filter(t => t.id !== related.id)
+                        .slice(0, 3);
+                      setRelatedTreatments(newRelated);
+                    }
+                  }}
+                >
+                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                    <img 
+                      src={related.images && related.images.length > 0 
+                        ? related.images[0] 
+                        : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+                      }
+                      alt={related.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <h4 className="text-sm font-medium text-black truncate">{related.name}</h4>
+                  <p className="text-xs text-gray-400">R$ {related.custom_price?.toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -59,71 +59,81 @@ const MenuDigital = ({
         </div>
       </div>;
   }
-  return <div className="menu-container bg-black relative">
+  return <div className="menu-container bg-black relative min-h-screen">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-6">
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-4 md:p-6">
         {/* Logo Appro */}
         <div className="flex items-center">
-          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-6 md:h-8" />
         </div>
 
         {/* Ícones superiores */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           {salon.phone && <a href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-              
+              <Phone className="h-5 w-5 md:h-6 md:w-6" />
             </a>}
           <div className="text-white">
-            <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-white"></div>
+            <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-white/20 flex items-center justify-center">
+              <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-white"></div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full flex">
+      <div className="h-screen flex flex-col md:flex-row">
         {/* Lado Esquerdo - Texto */}
-        <div className="flex-1 flex flex-col justify-center pl-16">
-          <div className="mb-8">
-            <h1 className="flex items-center gap-4 mb-4">
-              <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-12" />
-              <span className="text-8xl font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-                Menu
-              </span>
-              <span className="text-7xl font-bold text-white">Digital</span>
+        <div className="flex-1 flex flex-col justify-center px-4 py-20 md:pl-16 md:py-0 order-2 md:order-1">
+          <div className="mb-8 text-center md:text-left">
+            <h1 className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4 mb-6 md:mb-4">
+              <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8 md:h-12" />
+              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2">
+                <span className="text-4xl md:text-8xl font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
+                  Menu
+                </span>
+                <span className="text-3xl md:text-7xl font-bold text-white">Digital</span>
+              </div>
             </h1>
             
+            {/* Nome do Salão */}
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+              {salon.name}
+            </h2>
+            
             {/* Informações do Salão */}
-            <div className="space-y-2 mb-8">
-              {salon.address}
-              {salon.phone && <div className="flex items-center gap-2 text-white/80">
+            <div className="space-y-2 mb-6 md:mb-8">
+              {salon.address && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
+                  <MapPin className="h-4 w-4" />
+                  <span className="text-sm md:text-base">{salon.address}</span>
+                </div>}
+              {salon.phone && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
                   <Phone className="h-4 w-4" />
-                  <span className="text-sm">{salon.phone}</span>
+                  <span className="text-sm md:text-base">{salon.phone}</span>
                 </div>}
             </div>
 
             {/* Botão Entrar */}
-            <Button onClick={onEnter} className="bg-white text-black hover:bg-gray-100 px-8 py-6 text-lg font-semibold rounded-full">
+            <Button onClick={onEnter} className="bg-white text-black hover:bg-gray-100 px-6 py-4 md:px-8 md:py-6 text-base md:text-lg font-semibold rounded-full w-full md:w-auto">
               Entrar
             </Button>
           </div>
         </div>
 
         {/* Lado Direito - Modelo */}
-        <div className="flex-1 relative">
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/20"></div>
-          <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Profissional de beleza" className="w-full h-full object-cover object-center" />
+        <div className="flex-1 relative h-64 md:h-full order-1 md:order-2">
+          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black/20 via-transparent to-black/60 md:to-black/20"></div>
+          <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Profissional de beleza" className="w-full h-full object-cover object-center md:object-center" />
         </div>
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-6 right-6">
+      <div className="absolute bottom-4 md:bottom-6 right-4 md:right-6 z-10">
         {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-            <Instagram className="h-6 w-6" />
+            <Instagram className="h-5 w-5 md:h-6 md:w-6" />
           </a>}
       </div>
     </div>;

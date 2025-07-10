@@ -56,15 +56,16 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
   }
 
   return (
-    <div className="menu-container bg-black relative overflow-hidden">
+    <div className="menu-container bg-black relative overflow-hidden min-h-screen">
       {/* Conteúdo Principal */}
-      <div className="h-full">
+      <div className="h-full min-h-screen">
         {/* Carrossel de Categorias */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 h-full gap-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 h-full min-h-screen gap-0 md:gap-0">
           {categories.map((category, index) => (
             <div
               key={category.id}
-              className={`relative overflow-hidden cursor-pointer group bg-gradient-to-br from-blue-600 to-purple-700 h-full 
+              className={`relative overflow-hidden cursor-pointer group bg-gradient-to-br from-blue-600 to-purple-700 
+                         h-64 sm:h-80 lg:h-full min-h-[300px] lg:min-h-screen
                          animate-fade-in transition-all duration-700 ease-out transform hover:scale-[1.02] hover:-translate-y-1
                          hover:shadow-2xl hover:z-10`}
               style={{ 
@@ -88,10 +89,11 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
               />
               
               {/* Nome da categoria em cima */}
-              <div className="absolute top-8 left-8 right-8 transform transition-all duration-500 
+              <div className="absolute top-4 md:top-8 left-4 md:left-8 right-4 md:right-8 
+                            transform transition-all duration-500 
                             group-hover:-translate-y-2 group-hover:scale-105">
-                <h3 className="text-white text-2xl md:text-3xl font-bold text-center 
-                             bg-black/40 backdrop-blur-md rounded-xl py-3 px-4 
+                <h3 className="text-white text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center 
+                             bg-black/40 backdrop-blur-md rounded-xl py-2 md:py-3 px-3 md:px-4 
                              transition-all duration-500 group-hover:bg-black/60 
                              group-hover:backdrop-blur-lg group-hover:shadow-xl
                              border border-white/10 group-hover:border-white/20">
@@ -111,14 +113,14 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-6 left-6 z-20">
+      <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 z-20">
         <Button 
           onClick={onBack}
-          className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 p-3 rounded-full 
+          className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 p-2 md:p-3 rounded-full 
                    border border-white/20 transition-all duration-300 hover:scale-110 
                    hover:shadow-xl hover:border-white/40"
         >
-          <Home className="h-6 w-6 transition-transform duration-300 hover:scale-110" />
+          <Home className="h-5 w-5 md:h-6 md:w-6 transition-transform duration-300 hover:scale-110" />
         </Button>
       </div>
     </div>
