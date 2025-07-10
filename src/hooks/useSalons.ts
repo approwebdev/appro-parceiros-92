@@ -72,7 +72,24 @@ export const useSalons = () => {
   const saveSalon = async (formData: SalonFormData, editingSalon?: Salon | null) => {
     try {
       const slug = formData.slug || generateSlug(formData.name);
-      const dataToSave = { ...formData, slug };
+      
+      // Remover campos que não existem na tabela e processar endereço completo
+      const { address_number, address_complement, ...salonData } = formData;
+      
+      // Combinar endereço com número se fornecido
+      let fullAddress = salonData.address;
+      if (address_number) {
+        fullAddress = `${salonData.address}, ${address_number}`;
+      }
+      if (address_complement) {
+        fullAddress = `${fullAddress}, ${address_complement}`;
+      }
+      
+      const dataToSave = { 
+        ...salonData, 
+        slug,
+        address: fullAddress
+      };
 
       if (editingSalon) {
         const { error } = await supabase
