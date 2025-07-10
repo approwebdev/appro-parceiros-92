@@ -107,7 +107,6 @@ const AuthNew = () => {
           email,
           password,
           phone,
-          instagram,
           wants_salon: wantsSalon,
           salon_name: wantsSalon ? salonName : undefined,
           postal_code: wantsSalon ? postalCode : undefined,
@@ -127,7 +126,7 @@ const AuthNew = () => {
         } else {
           toast({
             title: "Cadastro realizado com sucesso!",
-            description: "Verifique seu email para confirmar a conta."
+            description: "Seu acesso está em análise pela nossa equipe."
           });
         }
       }
@@ -182,14 +181,10 @@ const AuthNew = () => {
             
             {!isLogin && <>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Telefone</Label>
-                  <Input id="phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} required />
+                  <Label htmlFor="phone">WhatsApp</Label>
+                  <Input id="phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} required placeholder="(00) 00000-0000" />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="instagram">Instagram (opcional)</Label>
-                  <Input id="instagram" type="text" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@seuusuario" />
-                </div>
                 
                 <div className="flex items-center space-x-2 p-4 border rounded-lg">
                   <Switch id="wants-salon" checked={wantsSalon} onCheckedChange={setWantsSalon} />

@@ -542,20 +542,27 @@ const SalonFinder = () => {
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
             <div className="space-y-4">
-              {banners.map(banner => (
+              {banners.slice(0, 2).map(banner => (
                 <Card key={banner.id} className="overflow-hidden">
-                  <CardContent className="p-0 relative h-48">
-                    <img 
-                      src={banner.image_url} 
-                      alt={banner.title} 
-                      className="w-full h-full object-cover" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                      <div className="p-4 text-white">
-                        <h4 className="font-bold text-lg">{banner.title}</h4>
-                        {banner.description && (
-                          <p className="text-sm opacity-90">{banner.description}</p>
-                        )}
+                  <CardContent className="p-0">
+                    <div className="flex h-32">
+                      {/* Lado esquerdo - Fundo preto com título */}
+                      <div className="w-1/2 bg-black flex items-center justify-center p-4">
+                        <div className="text-center">
+                          <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
+                          {banner.description && (
+                            <p className="text-gray-300 text-sm">{banner.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Lado direito - Imagem */}
+                      <div className="w-1/2">
+                        <img 
+                          src={banner.image_url} 
+                          alt={banner.title}
+                          className="w-full h-32 object-cover"
+                        />
                       </div>
                     </div>
                   </CardContent>

@@ -65,7 +65,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             <div
               key={category.id}
               className={`relative overflow-hidden cursor-pointer transition-transform hover:scale-105 bg-gradient-to-br from-blue-600 to-purple-700 h-full`}
-              onClick={() => onCategorySelect(category.name, category.id)}
+              onClick={() => onCategorySelect(category.name, category.name)}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40"></div>
               <img 

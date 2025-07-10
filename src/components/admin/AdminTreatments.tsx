@@ -161,9 +161,10 @@ export const AdminTreatments = () => {
       setIsDialogOpen(false);
       resetForm();
     } catch (error) {
+      console.error('Erro ao salvar tratamento:', error);
       toast({
         title: "Erro",
-        description: "Erro ao salvar tratamento",
+        description: `Erro ao salvar tratamento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         variant: "destructive",
       });
     }

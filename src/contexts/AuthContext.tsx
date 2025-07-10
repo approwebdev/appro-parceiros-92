@@ -23,7 +23,7 @@ interface SignUpData {
   email: string;
   password: string;
   phone: string;
-  instagram: string;
+  instagram?: string;
   wants_salon: boolean;
   salon_name?: string;
   postal_code?: string;
@@ -147,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: data.name,
           role: 'salon',
           phone: data.phone,
-          instagram: data.instagram,
+          instagram: data.instagram || '',
           wants_salon: data.wants_salon,
           salon_name: data.salon_name,
           postal_code: data.postal_code,
