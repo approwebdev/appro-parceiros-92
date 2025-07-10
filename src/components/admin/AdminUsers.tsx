@@ -84,16 +84,18 @@ export const AdminUsers = () => {
         if (error) throw error;
         toast({ title: "Usuário atualizado com sucesso!" });
       } else {
-        // Criar novo usuário
-        const { error } = await supabase.auth.admin.createUser({
+        // Criar novo usuário usando signUp
+        const { error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
-          user_metadata: {
-            name: formData.name,
-            role: formData.role,
-            phone: formData.phone,
-            instagram: formData.instagram,
-            plan_type: formData.role === 'salon' ? formData.plan_type : undefined
+          options: {
+            data: {
+              name: formData.name,
+              role: formData.role,
+              phone: formData.phone,
+              instagram: formData.instagram,
+              plan_type: formData.role === 'salon' ? formData.plan_type : undefined
+            }
           }
         });
         
