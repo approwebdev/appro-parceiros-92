@@ -36,8 +36,7 @@ export const AdminUsers = () => {
     role: 'salon' as 'admin' | 'salon' | 'collaborator',
     phone: '',
     instagram: '',
-    password: '',
-    plan_type: 'verificado_azul'
+    password: ''
   });
 
   const fetchUsers = async () => {
@@ -70,7 +69,7 @@ export const AdminUsers = () => {
     try {
       if (editingUser) {
         // Atualizar usuário existente - DADOS DO PERFIL
-        const { error: profileError } = await supabase
+        const { error } = await supabase
           .from('profiles')
           .update({
             name: formData.name,
@@ -81,33 +80,7 @@ export const AdminUsers = () => {
           })
           .eq('id', editingUser.id);
         
-        if (profileError) throw profileError;
-
-        // Se for usuário do tipo salon, atualizar também o plan_type do salão
-        if (formData.role === 'salon') {
-          console.log('Tentando atualizar plano:', {
-            userId: editingUser.user_id,
-            newPlanType: formData.plan_type,
-            userRole: formData.role
-          });
-          
-          const { data: salonData, error: salonError } = await supabase
-            .from('salons')
-            .update({ plan_type: formData.plan_type })
-            .eq('user_id', editingUser.user_id)
-            .select();
-          
-          console.log('Resultado da atualização do salão:', { 
-            salonData, 
-            salonError,
-            affectedRows: salonData?.length || 0 
-          });
-          
-          if (salonError) {
-            console.error('Erro ao atualizar plano do salão:', salonError);
-          }
-        }
-        
+        if (error) throw error;
         toast({ title: "Usuário atualizado com sucesso!" });
       } else {
         // Criar novo usuário usando signUp
@@ -119,8 +92,7 @@ export const AdminUsers = () => {
               name: formData.name,
               role: formData.role,
               phone: formData.phone,
-              instagram: formData.instagram,
-              plan_type: formData.role === 'salon' ? formData.plan_type : undefined
+              instagram: formData.instagram
             }
           }
         });
@@ -172,39 +144,15 @@ export const AdminUsers = () => {
     }
   };
 
-  const openEditDialog = async (user: User) => {
+  const openEditDialog = (user: User) => {
     setEditingUser(user);
-    
-    // Buscar o plano atual do salão se o usuário for do tipo salon
-    let currentPlan = 'verificado_azul';
-    if (user.role === 'salon') {
-      try {
-        console.log('Buscando plano para usuário:', user.user_id);
-        const { data: salonData, error } = await supabase
-          .from('salons')
-          .select('plan_type')
-          .eq('user_id', user.user_id)
-          .single();
-        
-        console.log('Dados do salão encontrados:', salonData);
-        
-        if (salonData?.plan_type) {
-          currentPlan = salonData.plan_type;
-          console.log('Plano atual encontrado:', currentPlan);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar plano do salão:', error);
-      }
-    }
-    
     setFormData({
       name: user.name,
       email: user.email,
       role: user.role,
       phone: user.phone || '',
       instagram: user.instagram || '',
-      password: '',
-      plan_type: currentPlan
+      password: ''
     });
     setIsDialogOpen(true);
   };
@@ -217,8 +165,7 @@ export const AdminUsers = () => {
       role: 'salon',
       phone: '',
       instagram: '',
-      password: '',
-      plan_type: 'verificado_azul'
+      password: ''
     });
   };
 
@@ -321,25 +268,6 @@ export const AdminUsers = () => {
                     placeholder="@usuario"
                   />
                 </div>
-                
-                {formData.role === 'salon' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="plan_type">Plano</Label>
-                    <Select
-                      value={formData.plan_type}
-                      onValueChange={(value) => setFormData({ ...formData, plan_type: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="basico">Básico</SelectItem>
-                        <SelectItem value="verificado_azul">Verificado Azul</SelectItem>
-                        <SelectItem value="verificado_dourado">Verificado Dourado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
                 
                 {!editingUser && (
                   <div className="space-y-2">
