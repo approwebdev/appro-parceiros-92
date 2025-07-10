@@ -141,9 +141,9 @@ const AuthNew = () => {
       setLoading(false);
     }
   };
-  return <div className="min-h-screen bg-black flex">
+  return <div className="h-screen bg-black flex">
       {/* Lado esquerdo - Imagem */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden fixed left-0 top-0 h-full">
         <img src="/lovable-uploads/c3cd9e4a-b3d4-4156-a87a-797c0fcb0e19.png" alt="Salon Professionals" className="w-full h-full object-cover opacity-90" />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-8 left-8 text-white">
@@ -153,7 +153,7 @@ const AuthNew = () => {
       </div>
       
       {/* Lado direito - Formulário */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 bg-white">
+      <div className="w-full lg:w-1/2 lg:ml-[50%] flex items-center justify-center px-4 bg-white overflow-y-auto min-h-screen">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-4" />
