@@ -89,6 +89,16 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
               <Phone className="h-6 w-6" />
             </a>
           )}
+          {salon.instagram && (
+            <a 
+              href={`https://instagram.com/${salon.instagram.replace('@', '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-gold transition-colors"
+            >
+              <Instagram className="h-6 w-6" />
+            </a>
+          )}
           <div className="text-white">
             <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
               <div className="h-3 w-3 rounded-full bg-white"></div>
@@ -147,19 +157,6 @@ const MenuDigital = ({ onEnter }: MenuDigitalProps) => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="absolute bottom-6 right-6">
-        {salon.instagram && (
-          <a 
-            href={`https://instagram.com/${salon.instagram.replace('@', '')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white hover:text-gold transition-colors"
-          >
-            <Instagram className="h-6 w-6" />
-          </a>
-        )}
-      </div>
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import MenuDigital from "./MenuDigital";
 import MenuCategories from "./MenuCategories";
-import MenuTreatmentList from "./MenuTreatmentList";
 import MenuTreatment from "./MenuTreatment";
 
 type PageType = 'home' | 'categories' | 'treatmentList' | 'treatment';
@@ -21,11 +20,7 @@ const MenuApp = () => {
 
   const handleCategorySelect = (category: string, categoryName: string) => {
     setSelectedCategory(categoryName);
-    setCurrentPage('treatmentList');
-  };
-
-  const handleTreatmentListBack = () => {
-    setCurrentPage('categories');
+    setCurrentPage('treatment');
   };
 
   const handleTreatmentSelect = (treatmentId: string) => {
@@ -34,7 +29,7 @@ const MenuApp = () => {
   };
 
   const handleTreatmentBack = () => {
-    setCurrentPage('treatmentList');
+    setCurrentPage('categories');
   };
 
   return (
@@ -47,16 +42,8 @@ const MenuApp = () => {
         <MenuCategories onBack={handleBack} onCategorySelect={handleCategorySelect} />
       </div>
       
-      <div className={`menu-page ${currentPage === 'treatmentList' ? 'active' : currentPage === 'categories' ? 'next' : 'prev'}`}>
-        <MenuTreatmentList 
-          onBack={handleTreatmentListBack} 
-          onTreatmentSelect={handleTreatmentSelect}
-          selectedCategory={selectedCategory}
-        />
-      </div>
-      
       <div className={`menu-page ${currentPage === 'treatment' ? 'active' : 'next'}`}>
-        <MenuTreatment onBack={handleTreatmentBack} treatmentId={selectedTreatment} />
+        <MenuTreatment onBack={handleTreatmentBack} treatmentId={selectedTreatment} selectedCategory={selectedCategory} />
       </div>
     </div>
   );

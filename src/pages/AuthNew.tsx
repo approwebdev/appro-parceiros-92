@@ -38,16 +38,6 @@ const AuthNew = () => {
   } = useToast();
   const navigate = useNavigate();
 
-  // Effect to redirect user after successful signup
-  useEffect(() => {
-    if (user && !isLogin) {
-      // Small delay to ensure user data is properly set
-      setTimeout(() => {
-        navigate('/salon-panel', { replace: true });
-      }, 1000);
-    }
-  }, [user, isLogin, navigate]);
-
   // Redirect if already authenticated
   if (user && profile) {
     if (profile.role === 'admin') {

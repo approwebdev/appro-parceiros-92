@@ -21,9 +21,10 @@ interface Treatment {
 interface MenuTreatmentProps {
   onBack: () => void;
   treatmentId: string;
+  selectedCategory: string;
 }
 
-const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
+const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentProps) => {
   const { slug } = useParams<{ slug: string }>();
   const [treatment, setTreatment] = useState<Treatment | null>(null);
   const [relatedTreatments, setRelatedTreatments] = useState<Treatment[]>([]);
@@ -32,12 +33,15 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [currentTreatmentIndex, setCurrentTreatmentIndex] = useState(0);
   const [allTreatments, setAllTreatments] = useState<Treatment[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [treatmentCategory, setTreatmentCategory] = useState('');
+  const [buttonColor, setButtonColor] = useState('#D4AF37');
 
   useEffect(() => {
-    if (slug && treatmentId) {
+    if (slug && (treatmentId || selectedCategory)) {
       fetchTreatment();
     }
-  }, [slug, treatmentId]);
+  }, [slug, treatmentId, selectedCategory]);
 
   const fetchTreatment = async () => {
     try {
@@ -53,12 +57,30 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         return;
       }
 
-      // Buscar tratamento específico
-      const { data: treatmentData, error: treatmentError } = await supabase
-        .from('treatments')
-        .select('*')
-        .eq('id', treatmentId)
-        .single();
+      let treatmentData;
+      let treatmentError;
+
+      if (treatmentId) {
+        // Buscar tratamento específico por ID
+        const result = await supabase
+          .from('treatments')
+          .select('*')
+          .eq('id', treatmentId)
+          .single();
+        treatmentData = result.data;
+        treatmentError = result.error;
+      } else if (selectedCategory) {
+        // Buscar primeiro tratamento da categoria
+        const result = await supabase
+          .from('treatments')
+          .select('*')
+          .eq('category', selectedCategory)
+          .eq('is_active', true)
+          .limit(1)
+          .single();
+        treatmentData = result.data;
+        treatmentError = result.error;
+      }
 
       if (treatmentError) {
         console.error('Erro ao buscar tratamento:', treatmentError);
@@ -70,7 +92,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         .from('salon_treatments')
         .select('custom_price, is_active')
         .eq('salon_id', salonData.id)
-        .eq('treatment_id', treatmentId)
+        .eq('treatment_id', treatmentData.id)
         .single();
 
       if (salonTreatmentError) {
@@ -96,12 +118,19 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         `)
         .eq('salon_id', salonData.id)
         .eq('is_active', true)
-        .neq('treatment_id', treatmentId)
+        .neq('treatment_id', treatmentData.id)
         .limit(3);
 
       if (relatedError) {
         console.error('Erro ao buscar tratamentos relacionados:', relatedError);
       }
+
+      // Buscar dados da categoria
+      const { data: categoryData } = await supabase
+        .from('categories')
+        .select('name')
+        .eq('name', treatmentData.category)
+        .single();
 
       // Montar dados do tratamento
       const fullTreatment = {
@@ -109,6 +138,9 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         custom_price: salonTreatmentData.custom_price,
         salon_phone: salonData.phone
       };
+
+      setTreatmentCategory(categoryData?.name || treatmentData.category);
+      setButtonColor(treatmentData.button_color || '#D4AF37');
 
       const relatedTreatments = relatedData?.map(item => ({
         ...item.treatments,
@@ -145,7 +177,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
         })) || [];
         
         setAllTreatments(allFormattedTreatments);
-        const currentIndex = allFormattedTreatments.findIndex(t => t.id === treatmentId);
+        const currentIndex = allFormattedTreatments.findIndex(t => t.id === treatmentData.id);
         setCurrentTreatmentIndex(currentIndex !== -1 ? currentIndex : 0);
       }
     } catch (error) {
@@ -291,7 +323,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
               <div className="h-96 bg-gray-100 rounded-2xl overflow-hidden">
                 <img 
                   src={treatment.images && treatment.images.length > 0 
-                    ? treatment.images[0] 
+                    ? treatment.images[currentImageIndex] 
                     : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                   }
                   alt={treatment.name}
@@ -299,18 +331,24 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                 />
               </div>
               
-              {/* Galeria de Miniaturas - Responsiva */}
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-3">
+              {/* Galeria de Miniaturas - Máximo 3 imagens */}
+              <div className="grid grid-cols-3 gap-3">
                 {(treatment.images && treatment.images.length > 0 ? treatment.images : [
                   "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
                   "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
                   "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-                ]).slice(0, 6).map((img, i) => (
-                  <div key={i} className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
+                ]).slice(0, 3).map((img, i) => (
+                  <div 
+                    key={i} 
+                    className={`aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-pointer ${
+                      i === currentImageIndex ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    onClick={() => setCurrentImageIndex(i)}
+                  >
                     <img 
                       src={img}
                       alt={`${treatment.name} ${i + 1}`}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform"
                     />
                   </div>
                 ))}
@@ -343,7 +381,7 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
             {/* Centro - Informações */}
             <div className="lg:col-span-1">
               <div className="mb-3">
-                <span className="text-sm text-gray-400 uppercase tracking-wide">Categoria</span>
+                <span className="text-sm text-gray-400 uppercase tracking-wide">{treatmentCategory}</span>
               </div>
               
               <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black">{treatment.name}</h1>
@@ -412,7 +450,10 @@ const MenuTreatment = ({ onBack, treatmentId }: MenuTreatmentProps) => {
                   </div>
                   
                   {/* Botão Saiba Mais */}
-                  <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-full text-base font-medium">
+                  <Button 
+                    className="text-white px-8 py-3 rounded-full text-base font-medium"
+                    style={{ backgroundColor: buttonColor }}
+                  >
                     Saiba mais...
                   </Button>
                 </div>
