@@ -39,7 +39,7 @@ export const AdminSalons = () => {
     address_complement: '',
     instagram: '',
     photo_url: '',
-    plan_type: 'basico',
+    plan_type: 'verificado_azul', // Default para verificado azul
     is_active: true
   });
 
@@ -86,7 +86,7 @@ export const AdminSalons = () => {
       address_complement: '',
       instagram: '',
       photo_url: '',
-      plan_type: 'basico',
+      plan_type: 'verificado_azul', // Default para verificado azul ao invés de básico
       is_active: true
     });
   };

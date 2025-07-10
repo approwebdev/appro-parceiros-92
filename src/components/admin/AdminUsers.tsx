@@ -36,7 +36,8 @@ export const AdminUsers = () => {
     role: 'salon' as 'admin' | 'salon' | 'collaborator',
     phone: '',
     instagram: '',
-    password: ''
+    password: '',
+    plan_type: 'verificado_azul'
   });
 
   const fetchUsers = async () => {
@@ -73,9 +74,10 @@ export const AdminUsers = () => {
           .from('profiles')
           .update({
             name: formData.name,
+            email: formData.email,
+            role: formData.role,
             phone: formData.phone,
             instagram: formData.instagram
-            // Removido role update para evitar problemas
           })
           .eq('id', editingUser.id);
         
@@ -90,7 +92,8 @@ export const AdminUsers = () => {
             name: formData.name,
             role: formData.role,
             phone: formData.phone,
-            instagram: formData.instagram
+            instagram: formData.instagram,
+            plan_type: formData.role === 'salon' ? formData.plan_type : undefined
           }
         });
         
@@ -149,7 +152,8 @@ export const AdminUsers = () => {
       role: user.role,
       phone: user.phone || '',
       instagram: user.instagram || '',
-      password: ''
+      password: '',
+      plan_type: 'verificado_azul'
     });
     setIsDialogOpen(true);
   };
@@ -162,7 +166,8 @@ export const AdminUsers = () => {
       role: 'salon',
       phone: '',
       instagram: '',
-      password: ''
+      password: '',
+      plan_type: 'verificado_azul'
     });
   };
 
@@ -214,25 +219,35 @@ export const AdminUsers = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email (somente leitura)</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
-                    disabled
-                    className="bg-gray-100"
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required={!editingUser}
+                    disabled={!!editingUser}
+                    className={editingUser ? "bg-gray-100" : ""}
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="role">Cargo (somente leitura)</Label>
-                  <Input
-                    value={editingUser ? editingUser.role : formData.role}
-                    disabled
-                    className="bg-gray-100"
-                  />
+                  <Label htmlFor="role">Cargo</Label>
+                  <Select
+                    value={formData.role}
+                    onValueChange={(value: 'admin' | 'salon' | 'collaborator') => setFormData({ ...formData, role: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="collaborator">Colaborador</SelectItem>
+                      <SelectItem value="salon">Parceiro</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="space-y-2">
@@ -255,6 +270,25 @@ export const AdminUsers = () => {
                     placeholder="@usuario"
                   />
                 </div>
+                
+                {formData.role === 'salon' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="plan_type">Plano</Label>
+                    <Select
+                      value={formData.plan_type}
+                      onValueChange={(value) => setFormData({ ...formData, plan_type: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basico">Básico</SelectItem>
+                        <SelectItem value="verificado_azul">Verificado Azul</SelectItem>
+                        <SelectItem value="verificado_dourado">Verificado Dourado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 
                 {!editingUser && (
                   <div className="space-y-2">
