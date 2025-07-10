@@ -69,7 +69,8 @@ export const AdminAccessRequests = () => {
         .from('profiles')
         .update({
           role: 'salon',
-          has_salon: true
+          has_salon: true,
+          status: 'approved'
         })
         .eq('user_id', request.user_id);
 
@@ -119,7 +120,7 @@ export const AdminAccessRequests = () => {
     }
   };
 
-  const handleRejectRequest = async (requestId: string) => {
+  const handleRejectRequest = async (requestId: string, userId: string) => {
     try {
       const { error } = await supabase
         .from('access_requests')
@@ -131,6 +132,16 @@ export const AdminAccessRequests = () => {
         .eq('id', requestId);
 
       if (error) throw error;
+
+      // Update user profile status to rejected
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          status: 'rejected'
+        })
+        .eq('user_id', userId);
+
+      if (profileError) throw profileError;
 
       toast({
         title: "Solicitação rejeitada",
@@ -236,7 +247,7 @@ export const AdminAccessRequests = () => {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleRejectRequest(request.id)}
+                    onClick={() => handleRejectRequest(request.id, request.user_id)}
                   >
                     <X className="h-4 w-4 mr-1" />
                     Rejeitar

@@ -16,6 +16,7 @@ interface Profile {
   address_number?: string;
   address_complement?: string;
   postal_code?: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 interface SignUpData {
