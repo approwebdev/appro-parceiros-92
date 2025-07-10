@@ -481,11 +481,11 @@ const SalonFinder = () => {
                   {showMidBanner && (
                     <div className="my-6">
                       <Card className="overflow-hidden">
-                        <CardContent className="p-0 relative h-64 md:h-80 lg:h-96">
+                        <CardContent className="p-0 relative">
                           <img 
                             src={banners[0].image_url} 
                             alt={banners[0].title} 
-                            className="w-full h-full object-contain bg-gray-100" 
+                            className="w-full h-auto object-contain" 
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
@@ -504,11 +504,11 @@ const SalonFinder = () => {
                   {showEndBanner && (
                     <div className="mt-6">
                       <Card className="overflow-hidden">
-                        <CardContent className="p-0 relative h-64 md:h-80 lg:h-96">
+                        <CardContent className="p-0 relative">
                           <img 
                             src={banners[1].image_url} 
                             alt={banners[1].title} 
-                            className="w-full h-full object-contain bg-gray-100" 
+                            className="w-full h-auto object-contain" 
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
