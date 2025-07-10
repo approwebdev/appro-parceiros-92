@@ -22,7 +22,6 @@ interface Salon {
   plan?: string;
   photo_url?: string;
 }
-
 interface Banner {
   id: string;
   title: string;
@@ -31,7 +30,6 @@ interface Banner {
   is_active: boolean;
   order_position: number;
 }
-
 const SalonFinder = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -46,8 +44,9 @@ const SalonFinder = () => {
   const [gettingLocation, setGettingLocation] = useState(false);
   const [isLocationFilterOpen, setIsLocationFilterOpen] = useState(false);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     fetchSalons();
     fetchBanners();
@@ -92,8 +91,14 @@ const SalonFinder = () => {
         if (salon.latitude && salon.longitude) {
           const distance = calculateDistance(location.lat, location.lng, salon.latitude, salon.longitude);
           console.log(`Distância calculada para ${salon.name}:`, {
-            salonCoords: { lat: salon.latitude, lng: salon.longitude },
-            userCoords: { lat: location.lat, lng: location.lng },
+            salonCoords: {
+              lat: salon.latitude,
+              lng: salon.longitude
+            },
+            userCoords: {
+              lat: location.lat,
+              lng: location.lng
+            },
             distance: distance.toFixed(2) + 'km'
           });
           return {
@@ -101,7 +106,10 @@ const SalonFinder = () => {
             distance
           };
         }
-        console.log(`Salão ${salon.name} sem coordenadas:`, { lat: salon.latitude, lng: salon.longitude });
+        console.log(`Salão ${salon.name} sem coordenadas:`, {
+          lat: salon.latitude,
+          lng: salon.longitude
+        });
         return salon;
       }));
       toast({
@@ -122,19 +130,23 @@ const SalonFinder = () => {
   };
 
   // Função para geocodificar endereço usando Google Maps
-  const geocodeAddress = async (address: string): Promise<{lat: number, lng: number} | null> => {
+  const geocodeAddress = async (address: string): Promise<{
+    lat: number;
+    lng: number;
+  } | null> => {
     try {
-      const { data: keyData } = await supabase.functions.invoke('get-google-maps-key');
+      const {
+        data: keyData
+      } = await supabase.functions.invoke('get-google-maps-key');
       if (!keyData?.key) return null;
-
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${keyData.key}`
-      );
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${keyData.key}`);
       const data = await response.json();
-      
       if (data.status === 'OK' && data.results.length > 0) {
         const location = data.results[0].geometry.location;
-        return { lat: location.lat, lng: location.lng };
+        return {
+          lat: location.lat,
+          lng: location.lng
+        };
       }
       return null;
     } catch (error) {
@@ -142,27 +154,26 @@ const SalonFinder = () => {
       return null;
     }
   };
-
   const fetchSalons = async () => {
     try {
-      const { data, error } = await supabase.from('salons').select('*').eq('is_active', true).order('name');
+      const {
+        data,
+        error
+      } = await supabase.from('salons').select('*').eq('is_active', true).order('name');
       if (error) {
         console.error('Erro ao buscar salões:', error);
         return;
       }
-
       console.log('Salões do banco de dados:', data);
 
       // Processar salões - usar coordenadas do banco ou endereços como texto para distância
-      const salonsWithCoords = (data || []).map((salon) => {
+      const salonsWithCoords = (data || []).map(salon => {
         console.log(`Processando salon: ${salon.name}`);
         console.log(`Coordenadas do banco: lat=${salon.latitude}, lng=${salon.longitude}`);
         console.log(`Endereço do banco: ${salon.address}`);
 
         // Se já tem coordenadas válidas no banco, usar elas
-        if (salon.latitude && salon.longitude && 
-            typeof salon.latitude === 'number' && typeof salon.longitude === 'number' &&
-            salon.latitude !== 0 && salon.longitude !== 0) {
+        if (salon.latitude && salon.longitude && typeof salon.latitude === 'number' && typeof salon.longitude === 'number' && salon.latitude !== 0 && salon.longitude !== 0) {
           console.log(`✓ Usando coordenadas do banco para ${salon.name}`);
           return salon;
         }
@@ -171,36 +182,35 @@ const SalonFinder = () => {
         // Vamos usar uma hash simples do endereço para coordenadas consistentes
         let lat = -23.5505; // São Paulo base
         let lng = -46.6333;
-        
         if (salon.address) {
           // Usar hash do endereço para coordenadas consistentes
           let hash = 0;
           for (let i = 0; i < salon.address.length; i++) {
             const char = salon.address.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
+            hash = (hash << 5) - hash + char;
             hash = hash & hash; // Convert to 32-bit integer
           }
-          
+
           // Converter hash em variação pequena de coordenadas
           const variation = 0.05; // ~5km de variação
-          lat += ((hash % 1000) / 1000 - 0.5) * variation;
-          lng += (((hash >> 10) % 1000) / 1000 - 0.5) * variation;
+          lat += (hash % 1000 / 1000 - 0.5) * variation;
+          lng += ((hash >> 10) % 1000 / 1000 - 0.5) * variation;
         } else {
           // Coordenadas aleatórias para salões sem endereço
           lat += (Math.random() - 0.5) * 0.1;
           lng += (Math.random() - 0.5) * 0.1;
         }
-
-        const coords = { latitude: lat, longitude: lng };
+        const coords = {
+          latitude: lat,
+          longitude: lng
+        };
         console.log(`✓ Coordenadas geradas para ${salon.name}:`, coords);
-        
         return {
           ...salon,
           latitude: coords.latitude,
           longitude: coords.longitude
         };
       });
-
       console.log('Salões processados:', salonsWithCoords.length);
       setSalons(salonsWithCoords);
     } catch (error) {
@@ -209,20 +219,16 @@ const SalonFinder = () => {
       setLoading(false);
     }
   };
-
   const fetchBanners = async () => {
     try {
-      const { data, error } = await supabase
-        .from('salon_banners')
-        .select('*')
-        .eq('is_active', true)
-        .order('order_position');
-
+      const {
+        data,
+        error
+      } = await supabase.from('salon_banners').select('*').eq('is_active', true).order('order_position');
       if (error) {
         console.error('Erro ao buscar banners:', error);
         return;
       }
-
       setBanners(data || []);
     } catch (error) {
       console.error('Erro ao buscar banners:', error);
@@ -254,8 +260,7 @@ const SalonFinder = () => {
       }}></div>
       </div>;
   }
-  return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
+  return <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Dialog de Localização */}
       <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
         <DialogContent className="max-w-md mx-auto" aria-describedby="location-dialog-description">
@@ -269,19 +274,11 @@ const SalonFinder = () => {
               Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
             </p>
             <div className="flex gap-3">
-              <Button 
-                onClick={getUserLocation} 
-                disabled={gettingLocation}
-                className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
-              >
+              <Button onClick={getUserLocation} disabled={gettingLocation} className="flex-1 bg-blue-600 text-white hover:bg-blue-700">
                 <Navigation className="h-4 w-4 mr-2" />
                 {gettingLocation ? 'Obtendo...' : 'Usar localização'}
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowLocationDialog(false)}
-                className="flex-1"
-              >
+              <Button variant="outline" onClick={() => setShowLocationDialog(false)} className="flex-1">
                 Agora não
               </Button>
             </div>
@@ -330,61 +327,28 @@ const SalonFinder = () => {
           </Button>
 
           {/* Distance Filters - Compact version */}
-          {userLocation && (
-            <div className="mb-4">
+          {userLocation && <div className="mb-4">
               <p className="text-sm text-gray-600 mb-2">Distância:</p>
               <div className="flex gap-2">
-                <Button 
-                  variant={distanceFilter === '50' ? 'default' : 'outline'} 
-                  onClick={() => setDistanceFilter('50')} 
-                  size="sm" 
-                  className={`flex-1 ${distanceFilter === '50' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
-                >
+                <Button variant={distanceFilter === '50' ? 'default' : 'outline'} onClick={() => setDistanceFilter('50')} size="sm" className={`flex-1 ${distanceFilter === '50' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
                   50km
                 </Button>
-                <Button 
-                  variant={distanceFilter === '100' ? 'default' : 'outline'} 
-                  onClick={() => setDistanceFilter('100')} 
-                  size="sm" 
-                  className={`flex-1 ${distanceFilter === '100' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
-                >
+                <Button variant={distanceFilter === '100' ? 'default' : 'outline'} onClick={() => setDistanceFilter('100')} size="sm" className={`flex-1 ${distanceFilter === '100' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
                   100km
                 </Button>
-                <Button 
-                  variant={distanceFilter === 'all' ? 'default' : 'outline'} 
-                  onClick={() => setDistanceFilter('all')} 
-                  size="sm" 
-                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
-                >
+                <Button variant={distanceFilter === 'all' ? 'default' : 'outline'} onClick={() => setDistanceFilter('all')} size="sm" className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
                   Todos
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
-            <Button 
-              variant={viewType === 'list' ? 'default' : 'outline'} 
-              onClick={() => setViewType('list')} 
-              className={`flex items-center gap-2 flex-1 ${
-                viewType === 'list' 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' 
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
-            >
+            <Button variant={viewType === 'list' ? 'default' : 'outline'} onClick={() => setViewType('list')} className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
               <List className="h-4 w-4" />
               Lista
             </Button>
-            <Button 
-              variant={viewType === 'map' ? 'default' : 'outline'} 
-              onClick={() => setViewType('map')} 
-              className={`flex items-center gap-2 flex-1 ${
-                viewType === 'map' 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' 
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
-            >
+            <Button variant={viewType === 'map' ? 'default' : 'outline'} onClick={() => setViewType('map')} className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
               <Map className="h-4 w-4" />
               Mapa
             </Button>
@@ -411,27 +375,17 @@ const SalonFinder = () => {
             </div>
             
             {filteredSalons.map((salon, index) => {
-              const midPoint = Math.floor(filteredSalons.length / 2);
-              const showMidBanner = index === midPoint && banners.length > 0;
-              const isLastSalon = index === filteredSalons.length - 1;
-              const showEndBanner = isLastSalon && banners.length > 1;
-              
-              return (
-                <div key={salon.id}>
+          const midPoint = Math.floor(filteredSalons.length / 2);
+          const showMidBanner = index === midPoint && banners.length > 0;
+          const isLastSalon = index === filteredSalons.length - 1;
+          const showEndBanner = isLastSalon && banners.length > 1;
+          return <div key={salon.id}>
                   <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
                     <CardContent className="p-6 md:p-8">
                       <div className="flex items-start gap-4 md:gap-6">
                         {/* Avatar */}
                         <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
-                          {salon.photo_url ? (
-                            <img 
-                              src={salon.photo_url} 
-                              alt={salon.name}
-                              className="w-full h-full object-cover rounded-full"
-                            />
-                          ) : (
-                            salon.name.charAt(0)
-                          )}
+                          {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
                         </div>
                         
                         {/* Content */}
@@ -439,9 +393,7 @@ const SalonFinder = () => {
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
-                              {salon.plan && salon.plan !== 'basico' && (
-                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
-                              )}
+                              {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />}
                             </div>
                           </div>
                           
@@ -459,12 +411,7 @@ const SalonFinder = () => {
                           
                           {salon.instagram && <div className="flex items-center gap-2 mb-3">
                               <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
-                              <a 
-                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-purple-600 hover:underline text-base md:text-xl"
-                              >
+                              <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline text-base md:text-xl">
                                 {salon.instagram}
                               </a>
                             </div>}
@@ -478,53 +425,36 @@ const SalonFinder = () => {
                   </Card>
                   
                   {/* Banner no meio dos salões */}
-                  {showMidBanner && (
-                    <div className="my-6">
+                  {showMidBanner && <div className="my-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative">
-                          <img 
-                            src={banners[0].image_url} 
-                            alt={banners[0].title} 
-                            className="w-full h-auto object-contain" 
-                          />
+                          <img src={banners[0].image_url} alt={banners[0].title} className="w-full h-auto object-contain" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
                               <h4 className="font-bold text-lg md:text-2xl">{banners[0].title}</h4>
-                              {banners[0].description && (
-                                <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>
-                              )}
+                              {banners[0].description && <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                    </div>
-                  )}
+                    </div>}
                   
                   {/* Banner no final */}
-                  {showEndBanner && (
-                    <div className="mt-6">
+                  {showEndBanner && <div className="mt-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative">
-                          <img 
-                            src={banners[1].image_url} 
-                            alt={banners[1].title} 
-                            className="w-full h-auto object-contain" 
-                          />
+                          <img src={banners[1].image_url} alt={banners[1].title} className="w-full h-auto object-contain" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
                               <h4 className="font-bold text-lg md:text-2xl">{banners[1].title}</h4>
-                              {banners[1].description && (
-                                <p className="text-sm md:text-base opacity-90">{banners[1].description}</p>
-                              )}
+                              {banners[1].description && <p className="text-sm md:text-base opacity-90">{banners[1].description}</p>}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    </div>}
+                </div>;
+        })}
 
             {filteredSalons.length === 0 && <Card className="bg-white text-black border border-gray-200">
                 <CardContent className="p-8 text-center">
@@ -538,39 +468,29 @@ const SalonFinder = () => {
           </div>}
 
         {/* Banners */}
-        {banners.length > 0 && (
-          <div className="mb-8">
+        {banners.length > 0 && <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
             <div className="space-y-4">
-              {banners.slice(0, 2).map(banner => (
-                <Card key={banner.id} className="overflow-hidden">
+              {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden">
                   <CardContent className="p-0">
                     <div className="flex h-32">
                       {/* Lado esquerdo - Fundo preto com título */}
                       <div className="w-1/2 bg-black flex items-center justify-center p-4">
                         <div className="text-center">
                           <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
-                          {banner.description && (
-                            <p className="text-gray-300 text-sm">{banner.description}</p>
-                          )}
+                          {banner.description && <p className="text-gray-300 text-sm">{banner.description}</p>}
                         </div>
                       </div>
                       
                       {/* Lado direito - Imagem */}
                       <div className="w-1/2">
-                        <img 
-                          src={banner.image_url} 
-                          alt={banner.title}
-                          className="w-full h-32 object-cover"
-                        />
+                        <img src={banner.image_url} alt={banner.title} className="w-full h-32 object-cover" />
                       </div>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Informativo Section */}
         <div className="mb-8">
@@ -586,11 +506,7 @@ const SalonFinder = () => {
                   <p className="text-sm">Clique para reproduzir o vídeo</p>
                 </div>
               </div>
-              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded">
-                <span className="text-2xl font-bold">02</span>
-                <br />
-                <span className="text-xs">2024</span>
-              </div>
+              
             </CardContent>
           </Card>
           
@@ -625,8 +541,6 @@ const SalonFinder = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default SalonFinder;
