@@ -85,10 +85,14 @@ export const useSalons = () => {
         fullAddress = `${fullAddress}, ${address_complement}`;
       }
       
+      // Obter o ID do usuário atual
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const dataToSave = { 
         ...salonData, 
         slug,
-        address: fullAddress
+        address: fullAddress,
+        user_id: user?.id || null // Adicionar user_id para evitar violação de RLS
       };
 
       if (editingSalon) {
