@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Loader } from '@googlemaps/js-api-loader';
 import { supabase } from "@/integrations/supabase/client";
-
-/// <reference types="google.maps" />
 
 interface GoogleMapProps {
   salons: Array<{
@@ -17,170 +14,183 @@ interface GoogleMapProps {
 
 const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<google.maps.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    let isMounted = true;
 
-    // Timeout para evitar carregamento infinito
-    const loadingTimeout = setTimeout(() => {
-      console.warn('Google Maps: Timeout de carregamento, mostrando fallback');
-      setHasError(true);
-      setIsLoaded(true);
-    }, 8000);
-
-    const initializeMap = async () => {
+    const initMap = async () => {
       try {
-        console.log('Google Maps: Obtendo chave da API...');
-        
-        // Buscar a chave do Google Maps da função edge
+        if (!mapRef.current) return;
+
+        console.log('Iniciando carregamento do Google Maps...');
+
+        // Buscar chave da API
         const { data: keyData, error: keyError } = await supabase.functions.invoke('get-google-maps-key');
         
-        console.log('Google Maps: Resposta da função edge:', { keyData, keyError });
-        
         if (keyError || !keyData?.key) {
-          console.error('Erro ao obter chave do Google Maps:', keyError);
-          console.log('Google Maps: Definindo erro e carregado como true devido ao erro da chave');
-          clearTimeout(loadingTimeout);
-          setHasError(true);
-          setIsLoaded(true);
+          console.error('Erro ao obter chave:', keyError);
+          if (isMounted) {
+            setHasError(true);
+            setIsLoaded(true);
+          }
           return;
         }
 
-        console.log('Google Maps: Inicializando loader com chave:', keyData.key.substring(0, 20) + '...');
-        
-        const loader = new Loader({
-          apiKey: keyData.key,
-          version: 'weekly',
-          libraries: ['places']
-        });
+        console.log('Chave obtida, carregando script...');
 
-        console.log('Google Maps: Carregando API...');
-        await loader.load();
+        // Verificar se o Google Maps já foi carregado
+        if (typeof google !== 'undefined' && google.maps) {
+          console.log('Google Maps já está carregado');
+          createMap();
+          return;
+        }
+
+        // Carregar script do Google Maps
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
+        script.async = true;
+        script.defer = true;
         
-        console.log('Google Maps: API carregada com sucesso');
+        script.onload = () => {
+          console.log('Script do Google Maps carregado');
+          if (isMounted) {
+            createMap();
+          }
+        };
+
+        script.onerror = () => {
+          console.error('Erro ao carregar script do Google Maps');
+          if (isMounted) {
+            setHasError(true);
+            setIsLoaded(true);
+          }
+        };
+
+        document.head.appendChild(script);
+
+        // Cleanup function
+        return () => {
+          isMounted = false;
+        };
+
+      } catch (error) {
+        console.error('Erro na inicialização:', error);
+        if (isMounted) {
+          setHasError(true);
+          setIsLoaded(true);
+        }
+      }
+    };
+
+    const createMap = () => {
+      try {
+        if (!mapRef.current || !isMounted) return;
+
+        console.log('Criando mapa...');
 
         const center = userLocation 
           ? { lat: userLocation.lat, lng: userLocation.lng }
-          : { lat: -23.5505, lng: -46.6333 }; // São Paulo como padrão
+          : { lat: -23.5505, lng: -46.6333 }; // São Paulo
 
-        mapInstance.current = new google.maps.Map(mapRef.current!, {
+        const map = new google.maps.Map(mapRef.current, {
           center: center,
           zoom: 12,
           mapTypeControl: false,
           fullscreenControl: false,
           streetViewControl: false,
-          styles: [
-            {
-              featureType: 'poi',
-              elementType: 'labels',
-              stylers: [{ visibility: 'off' }]
-            }
-          ]
         });
 
-        console.log('Google Maps: Mapa inicializado com sucesso');
-        clearTimeout(loadingTimeout);
-        setIsLoaded(true);
+        setMapInstance(map);
 
         // Adicionar marcador do usuário
-        if (userLocation && mapInstance.current) {
+        if (userLocation) {
           new google.maps.Marker({
             position: { lat: userLocation.lat, lng: userLocation.lng },
-            map: mapInstance.current,
+            map: map,
             title: 'Sua localização',
             icon: {
-              url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="8" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
-                  <circle cx="12" cy="12" r="3" fill="#fff"/>
-                </svg>
-              `),
-              scaledSize: new google.maps.Size(24, 24)
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: '#4285F4',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
             }
           });
         }
 
         // Adicionar marcadores dos salões
         const bounds = new google.maps.LatLngBounds();
-        let hasValidMarkers = false;
+        let hasMarkers = false;
 
         if (userLocation) {
           bounds.extend(new google.maps.LatLng(userLocation.lat, userLocation.lng));
-          hasValidMarkers = true;
+          hasMarkers = true;
         }
 
         salons.forEach((salon) => {
-          if (salon.latitude && salon.longitude && mapInstance.current) {
+          if (salon.latitude && salon.longitude) {
             const marker = new google.maps.Marker({
               position: { lat: salon.latitude, lng: salon.longitude },
-              map: mapInstance.current,
+              map: map,
               title: salon.name,
               icon: {
-                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#d4af37" stroke="#fff" stroke-width="1"/>
-                    <circle cx="12" cy="9" r="2.5" fill="#fff"/>
-                  </svg>
-                `),
-                scaledSize: new google.maps.Size(32, 32)
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                scale: 6,
+                fillColor: '#d4af37',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 1,
               }
             });
 
             const infoWindow = new google.maps.InfoWindow({
               content: `
                 <div style="padding: 8px; max-width: 200px;">
-                  <h3 style="margin: 0 0 4px 0; font-weight: 600; font-size: 16px;">${salon.name}</h3>
+                  <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
                   <p style="margin: 0; color: #666; font-size: 14px;">${salon.address || ''}</p>
                 </div>
               `
             });
 
             marker.addListener('click', () => {
-              infoWindow.open(mapInstance.current, marker);
+              infoWindow.open(map, marker);
             });
 
             bounds.extend(new google.maps.LatLng(salon.latitude, salon.longitude));
-            hasValidMarkers = true;
+            hasMarkers = true;
           }
         });
 
-        // Ajustar visualização para mostrar todos os marcadores
-        if (hasValidMarkers && mapInstance.current) {
-          mapInstance.current.fitBounds(bounds, {
-            top: 50,
-            right: 50,
-            bottom: 50,
-            left: 50
-          });
+        // Ajustar zoom para mostrar todos os marcadores
+        if (hasMarkers) {
+          map.fitBounds(bounds);
           
-          // Limitar o zoom máximo
-          const listener = google.maps.event.addListener(mapInstance.current, 'bounds_changed', () => {
-            if (mapInstance.current!.getZoom()! > 15) {
-              mapInstance.current!.setZoom(15);
+          // Limitar zoom máximo
+          google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+            if (map.getZoom()! > 15) {
+              map.setZoom(15);
             }
-            google.maps.event.removeListener(listener);
           });
         }
 
+        console.log('Mapa criado com sucesso');
+        setIsLoaded(true);
+
       } catch (error) {
-        console.error('Google Maps: Erro ao inicializar mapa:', error);
-        clearTimeout(loadingTimeout);
+        console.error('Erro ao criar mapa:', error);
         setHasError(true);
         setIsLoaded(true);
       }
     };
 
-    initializeMap();
+    initMap();
 
-    // Cleanup
     return () => {
-      clearTimeout(loadingTimeout);
-      if (mapInstance.current) {
-        mapInstance.current = null;
-      }
+      isMounted = false;
     };
   }, [salons, userLocation]);
 
@@ -195,15 +205,14 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     );
   }
 
-  // Fallback visual se o mapa não carregar ou houver erro
-  if (!mapInstance.current || hasError) {
+  if (hasError || !mapInstance) {
     return (
       <div className="w-full h-64 rounded-lg overflow-hidden shadow-lg border">
         <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex flex-col items-center justify-center p-4">
           <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 text-center max-w-sm">
             <h3 className="text-lg font-semibold mb-3 text-gray-800">📍 Localização dos Salões</h3>
             <p className="text-sm text-gray-600 mb-4">
-              {hasError ? 'Erro ao carregar mapa interativo' : 'Mapa interativo indisponível'}
+              Mapa interativo indisponível
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {salons.slice(0, 6).map(salon => (
