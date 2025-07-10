@@ -8,6 +8,9 @@ interface Salon {
   slug: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
+  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;
@@ -20,9 +23,11 @@ interface SalonFormData {
   slug: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
+  postal_code: string;
   address_number: string;
   address_complement: string;
-  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;

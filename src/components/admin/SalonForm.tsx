@@ -13,6 +13,9 @@ interface Salon {
   slug: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
+  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;
@@ -25,9 +28,11 @@ interface SalonFormData {
   slug: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
+  postal_code: string;
   address_number: string;
   address_complement: string;
-  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;
@@ -63,7 +68,9 @@ export const SalonForm = ({
           const addressData = response.data;
           setFormData({ 
             ...formData, 
-            address: `${addressData.logradouro}, ${addressData.bairro}, ${addressData.localidade} - ${addressData.uf}`
+            address: `${addressData.logradouro}, ${addressData.bairro}`,
+            city: addressData.localidade,
+            state: addressData.uf
           });
           toast({
             title: "CEP encontrado!",
@@ -160,6 +167,29 @@ export const SalonForm = ({
           onChange={(e) => setFormData({ ...formData, address_complement: e.target.value })}
           placeholder="Apartamento, sala, andar..."
         />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="city">Cidade</Label>
+          <Input
+            id="city"
+            value={formData.city}
+            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            placeholder="São Paulo"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="state">Estado</Label>
+          <Input
+            id="state"
+            value={formData.state}
+            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+            placeholder="SP"
+            maxLength={2}
+          />
+        </div>
       </div>
       
       <div className="grid grid-cols-2 gap-4">

@@ -12,6 +12,9 @@ interface Salon {
   slug: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
+  postal_code: string;
   instagram: string;
   photo_url: string;
   plan_type: string;
@@ -29,9 +32,11 @@ export const AdminSalons = () => {
     slug: '',
     phone: '',
     address: '',
+    city: '',
+    state: '',
+    postal_code: '',
     address_number: '',
     address_complement: '',
-    postal_code: '',
     instagram: '',
     photo_url: '',
     plan_type: 'basico',
@@ -54,9 +59,11 @@ export const AdminSalons = () => {
       slug: salon.slug,
       phone: salon.phone || '',
       address: salon.address || '',
+      city: salon.city || '',
+      state: salon.state || '',
+      postal_code: salon.postal_code || '',
       address_number: '',
       address_complement: '',
-      postal_code: '',
       instagram: salon.instagram || '',
       photo_url: salon.photo_url || '',
       plan_type: salon.plan_type || 'basico',
@@ -72,9 +79,11 @@ export const AdminSalons = () => {
       slug: '',
       phone: '',
       address: '',
+      city: '',
+      state: '',
+      postal_code: '',
       address_number: '',
       address_complement: '',
-      postal_code: '',
       instagram: '',
       photo_url: '',
       plan_type: 'basico',
