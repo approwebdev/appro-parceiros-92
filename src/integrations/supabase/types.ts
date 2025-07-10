@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_requests: {
+        Row: {
+          address: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          plan_type: string | null
+          salon_name: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          plan_type?: string | null
+          salon_name?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          plan_type?: string | null
+          salon_name?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           cover_image_url: string | null

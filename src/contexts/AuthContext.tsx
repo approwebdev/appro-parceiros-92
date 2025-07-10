@@ -138,7 +138,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUpWithDetails = async (data: SignUpData) => {    
-    const { error } = await supabase.auth.signUp({
+    // First create the user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
@@ -157,7 +158,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     });
-    return { error };
+
+    if (authError) {
+      return { error: authError };
+    }
+
+    // If user was created successfully, create an access request
+    if (authData.user) {
+      const { error: requestError } = await supabase
+        .from('access_requests')
+        .insert([
+          {
+            user_id: authData.user.id,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            salon_name: data.salon_name,
+            address: data.address,
+            status: 'pending'
+          }
+        ]);
+
+      if (requestError) {
+        console.error('Error creating access request:', requestError);
+        // Even if access request fails, user is created, so don't return error
+      }
+    }
+
+    return { error: authError };
   };
 
   const signOut = async () => {

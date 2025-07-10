@@ -1,4 +1,4 @@
-import { Package, Users, Grid3x3, Image, LogOut, UserCog } from 'lucide-react';
+import { Package, Users, Grid3x3, Image, LogOut, UserCog, ClipboardList } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -39,6 +39,10 @@ export const AdminSidebarNew = ({
   }];
 
   const adminOnlyItems = [{
+    id: 'access-requests',
+    label: 'Solicitações',
+    icon: ClipboardList
+  }, {
     id: 'users',
     label: 'Usuários',
     icon: UserCog

@@ -3,13 +3,14 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Bell, Settings, Package, Users, Grid3x3, Image, UserCog } from 'lucide-react';
+import { Plus, Search, Bell, Settings, Package, Users, Grid3x3, Image, UserCog, ClipboardList } from 'lucide-react';
 import { AdminTreatments } from '@/components/admin/AdminTreatments';
 import { AdminPartners } from '@/components/admin/AdminPartners';
 import { AdminSalons } from '@/components/admin/AdminSalons';
 import { AdminBanners } from '@/components/admin/AdminBanners';
 import { AdminCategories } from '@/components/admin/AdminCategories';
 import { AdminUsers } from '@/components/admin/AdminUsers';
+import { AdminAccessRequests } from '@/components/admin/AdminAccessRequests';
 import { AdminSidebarNew } from '@/components/admin/AdminSidebarNew';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -42,6 +43,8 @@ const AdminPanel = () => {
         return <AdminCategories />;
       case 'banners':
         return <AdminBanners />;
+      case 'access-requests':
+        return profile?.role === 'admin' ? <AdminAccessRequests /> : <AdminTreatments />;
       case 'users':
         return profile?.role === 'admin' ? <AdminUsers /> : <AdminTreatments />;
       default:
@@ -70,6 +73,7 @@ const AdminPanel = () => {
                     {activeTab === 'salons' && 'Salões Parceiros'}
                     {activeTab === 'categories' && 'Categorias'}
                     {activeTab === 'banners' && 'Banners'}
+                    {activeTab === 'access-requests' && 'Solicitações de Acesso'}
                     {activeTab === 'users' && 'Usuários'}
                   </h1>
                   <p className="text-admin-text-muted">
@@ -77,6 +81,7 @@ const AdminPanel = () => {
                     {activeTab === 'salons' && 'Visualize e gerencie todos os salões parceiros'}
                     {activeTab === 'categories' && 'Gerencie as categorias do carrossel do menu'}
                     {activeTab === 'banners' && 'Gerencie os banners promocionais'}
+                    {activeTab === 'access-requests' && 'Aprove ou rejeite solicitações de acesso'}
                     {activeTab === 'users' && 'Gerencie todos os usuários do sistema'}
                   </p>
                 </div>
@@ -102,6 +107,7 @@ const AdminPanel = () => {
                 {activeTab === 'salons' && 'Salões'}
                 {activeTab === 'categories' && 'Categorias'}
                 {activeTab === 'banners' && 'Banners'}
+                {activeTab === 'access-requests' && 'Solicitações'}
                 {activeTab === 'users' && 'Usuários'}
               </h1>
               <div className="relative">
@@ -128,7 +134,10 @@ const AdminPanel = () => {
               { id: 'salons', label: 'Salões', icon: Users },
               { id: 'categories', label: 'Categorias', icon: Grid3x3 },
               { id: 'banners', label: 'Banners', icon: Image },
-              ...(profile?.role === 'admin' ? [{ id: 'users', label: 'Usuários', icon: UserCog }] : [])
+              ...(profile?.role === 'admin' ? [
+                { id: 'access-requests', label: 'Solicitações', icon: ClipboardList },
+                { id: 'users', label: 'Usuários', icon: UserCog }
+              ] : [])
             ].map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
