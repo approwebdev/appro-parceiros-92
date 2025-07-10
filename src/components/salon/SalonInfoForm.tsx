@@ -14,6 +14,9 @@ interface SalonData {
   name: string;
   phone: string | null;
   address: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
   instagram: string | null;
   photo_url: string | null;
 }
@@ -42,6 +45,9 @@ export function SalonInfoForm({ salon, onUpdate }: SalonInfoFormProps) {
     name: salon.name || '',
     phone: salon.phone || '',
     address: salon.address || '',
+    city: salon.city || '',
+    state: salon.state || '',
+    postal_code: salon.postal_code || '',
     instagram: salon.instagram || '',
     photo_url: salon.photo_url || ''
   });
@@ -113,13 +119,44 @@ export function SalonInfoForm({ salon, onUpdate }: SalonInfoFormProps) {
           </div>
           
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="address">Endereço</Label>
-            <Textarea
+            <Label htmlFor="address">Endereço (Rua/Avenida)</Label>
+            <Input
               id="address"
               value={formData.address}
               onChange={(e) => handleInputChange('address', e.target.value)}
-              placeholder="Digite o endereço completo"
-              rows={3}
+              placeholder="Ex: Rua das Flores, 123"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="city">Cidade</Label>
+            <Input
+              id="city"
+              value={formData.city}
+              onChange={(e) => handleInputChange('city', e.target.value)}
+              placeholder="Ex: São Paulo"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="state">Estado</Label>
+            <Input
+              id="state"
+              value={formData.state}
+              onChange={(e) => handleInputChange('state', e.target.value)}
+              placeholder="Ex: SP"
+              maxLength={2}
+            />
+          </div>
+          
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="postal_code">CEP</Label>
+            <Input
+              id="postal_code"
+              value={formData.postal_code}
+              onChange={(e) => handleInputChange('postal_code', e.target.value)}
+              placeholder="00000-000"
+              maxLength={9}
             />
           </div>
           

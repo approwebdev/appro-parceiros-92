@@ -182,6 +182,7 @@ export type Database = {
       salons: {
         Row: {
           address: string | null
+          city: string | null
           created_at: string
           id: string
           instagram: string | null
@@ -193,14 +194,17 @@ export type Database = {
           photo_url: string | null
           plan: string | null
           plan_type: string | null
+          postal_code: string | null
           responsible_email: string | null
           responsible_name: string | null
           slug: string
+          state: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
           address?: string | null
+          city?: string | null
           created_at?: string
           id?: string
           instagram?: string | null
@@ -212,14 +216,17 @@ export type Database = {
           photo_url?: string | null
           plan?: string | null
           plan_type?: string | null
+          postal_code?: string | null
           responsible_email?: string | null
           responsible_name?: string | null
           slug: string
+          state?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           address?: string | null
+          city?: string | null
           created_at?: string
           id?: string
           instagram?: string | null
@@ -231,9 +238,11 @@ export type Database = {
           photo_url?: string | null
           plan?: string | null
           plan_type?: string | null
+          postal_code?: string | null
           responsible_email?: string | null
           responsible_name?: string | null
           slug?: string
+          state?: string | null
           updated_at?: string
           user_id?: string | null
         }

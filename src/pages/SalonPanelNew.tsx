@@ -136,6 +136,9 @@ const SalonPanelNew = () => {
           slug: `${data.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
           phone: data.phone,
           address: `${data.address}, ${data.address_number}${data.address_complement ? ` - ${data.address_complement}` : ''}`,
+          city: profile?.address || '',
+          state: '',
+          postal_code: data.postal_code,
           is_active: true
         })
         .select()
@@ -175,6 +178,9 @@ const SalonPanelNew = () => {
       const updateData: any = {
         name: data.name,
         address: data.address,
+        city: data.city,
+        state: data.state,
+        postal_code: data.postal_code,
         instagram: data.instagram
       };
 
@@ -452,9 +458,12 @@ const SalonPanelNew = () => {
                           <p className="text-green-700 text-sm">
                             <strong>Nome:</strong> {salonData.name}
                           </p>
-                          <p className="text-green-700 text-sm">
-                            <strong>Endereço:</strong> {salonData.address}
-                          </p>
+                           <p className="text-green-700 text-sm">
+                             <strong>Endereço:</strong> {salonData.address}
+                             {salonData.city && `, ${salonData.city}`}
+                             {salonData.state && ` - ${salonData.state}`}
+                             {salonData.postal_code && ` - CEP: ${salonData.postal_code}`}
+                           </p>
                           {salonData.phone && (
                             <p className="text-green-700 text-sm">
                               <strong>Telefone:</strong> {salonData.phone}
