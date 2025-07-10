@@ -35,7 +35,6 @@ export const AdminUsers = () => {
     email: '',
     role: 'salon' as 'admin' | 'salon' | 'collaborator',
     phone: '',
-    instagram: '',
     password: ''
   });
 
@@ -75,8 +74,7 @@ export const AdminUsers = () => {
             name: formData.name,
             email: formData.email,
             role: formData.role,
-            phone: formData.phone,
-            instagram: formData.instagram
+            phone: formData.phone
           })
           .eq('id', editingUser.id);
         
@@ -91,8 +89,7 @@ export const AdminUsers = () => {
             data: {
               name: formData.name,
               role: formData.role,
-              phone: formData.phone,
-              instagram: formData.instagram
+              phone: formData.phone
             }
           }
         });
@@ -151,7 +148,6 @@ export const AdminUsers = () => {
       email: user.email,
       role: user.role,
       phone: user.phone || '',
-      instagram: user.instagram || '',
       password: ''
     });
     setIsDialogOpen(true);
@@ -164,7 +160,6 @@ export const AdminUsers = () => {
       email: '',
       role: 'salon',
       phone: '',
-      instagram: '',
       password: ''
     });
   };
@@ -258,17 +253,7 @@ export const AdminUsers = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="instagram">Instagram</Label>
-                  <Input
-                    id="instagram"
-                    value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                    placeholder="@usuario"
-                  />
-                </div>
-                
+              <div className="grid grid-cols-1 gap-4">
                 {!editingUser && (
                   <div className="space-y-2">
                     <Label htmlFor="password">Senha</Label>
