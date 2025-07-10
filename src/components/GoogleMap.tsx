@@ -38,15 +38,18 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         // Buscar a chave do Google Maps da função edge
         const { data: keyData, error: keyError } = await supabase.functions.invoke('get-google-maps-key');
         
+        console.log('Google Maps: Resposta da função edge:', { keyData, keyError });
+        
         if (keyError || !keyData?.key) {
           console.error('Erro ao obter chave do Google Maps:', keyError);
+          console.log('Google Maps: Definindo erro e carregado como true devido ao erro da chave');
           clearTimeout(loadingTimeout);
           setHasError(true);
           setIsLoaded(true);
           return;
         }
 
-        console.log('Google Maps: Inicializando loader...');
+        console.log('Google Maps: Inicializando loader com chave:', keyData.key.substring(0, 20) + '...');
         
         const loader = new Loader({
           apiKey: keyData.key,
@@ -54,6 +57,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           libraries: ['places']
         });
 
+        console.log('Google Maps: Carregando API...');
         await loader.load();
         
         console.log('Google Maps: API carregada com sucesso');

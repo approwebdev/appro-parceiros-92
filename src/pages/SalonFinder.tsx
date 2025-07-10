@@ -90,11 +90,17 @@ const SalonFinder = () => {
       setSalons(prevSalons => prevSalons.map(salon => {
         if (salon.latitude && salon.longitude) {
           const distance = calculateDistance(location.lat, location.lng, salon.latitude, salon.longitude);
+          console.log(`Distância calculada para ${salon.name}:`, {
+            salonCoords: { lat: salon.latitude, lng: salon.longitude },
+            userCoords: { lat: location.lat, lng: location.lng },
+            distance: distance.toFixed(2) + 'km'
+          });
           return {
             ...salon,
             distance
           };
         }
+        console.log(`Salão ${salon.name} sem coordenadas:`, { lat: salon.latitude, lng: salon.longitude });
         return salon;
       }));
       toast({
@@ -125,11 +131,21 @@ const SalonFinder = () => {
       }
 
       // Usar coordenadas reais dos salões ou São Paulo como fallback se não existirem
-      const salonsWithCoords = (data || []).map((salon) => ({
-        ...salon,
-        latitude: salon.latitude || (-23.5505 + (Math.random() - 0.5) * 0.2),
-        longitude: salon.longitude || (-46.6333 + (Math.random() - 0.5) * 0.2)
-      }));
+      const salonsWithCoords = (data || []).map((salon) => {
+        const coords = {
+          latitude: salon.latitude || (-23.5505 + (Math.random() - 0.5) * 0.2),
+          longitude: salon.longitude || (-46.6333 + (Math.random() - 0.5) * 0.2)
+        };
+        console.log(`Coordenadas para salon ${salon.name}:`, {
+          original: { lat: salon.latitude, lng: salon.longitude },
+          final: coords,
+          usedFallback: !salon.latitude || !salon.longitude
+        });
+        return {
+          ...salon,
+          ...coords
+        };
+      });
       setSalons(salonsWithCoords);
     } catch (error) {
       console.error('Erro ao buscar salões:', error);
