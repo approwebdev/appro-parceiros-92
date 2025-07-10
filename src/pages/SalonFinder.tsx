@@ -444,12 +444,7 @@ const SalonFinder = () => {
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative">
                           <img src={banners[1].image_url} alt={banners[1].title} className="w-full h-auto object-contain" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                            <div className="p-4 md:p-6 text-white">
-                              <h4 className="font-bold text-lg md:text-2xl">{banners[1].title}</h4>
-                              {banners[1].description && <p className="text-sm md:text-base opacity-90">{banners[1].description}</p>}
-                            </div>
-                          </div>
+                          
                         </CardContent>
                       </Card>
                     </div>}
