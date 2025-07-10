@@ -20,6 +20,7 @@ interface Salon {
   longitude?: number;
   distance?: number;
   plan?: string;
+  photo_url?: string;
 }
 
 interface Banner {
@@ -421,8 +422,16 @@ const SalonFinder = () => {
                     <CardContent className="p-6 md:p-8">
                       <div className="flex items-start gap-4 md:gap-6">
                         {/* Avatar */}
-                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl">
-                          {salon.name.charAt(0)}
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
+                          {salon.photo_url ? (
+                            <img 
+                              src={salon.photo_url} 
+                              alt={salon.name}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            salon.name.charAt(0)
+                          )}
                         </div>
                         
                         {/* Content */}
