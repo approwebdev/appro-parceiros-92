@@ -85,13 +85,26 @@ export const AdminUsers = () => {
 
         // Se for usuário do tipo salon, atualizar também o plan_type do salão
         if (formData.role === 'salon') {
-          const { error: salonError } = await supabase
+          console.log('Tentando atualizar plano:', {
+            userId: editingUser.user_id,
+            newPlanType: formData.plan_type,
+            userRole: formData.role
+          });
+          
+          const { data: salonData, error: salonError } = await supabase
             .from('salons')
             .update({ plan_type: formData.plan_type })
-            .eq('user_id', editingUser.user_id);
+            .eq('user_id', editingUser.user_id)
+            .select();
+          
+          console.log('Resultado da atualização do salão:', { 
+            salonData, 
+            salonError,
+            affectedRows: salonData?.length || 0 
+          });
           
           if (salonError) {
-            console.warn('Erro ao atualizar plano do salão:', salonError);
+            console.error('Erro ao atualizar plano do salão:', salonError);
           }
         }
         
@@ -166,17 +179,21 @@ export const AdminUsers = () => {
     let currentPlan = 'verificado_azul';
     if (user.role === 'salon') {
       try {
-        const { data: salonData } = await supabase
+        console.log('Buscando plano para usuário:', user.user_id);
+        const { data: salonData, error } = await supabase
           .from('salons')
           .select('plan_type')
           .eq('user_id', user.user_id)
           .single();
         
+        console.log('Dados do salão encontrados:', salonData);
+        
         if (salonData?.plan_type) {
           currentPlan = salonData.plan_type;
+          console.log('Plano atual encontrado:', currentPlan);
         }
       } catch (error) {
-        console.warn('Erro ao buscar plano do salão:', error);
+        console.error('Erro ao buscar plano do salão:', error);
       }
     }
     
