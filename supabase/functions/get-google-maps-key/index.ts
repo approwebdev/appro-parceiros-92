@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const googleMapsKey = 'AIzaSyCRcp6YTJs_02afKJFRkpqOPmXk2eA7mUI';
+    const googleMapsKey = 'AIzaSyBCuU-wlEg9F4IWhAOyz0iW573ftQzVf6M';
     console.log('Google Maps Key configurada: SIM');
     
     console.log('Retornando chave Google Maps com sucesso');

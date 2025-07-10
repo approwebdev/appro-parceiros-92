@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import MapTilerMap from "@/components/MapTilerMap";
+import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
 interface Salon {
   id: string;
@@ -323,7 +323,7 @@ const SalonFinder = () => {
         {/* Map View */}
         {viewType === 'map' && <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Mapa dos Salões</h3>
-            <MapTilerMap salons={filteredSalons} userLocation={userLocation} />
+            <GoogleMap salons={filteredSalons} userLocation={userLocation} />
           </div>}
 
         {/* Salons List */}
