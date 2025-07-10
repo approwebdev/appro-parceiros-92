@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 
-declare global {
-  interface Window {
-    google: any;
-    initGoogleMap: () => void;
-  }
-}
-
 interface GoogleMapProps {
   salons: Array<{
     id: string;
@@ -19,103 +12,33 @@ interface GoogleMapProps {
   userLocation?: { lat: number; lng: number };
 }
 
+declare global {
+  interface Window {
+    google: any;
+    googleMapsCallback: () => void;
+  }
+}
+
 const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-
-  const updateMapMarkers = () => {
-    if (!mapInstanceRef.current || !window.google) return;
-
-    const map = mapInstanceRef.current;
-
-    // Marcador do usuário
-    if (userLocation) {
-      new window.google.maps.Marker({
-        position: { lat: userLocation.lat, lng: userLocation.lng },
-        map: map,
-        title: 'Sua localização',
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: '#4285F4',
-          fillOpacity: 1,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-        }
-      });
-    }
-
-    // Marcadores dos salões
-    const bounds = new window.google.maps.LatLngBounds();
-    let hasMarkers = false;
-
-    if (userLocation) {
-      bounds.extend(new window.google.maps.LatLng(userLocation.lat, userLocation.lng));
-      hasMarkers = true;
-    }
-
-    salons.forEach((salon) => {
-      if (salon.latitude && salon.longitude) {
-        const marker = new window.google.maps.Marker({
-          position: { lat: salon.latitude, lng: salon.longitude },
-          map: map,
-          title: salon.name,
-          icon: {
-            path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 6,
-            fillColor: '#d4af37',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 1,
-          }
-        });
-
-        const infoWindow = new window.google.maps.InfoWindow({
-          content: `
-            <div style="padding: 8px; max-width: 200px;">
-              <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
-              <p style="margin: 0; color: #666; font-size: 14px;">${salon.address || ''}</p>
-            </div>
-          `
-        });
-
-        marker.addListener('click', () => {
-          infoWindow.open(map, marker);
-        });
-
-        bounds.extend(new window.google.maps.LatLng(salon.latitude, salon.longitude));
-        hasMarkers = true;
-      }
-    });
-
-    if (hasMarkers) {
-      map.fitBounds(bounds);
-      window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-        if (map.getZoom()! > 15) {
-          map.setZoom(15);
-        }
-      });
-    }
-  };
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadGoogleMaps = async () => {
-      try {
-        console.log('Google Maps: Iniciando carregamento...');
-        
-        // Verificar se já está carregado
-        if (window.google && window.google.maps && mapRef.current && !mapInstanceRef.current) {
-          console.log('Google Maps: Já carregado, criando mapa...');
-          createMap();
-          return;
-        }
+    let mounted = true;
 
-        // Se já tem instância do mapa, não recarregar
-        if (mapInstanceRef.current) {
-          console.log('Google Maps: Mapa já existe, atualizando...');
-          updateMapMarkers();
+    const initializeMap = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Google Maps: Iniciando carregamento...');
+
+        // Se Google Maps já está carregado, criar mapa diretamente
+        if (window.google && window.google.maps) {
+          console.log('Google Maps: API já carregada');
+          if (mounted) {
+            createMap();
+          }
           return;
         }
 
@@ -124,72 +47,70 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         
         if (keyError || !keyData?.key) {
           console.error('Google Maps: Erro ao obter chave:', keyError);
-          setHasError(true);
-          setIsLoaded(true);
+          if (mounted) {
+            setHasError(true);
+            setIsLoading(false);
+          }
           return;
         }
 
         console.log('Google Maps: Chave obtida, carregando script...');
 
-        // Verificar se script já existe
-        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-        if (existingScript && window.google && window.google.maps) {
-          console.log('Google Maps: Script já carregado, criando mapa...');
-          createMap();
-          return;
+        // Remover callback anterior se existir
+        if (window.googleMapsCallback) {
+          delete window.googleMapsCallback;
         }
 
-        // Callback global único
-        const callbackName = `initGoogleMap_${Date.now()}`;
-        (window as any)[callbackName] = () => {
+        // Definir callback global
+        window.googleMapsCallback = () => {
           console.log('Google Maps: Callback executado');
-          delete (window as any)[callbackName];
-          if (mapRef.current) {
+          if (mounted && mapRef.current) {
             createMap();
           }
         };
 
-        // Remover script anterior se existir
+        // Verificar se script já existe
+        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
         if (existingScript) {
           existingScript.remove();
         }
 
-        // Carregar script
+        // Carregar script do Google Maps
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=${callbackName}&libraries=places&loading=async`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=googleMapsCallback&libraries=places&loading=async`;
         script.async = true;
         script.defer = true;
         
         script.onerror = () => {
           console.error('Google Maps: Erro ao carregar script');
-          setHasError(true);
-          setIsLoaded(true);
-          delete (window as any)[callbackName];
+          if (mounted) {
+            setHasError(true);
+            setIsLoading(false);
+          }
         };
 
         document.head.appendChild(script);
 
       } catch (error) {
         console.error('Google Maps: Erro geral:', error);
-        setHasError(true);
-        setIsLoaded(true);
+        if (mounted) {
+          setHasError(true);
+          setIsLoading(false);
+        }
       }
     };
 
     const createMap = () => {
       try {
+        console.log('Google Maps: Tentando criar mapa...');
+        
         if (!mapRef.current) {
-          console.log('Google Maps: Ref do mapa não encontrado, aguardando...');
-          setTimeout(() => {
-            if (mapRef.current) {
-              createMap();
-            }
-          }, 100);
+          console.log('Google Maps: Ref do mapa não encontrado');
           return;
         }
 
         if (!window.google || !window.google.maps) {
-          console.log('Google Maps: API não carregada ainda');
+          console.log('Google Maps: API não disponível');
           return;
         }
 
@@ -207,37 +128,101 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           streetViewControl: false,
         });
 
-        mapInstanceRef.current = map;
+        // Marcador do usuário
+        if (userLocation) {
+          new window.google.maps.Marker({
+            position: { lat: userLocation.lat, lng: userLocation.lng },
+            map: map,
+            title: 'Sua localização',
+            icon: {
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: '#4285F4',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            }
+          });
+        }
 
-        updateMapMarkers();
+        // Marcadores dos salões
+        const bounds = new window.google.maps.LatLngBounds();
+        let hasMarkers = false;
+
+        if (userLocation) {
+          bounds.extend(new window.google.maps.LatLng(userLocation.lat, userLocation.lng));
+          hasMarkers = true;
+        }
+
+        salons.forEach((salon) => {
+          if (salon.latitude && salon.longitude) {
+            const marker = new window.google.maps.Marker({
+              position: { lat: salon.latitude, lng: salon.longitude },
+              map: map,
+              title: salon.name,
+              icon: {
+                path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                scale: 6,
+                fillColor: '#d4af37',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 1,
+              }
+            });
+
+            const infoWindow = new window.google.maps.InfoWindow({
+              content: `
+                <div style="padding: 8px; max-width: 200px;">
+                  <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
+                  <p style="margin: 0; color: #666; font-size: 14px;">${salon.address || ''}</p>
+                </div>
+              `
+            });
+
+            marker.addListener('click', () => {
+              infoWindow.open(map, marker);
+            });
+
+            bounds.extend(new window.google.maps.LatLng(salon.latitude, salon.longitude));
+            hasMarkers = true;
+          }
+        });
+
+        if (hasMarkers) {
+          map.fitBounds(bounds);
+          window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+            if (map.getZoom()! > 15) {
+              map.setZoom(15);
+            }
+          });
+        }
 
         console.log('Google Maps: Mapa criado com sucesso');
-        setIsLoaded(true);
+        if (mounted) {
+          setIsLoaded(true);
+          setIsLoading(false);
+        }
 
       } catch (error) {
         console.error('Google Maps: Erro ao criar mapa:', error);
-        setHasError(true);
-        setIsLoaded(true);
+        if (mounted) {
+          setHasError(true);
+          setIsLoading(false);
+        }
       }
     };
 
-
-    loadGoogleMaps();
+    initializeMap();
 
     return () => {
-      // Cleanup apenas quando componente desmonta
-      mapInstanceRef.current = null;
+      mounted = false;
+      if (window.googleMapsCallback) {
+        delete window.googleMapsCallback;
+      }
     };
-  }, []);
-
-  // Atualizar marcadores quando dados mudarem
-  useEffect(() => {
-    if (mapInstanceRef.current) {
-      updateMapMarkers();
-    }
   }, [salons, userLocation]);
 
-  if (!isLoaded && !hasError) {
+  if (isLoading) {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
