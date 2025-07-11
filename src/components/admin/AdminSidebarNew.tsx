@@ -1,4 +1,4 @@
-import { Package, Users, Grid3x3, Image, LogOut, UserCog, ClipboardList } from 'lucide-react';
+import { Package, Users, Grid3x3, Image, LogOut, UserCog, ClipboardList, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -46,6 +46,10 @@ export const AdminSidebarNew = ({
     id: 'users',
     label: 'Usuários',
     icon: UserCog
+  }, {
+    id: 'kiwify',
+    label: 'Kiwify',
+    icon: Settings
   }];
 
   const menuItems = profile?.role === 'admin' 

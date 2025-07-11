@@ -256,7 +256,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   return (
     <div className="menu-container bg-white relative min-h-screen overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 left-0 right-0 z-30 flex justify-between items-center p-4 md:p-6 bg-white border-b shadow-sm">
+      <div className="sticky top-0 left-0 right-0 z-30 flex justify-between items-center p-4 md:p-6 bg-white border-b shadow-sm animate-fade-in">
         <div className="flex items-center gap-2 md:gap-4">
           <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-6 md:h-8" />
           <Button 
@@ -291,8 +291,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="bg-white pb-20 md:pb-8">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8 relative">
+      <div className="bg-white pb-20 md:pb-8 animate-fade-in">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8 relative animate-scale-in">
           {/* Controles do Carrossel - Mobile responsivo */}
           <div className="hidden lg:block absolute -left-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
@@ -341,16 +341,16 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             
             {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
-            <div className="lg:col-span-1 space-y-4 md:space-y-6">
+            <div className="lg:col-span-1 space-y-4 md:space-y-6 animate-fade-in">
               {/* Imagem Principal */}
-              <div className="h-64 md:h-80 lg:h-96 bg-gray-100 rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="h-64 md:h-80 lg:h-96 bg-gray-100 rounded-xl md:rounded-2xl overflow-hidden group hover:shadow-xl transition-all duration-500 hover:scale-[1.02]">
                 <img 
                   src={treatment.images && treatment.images.length > 0 
                     ? treatment.images[currentImageIndex] 
                     : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                   }
                   alt={treatment.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                 />
               </div>
               
@@ -419,17 +419,17 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
             </div>
 
             {/* Centro - Informações */}
-            <div className="lg:col-span-1">
-              <div className="mb-3">
-                <span className="text-sm text-gray-400 uppercase tracking-wide">{treatmentCategory}</span>
+            <div className="lg:col-span-1 animate-fade-in">
+              <div className="mb-3 animate-slide-in-right">
+                <span className="text-sm text-gray-400 uppercase tracking-wide transform transition-all duration-500 hover:text-gray-600 hover:scale-105">{treatmentCategory}</span>
               </div>
               
-              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black">{treatment.name}</h1>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black animate-fade-in transform transition-all duration-700 hover:text-gray-800">{treatment.name}</h1>
               
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">{treatment.subtitle}</p>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed animate-fade-in transition-all duration-500 hover:text-gray-700">{treatment.subtitle}</p>
               
-              <div className="mb-6">
-                <p className="text-gray-700 leading-relaxed text-base">
+              <div className="mb-6 animate-fade-in">
+                <p className="text-gray-700 leading-relaxed text-base transition-all duration-500 hover:text-gray-800">
                   {truncateDescription(treatment.description, 330)}
                 </p>
                 {treatment.description.length > 330 && (
@@ -454,7 +454,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               </div>
               
               {/* Avaliações */}
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-6 animate-fade-in transform transition-all duration-500 hover:scale-105">
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star 
@@ -467,7 +467,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               </div>
               
               {/* Preço e Botões */}
-              <div>
+              <div className="animate-fade-in">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-sm text-gray-400">de</span>
                   <span className="text-lg line-through text-gray-500">
@@ -491,7 +491,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   
                   {/* Botão Saiba Mais */}
                   <Button 
-                    className="text-white px-8 py-3 rounded-full text-base font-medium hover:opacity-90 transition-opacity"
+                    className="text-white px-8 py-3 rounded-full text-base font-medium hover:opacity-90 transition-all duration-500 hover:scale-105 hover:shadow-lg transform animate-fade-in"
                     style={{ backgroundColor: buttonColor }}
                   >
                     Saiba mais...
@@ -501,15 +501,15 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
             </div>
 
             {/* Lado Direito - Vídeo */}
-            <div className="lg:col-span-1">
-              <div className="aspect-[9/16] bg-black rounded-2xl overflow-hidden relative z-30 h-[calc(100vh-12rem)]">
+            <div className="lg:col-span-1 animate-fade-in">
+              <div className="aspect-[9/16] bg-black rounded-2xl overflow-hidden relative z-30 h-[calc(100vh-12rem)] group hover:shadow-2xl transition-all duration-700 hover:scale-[1.02]">
                 <img 
                   src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                   alt="Vídeo demonstrativo"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-black/70 rounded-full p-6 hover:bg-black/80 transition-colors cursor-pointer">
+                  <div className="bg-black/70 rounded-full p-6 hover:bg-black/80 transition-all duration-500 cursor-pointer transform hover:scale-110 animate-pulse">
                     <div className="w-0 h-0 border-l-[24px] border-l-white border-t-[14px] border-t-transparent border-b-[14px] border-b-transparent ml-1"></div>
                   </div>
                 </div>

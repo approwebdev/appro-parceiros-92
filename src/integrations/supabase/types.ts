@@ -95,6 +95,54 @@ export type Database = {
         }
         Relationships: []
       }
+      kiwify_subscriptions: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          end_date: string | null
+          id: string
+          kiwify_customer_id: string
+          kiwify_order_id: string
+          plan_type: string
+          product_id: string
+          start_date: string
+          status: string
+          updated_at: string
+          webhook_data: Json | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          end_date?: string | null
+          id?: string
+          kiwify_customer_id: string
+          kiwify_order_id: string
+          plan_type: string
+          product_id: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          webhook_data?: Json | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          end_date?: string | null
+          id?: string
+          kiwify_customer_id?: string
+          kiwify_order_id?: string
+          plan_type?: string
+          product_id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          webhook_data?: Json | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -105,11 +153,14 @@ export type Database = {
           has_salon: boolean | null
           id: string
           instagram: string | null
+          kiwify_subscription_id: string | null
           name: string
           phone: string | null
           postal_code: string | null
           role: string
           status: string | null
+          subscription_plan: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string
           wants_salon: boolean | null
@@ -123,11 +174,14 @@ export type Database = {
           has_salon?: boolean | null
           id?: string
           instagram?: string | null
+          kiwify_subscription_id?: string | null
           name: string
           phone?: string | null
           postal_code?: string | null
           role?: string
           status?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id: string
           wants_salon?: boolean | null
@@ -141,16 +195,27 @@ export type Database = {
           has_salon?: boolean | null
           id?: string
           instagram?: string | null
+          kiwify_subscription_id?: string | null
           name?: string
           phone?: string | null
           postal_code?: string | null
           role?: string
           status?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string
           wants_salon?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_kiwify_subscription_id_fkey"
+            columns: ["kiwify_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "kiwify_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       salon_banners: {
         Row: {
@@ -250,6 +315,7 @@ export type Database = {
           responsible_name: string | null
           slug: string
           state: string | null
+          subscription_plan: string | null
           updated_at: string
           user_id: string | null
         }
@@ -272,6 +338,7 @@ export type Database = {
           responsible_name?: string | null
           slug: string
           state?: string | null
+          subscription_plan?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -294,6 +361,7 @@ export type Database = {
           responsible_name?: string | null
           slug?: string
           state?: string | null
+          subscription_plan?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -417,6 +485,18 @@ export type Database = {
       }
     }
     Functions: {
+      activate_kiwify_subscription: {
+        Args: {
+          p_email: string
+          p_name: string
+          p_kiwify_order_id: string
+          p_kiwify_customer_id: string
+          p_product_id: string
+          p_plan_type: string
+          p_webhook_data?: Json
+        }
+        Returns: string
+      }
       get_address_from_cep: {
         Args: { cep_input: string }
         Returns: {

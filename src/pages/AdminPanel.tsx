@@ -12,6 +12,7 @@ import { AdminCategories } from '@/components/admin/AdminCategories';
 import { AdminUsers } from '@/components/admin/AdminUsers';
 import { AdminAccessRequests } from '@/components/admin/AdminAccessRequests';
 import { AdminSidebarNew } from '@/components/admin/AdminSidebarNew';
+import AdminKiwifyIntegration from '@/components/admin/AdminKiwifyIntegration';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +48,8 @@ const AdminPanel = () => {
         return profile?.role === 'admin' ? <AdminAccessRequests /> : <AdminTreatments />;
       case 'users':
         return profile?.role === 'admin' ? <AdminUsers /> : <AdminTreatments />;
+      case 'kiwify':
+        return profile?.role === 'admin' ? <AdminKiwifyIntegration /> : <AdminTreatments />;
       default:
         return <AdminTreatments />;
     }
@@ -75,6 +78,7 @@ const AdminPanel = () => {
                     {activeTab === 'banners' && 'Banners'}
                     {activeTab === 'access-requests' && 'Solicitações de Acesso'}
                     {activeTab === 'users' && 'Usuários'}
+                    {activeTab === 'kiwify' && 'Integração Kiwify'}
                   </h1>
                   <p className="text-admin-text-muted">
                     {activeTab === 'treatments' && 'Gerencie todos os tratamentos cadastrados'}
@@ -83,6 +87,7 @@ const AdminPanel = () => {
                     {activeTab === 'banners' && 'Gerencie os banners promocionais'}
                     {activeTab === 'access-requests' && 'Aprove ou rejeite solicitações de acesso'}
                     {activeTab === 'users' && 'Gerencie todos os usuários do sistema'}
+                    {activeTab === 'kiwify' && 'Configure a integração com a plataforma Kiwify'}
                   </p>
                 </div>
               </div>
