@@ -39,40 +39,73 @@ const AuthNew = () => {
   } = useToast();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated and approved
-  if (user && profile) {
-    if (profile.role === 'admin') {
-      return <Navigate to="/admin" replace />;
-    } else if (profile.role === 'salon' && profile.status === 'approved') {
-      return <Navigate to="/salon-panel" replace />;
+  // Handle authentication states
+  if (user) {
+    if (profile) {
+      // User has profile - check status and role
+      if (profile.role === 'admin') {
+        return <Navigate to="/admin" replace />;
+      } else if (profile.status === 'approved') {
+        return <Navigate to="/salon-panel" replace />;
+      } else if (profile.status === 'pending') {
+        // Show pending message
+        return (
+          <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg max-w-md text-center">
+              <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-6" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Acesso em Análise</h2>
+              <p className="text-gray-600 mb-6">
+                Seu cadastro foi recebido e está sendo analisado pela nossa equipe. 
+                Você receberá uma confirmação por email assim que for aprovado.
+              </p>
+              <Button 
+                onClick={async () => {
+                  await signOut();
+                  window.location.reload();
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Sair
+              </Button>
+            </div>
+          </div>
+        );
+      } else if (profile.status === 'rejected') {
+        // Show rejected message
+        return (
+          <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg max-w-md text-center">
+              <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-6" />
+              <h2 className="text-2xl font-bold text-red-600 mb-4">Acesso Negado</h2>
+              <p className="text-gray-600 mb-6">
+                Infelizmente seu cadastro não foi aprovado pela nossa equipe.
+                Entre em contato para mais informações.
+              </p>
+              <Button 
+                onClick={async () => {
+                  await signOut();
+                  window.location.reload();
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Sair
+              </Button>
+            </div>
+          </div>
+        );
+      }
+    } else {
+      // User exists but no profile - this shouldn't happen with proper triggers
+      // Force logout and show error
+      toast({
+        title: "Erro de autenticação",
+        description: "Perfil não encontrado. Faça login novamente.",
+        variant: "destructive"
+      });
+      signOut();
     }
-    // If status is pending, stay on auth page
-  }
-
-  // Show pending message if user is logged in but pending approval
-  if (user && profile && profile.status === 'pending') {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg max-w-md text-center">
-          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Acesso em Análise</h2>
-          <p className="text-gray-600 mb-6">
-            Seu cadastro foi recebido e está sendo analisado pela nossa equipe. 
-            Você receberá uma confirmação por email assim que for aprovado.
-          </p>
-          <Button 
-            onClick={async () => {
-              await signOut();
-              window.location.reload();
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            Sair
-          </Button>
-        </div>
-      </div>
-    );
   }
   const handlePostalCodeBlur = async () => {
     if (postalCode.length === 8) {
@@ -146,6 +179,9 @@ const AuthNew = () => {
             title: "Cadastro realizado com sucesso!",
             description: "Seu acesso está em análise pela nossa equipe."
           });
+          // Switch to login mode after successful registration
+          setIsLogin(true);
+          setPassword(''); // Clear password for security
         }
       }
     } catch (error) {
