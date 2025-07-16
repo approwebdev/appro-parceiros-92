@@ -69,48 +69,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
       
       if (error) {
+        console.error('Error fetching profile:', error);
+        setProfile(null);
         return;
-      }
-      
-      // If no profile exists, try to create one from user metadata
-      if (!data) {
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData.user?.user_metadata) {
-          const metadata = userData.user.user_metadata;
-          const { error: insertError } = await supabase
-            .from('profiles')
-            .insert({
-              user_id: userId,
-              name: metadata.name || 'Usuário',
-              email: userData.user.email || '',
-              role: metadata.role || 'salon',
-              phone: metadata.phone || null,
-              instagram: metadata.instagram || null,
-              wants_salon: metadata.wants_salon || false,
-              postal_code: metadata.postal_code || null,
-              address: metadata.address || null,
-              address_number: metadata.address_number || null,
-              address_complement: metadata.address_complement || null,
-              has_salon: metadata.wants_salon || false,
-              status: 'pending'
-            });
-          
-          if (!insertError) {
-            // Fetch the newly created profile
-            const { data: newProfile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', userId)
-              .maybeSingle();
-            setProfile(newProfile as Profile);
-            return;
-          }
-        }
       }
       
       setProfile(data as Profile);
     } catch (error) {
-      
+      console.error('Unexpected error in fetchProfile:', error);
+      setProfile(null);
     }
   };
 

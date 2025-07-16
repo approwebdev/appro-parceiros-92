@@ -493,8 +493,16 @@ export type Database = {
           wants_salon: boolean
         }[]
       }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       is_admin_user: {
         Args: { user_uuid: string }
+        Returns: boolean
+      }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
     }
