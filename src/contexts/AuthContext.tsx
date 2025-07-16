@@ -89,7 +89,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        // Use setTimeout to prevent potential infinite loops in onAuthStateChange
+        setTimeout(() => {
+          if (mounted) {
+            fetchProfile(session.user.id);
+          }
+        }, 0);
       } else {
         setProfile(null);
       }
@@ -130,10 +135,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
       
-      // Force a profile fetch after successful login
-      if (data.user) {
-        await fetchProfile(data.user.id);
-      }
+      // Don't force profile fetch here - let onAuthStateChange handle it
+      // to avoid potential conflicts and loops
       
       return { error: null };
     } catch (err) {
