@@ -41,17 +41,23 @@ const AuthNew = () => {
 
   // Handle authentication states
   useEffect(() => {
-    if (user && !profile) {
-      // User exists but no profile - this shouldn't happen with proper triggers
-      // Force logout and show error
-      toast({
-        title: "Erro de autenticação",
-        description: "Perfil não encontrado. Faça login novamente.",
-        variant: "destructive"
-      });
-      signOut();
+    // Only check for profile error if loading is complete and user exists for more than 2 seconds
+    if (user && !profile && !loading) {
+      const timer = setTimeout(() => {
+        // Double check if profile is still null after loading completed
+        if (user && !profile && !loading) {
+          toast({
+            title: "Erro de autenticação",
+            description: "Perfil não encontrado. Faça login novamente.",
+            variant: "destructive"
+          });
+          signOut();
+        }
+      }, 2000); // Wait 2 seconds after loading completes
+
+      return () => clearTimeout(timer);
     }
-  }, [user, profile, toast, signOut]);
+  }, [user, profile, loading, toast, signOut]);
 
   // Redirect if already authenticated and approved
   if (user && profile) {
