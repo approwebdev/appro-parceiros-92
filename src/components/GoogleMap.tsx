@@ -31,11 +31,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     const initializeMap = async () => {
       try {
         setIsLoading(true);
-        console.log('Google Maps: Iniciando carregamento...');
+        
 
         // Se Google Maps já está carregado, criar mapa diretamente
         if (window.google && window.google.maps) {
-          console.log('Google Maps: API já carregada');
+          
           if (mounted) {
             createMap();
           }
@@ -54,7 +54,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           return;
         }
 
-        console.log('Google Maps: Chave obtida, carregando script...');
+        
 
         // Remover callback anterior se existir
         if (window.googleMapsCallback) {
@@ -63,7 +63,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
         // Definir callback global
         window.googleMapsCallback = () => {
-          console.log('Google Maps: Callback executado');
+          
           if (mounted && mapRef.current) {
             createMap();
           }
@@ -102,19 +102,19 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
     const createMap = () => {
       try {
-        console.log('Google Maps: Tentando criar mapa...');
+        
         
         if (!mapRef.current) {
-          console.log('Google Maps: Ref do mapa não encontrado');
+          
           return;
         }
 
         if (!window.google || !window.google.maps) {
-          console.log('Google Maps: API não disponível');
+          
           return;
         }
 
-        console.log('Google Maps: Criando mapa...');
+        
 
         const center = userLocation 
           ? { lat: userLocation.lat, lng: userLocation.lng }
@@ -197,7 +197,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           });
         }
 
-        console.log('Google Maps: Mapa criado com sucesso');
+        
         if (mounted) {
           setIsLoaded(true);
           setIsLoading(false);

@@ -90,26 +90,11 @@ const SalonFinder = () => {
       setSalons(prevSalons => prevSalons.map(salon => {
         if (salon.latitude && salon.longitude) {
           const distance = calculateDistance(location.lat, location.lng, salon.latitude, salon.longitude);
-          console.log(`Distância calculada para ${salon.name}:`, {
-            salonCoords: {
-              lat: salon.latitude,
-              lng: salon.longitude
-            },
-            userCoords: {
-              lat: location.lat,
-              lng: location.lng
-            },
-            distance: distance.toFixed(2) + 'km'
-          });
           return {
             ...salon,
             distance
           };
         }
-        console.log(`Salão ${salon.name} sem coordenadas:`, {
-          lat: salon.latitude,
-          lng: salon.longitude
-        });
         return salon;
       }));
       toast({
@@ -164,17 +149,12 @@ const SalonFinder = () => {
         console.error('Erro ao buscar salões:', error);
         return;
       }
-      console.log('Salões do banco de dados:', data);
+      
 
       // Processar salões - usar coordenadas do banco ou endereços como texto para distância
       const salonsWithCoords = (data || []).map(salon => {
-        console.log(`Processando salon: ${salon.name}`);
-        console.log(`Coordenadas do banco: lat=${salon.latitude}, lng=${salon.longitude}`);
-        console.log(`Endereço do banco: ${salon.address}`);
-
         // Se já tem coordenadas válidas no banco, usar elas
         if (salon.latitude && salon.longitude && typeof salon.latitude === 'number' && typeof salon.longitude === 'number' && salon.latitude !== 0 && salon.longitude !== 0) {
-          console.log(`✓ Usando coordenadas do banco para ${salon.name}`);
           return salon;
         }
 
@@ -204,14 +184,12 @@ const SalonFinder = () => {
           latitude: lat,
           longitude: lng
         };
-        console.log(`✓ Coordenadas geradas para ${salon.name}:`, coords);
         return {
           ...salon,
           latitude: coords.latitude,
           longitude: coords.longitude
         };
       });
-      console.log('Salões processados:', salonsWithCoords.length);
       setSalons(salonsWithCoords);
     } catch (error) {
       console.error('Erro ao buscar salões:', error);

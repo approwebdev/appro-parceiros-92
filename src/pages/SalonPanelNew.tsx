@@ -51,7 +51,7 @@ const SalonPanelNew = () => {
             .select('*')
             .eq('user_id', user.id)
             .eq('is_active', true)
-            .single();
+            .maybeSingle();
 
           if (salon && !error) {
             setSalonData(salon);
@@ -73,7 +73,7 @@ const SalonPanelNew = () => {
             setMenuLink(`${window.location.origin}/menu/${salon.slug}`);
           }
         } catch (error) {
-          console.error('Error fetching salon:', error);
+          
         }
       }
     };
@@ -162,7 +162,7 @@ const SalonPanelNew = () => {
       setCreateSalonOpen(false);
       window.location.reload();
     } catch (error) {
-      console.error('Erro ao criar salão:', error);
+      
       toast({
         title: "Erro",
         description: "Não foi possível criar o salão. Tente novamente.",
@@ -206,7 +206,7 @@ const SalonPanelNew = () => {
 
       setSalonData(prev => prev ? { ...prev, ...updateData } : prev);
     } catch (error) {
-      console.error('Erro ao atualizar salão:', error);
+      
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o salão. Tente novamente.",
@@ -236,7 +236,7 @@ const SalonPanelNew = () => {
       setEditProfileOpen(false);
       window.location.reload();
     } catch (error) {
-      console.error('Erro ao atualizar perfil:', error);
+      
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o perfil. Tente novamente.",
@@ -280,7 +280,7 @@ const SalonPanelNew = () => {
         }
       }
     } catch (error) {
-      console.error('Erro ao atualizar tratamento:', error);
+      
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o tratamento. Tente novamente.",

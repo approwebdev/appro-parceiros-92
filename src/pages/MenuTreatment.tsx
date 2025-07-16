@@ -53,7 +53,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .maybeSingle();
 
       if (salonError || !salonData) {
-        console.error('Erro ao buscar salão:', salonError);
+        
         setLoading(false);
         return;
       }
@@ -84,7 +84,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       }
 
       if (treatmentError || !treatmentData) {
-        console.error('Erro ao buscar tratamento:', treatmentError);
+        
         setLoading(false);
         return;
       }
@@ -98,7 +98,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .maybeSingle();
 
       if (salonTreatmentError || !salonTreatmentData) {
-        console.error('Erro ao buscar preço do tratamento:', salonTreatmentError);
+        
         setLoading(false);
         return;
       }
@@ -126,7 +126,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .limit(3);
 
       if (relatedError) {
-        console.error('Erro ao buscar tratamentos relacionados:', relatedError);
+        
       }
 
       // Buscar dados da categoria
@@ -186,7 +186,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         setCurrentTreatmentIndex(currentIndex !== -1 ? currentIndex : 0);
       }
     } catch (error) {
-      console.error('Erro ao buscar tratamento:', error);
+      
     } finally {
       setLoading(false);
     }

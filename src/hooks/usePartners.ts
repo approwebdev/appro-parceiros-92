@@ -28,7 +28,7 @@ export const usePartners = () => {
 
   const fetchPartners = async () => {
     try {
-      console.log('Iniciando busca de parceiros...');
+      
       
       const { data, error } = await supabase
         .from('profiles')
@@ -46,11 +46,11 @@ export const usePartners = () => {
         .order('name');
 
       if (error) {
-        console.error('Erro na query profiles:', error);
+        
         throw error;
       }
 
-      console.log('Dados dos profiles:', data);
+      
 
       // Buscar salões separadamente para cada usuário que tem salão
       const formattedPartners: Partner[] = [];
@@ -63,10 +63,10 @@ export const usePartners = () => {
             .from('salons')
             .select('id, name, slug, address, is_active, plan_type')
             .eq('user_id', profile.user_id)
-            .single();
+            .maybeSingle();
             
           if (salonError) {
-            console.error(`Erro ao buscar salão para usuário ${profile.user_id}:`, salonError);
+            
           } else {
             salon = salonData;
           }
@@ -85,10 +85,10 @@ export const usePartners = () => {
         });
       }
 
-      console.log('Parceiros formatados:', formattedPartners);
+      
       setPartners(formattedPartners);
     } catch (error) {
-      console.error('Erro geral:', error);
+      
       toast({
         title: "Erro",
         description: "Erro ao carregar parceiros",

@@ -34,14 +34,13 @@ const MenuDigital = ({
       const {
         data,
         error
-      } = await supabase.from('salons').select('*').eq('slug', slug).single();
+      } = await supabase.from('salons').select('*').eq('slug', slug).maybeSingle();
       if (error) {
-        console.error('Erro ao buscar salão:', error);
         return;
       }
       setSalon(data);
     } catch (error) {
-      console.error('Erro ao buscar salão:', error);
+      
     } finally {
       setLoading(false);
     }

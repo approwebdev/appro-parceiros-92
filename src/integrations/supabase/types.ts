@@ -429,60 +429,7 @@ export type Database = {
       }
     }
     Views: {
-      admin_profile_access: {
-        Row: {
-          address: string | null
-          address_complement: string | null
-          address_number: string | null
-          created_at: string | null
-          email: string | null
-          has_salon: boolean | null
-          id: string | null
-          instagram: string | null
-          name: string | null
-          phone: string | null
-          postal_code: string | null
-          role: string | null
-          updated_at: string | null
-          user_id: string | null
-          wants_salon: boolean | null
-        }
-        Insert: {
-          address?: string | null
-          address_complement?: string | null
-          address_number?: string | null
-          created_at?: string | null
-          email?: string | null
-          has_salon?: boolean | null
-          id?: string | null
-          instagram?: string | null
-          name?: string | null
-          phone?: string | null
-          postal_code?: string | null
-          role?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          wants_salon?: boolean | null
-        }
-        Update: {
-          address?: string | null
-          address_complement?: string | null
-          address_number?: string | null
-          created_at?: string | null
-          email?: string | null
-          has_salon?: boolean | null
-          id?: string | null
-          instagram?: string | null
-          name?: string | null
-          phone?: string | null
-          postal_code?: string | null
-          role?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          wants_salon?: boolean | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       activate_kiwify_subscription: {
@@ -506,6 +453,26 @@ export type Database = {
           uf: string
           latitude: number
           longitude: number
+        }[]
+      }
+      get_admin_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          user_id: string
+          name: string
+          email: string
+          role: string
+          phone: string
+          instagram: string
+          address: string
+          address_number: string
+          address_complement: string
+          postal_code: string
+          created_at: string
+          updated_at: string
+          has_salon: boolean
+          wants_salon: boolean
         }[]
       }
       is_admin_user: {

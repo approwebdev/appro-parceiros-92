@@ -34,13 +34,12 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
         .order('order_position');
 
       if (error) {
-        console.error('Erro ao buscar categorias:', error);
         return;
       }
 
       setCategories(data || []);
     } catch (error) {
-      console.error('Erro ao buscar categorias:', error);
+      
     } finally {
       setLoading(false);
     }

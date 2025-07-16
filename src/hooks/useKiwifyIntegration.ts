@@ -28,7 +28,7 @@ export const useKiwifyIntegration = () => {
       if (error) throw error;
       return data as KiwifySubscription[];
     } catch (error) {
-      console.error('Error fetching subscriptions:', error);
+      
       toast({
         title: "Erro",
         description: "Erro ao buscar assinaturas",
@@ -68,7 +68,7 @@ export const useKiwifyIntegration = () => {
 
       return true;
     } catch (error) {
-      console.error('Error cancelling subscription:', error);
+      
       toast({
         title: "Erro",
         description: "Erro ao cancelar assinatura",
@@ -96,7 +96,7 @@ export const useKiwifyIntegration = () => {
 
       return data;
     } catch (error) {
-      console.error('Error testing webhook:', error);
+      
       toast({
         title: "Erro",
         description: "Erro ao testar webhook",

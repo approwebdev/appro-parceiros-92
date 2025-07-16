@@ -127,7 +127,7 @@ export const AdminUsers = () => {
       
       if (authError) {
         // Se falhar no auth, mas sucedeu no profile, vamos apenas atualizar a lista
-        console.warn('Falha ao deletar do auth, mas profile foi removido:', authError);
+        
       }
       
       toast({ title: "Usuário excluído com sucesso!" });

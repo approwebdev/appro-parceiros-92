@@ -31,13 +31,12 @@ const Index = () => {
         .order('name');
 
       if (error) {
-        console.error('Erro ao buscar salões:', error);
         return;
       }
 
       setSalons(data || []);
     } catch (error) {
-      console.error('Erro ao buscar salões:', error);
+      
     } finally {
       setLoading(false);
     }

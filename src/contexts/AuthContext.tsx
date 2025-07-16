@@ -69,7 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
       
       if (error) {
-        console.error('Error fetching profile:', error);
         return;
       }
       
@@ -102,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .from('profiles')
               .select('*')
               .eq('user_id', userId)
-              .single();
+              .maybeSingle();
             setProfile(newProfile as Profile);
             return;
           }
@@ -111,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setProfile(data as Profile);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      
     }
   };
 
@@ -162,13 +161,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
-        console.error('Login error:', error);
+        
         return { error };
       }
       
       return { error: null };
     } catch (err) {
-      console.error('Unexpected login error:', err);
+      
       return { error: err };
     }
   };
@@ -233,7 +232,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ]);
 
       if (requestError) {
-        console.error('Error creating access request:', requestError);
+        
         // Even if access request fails, user is created, so don't return error
       }
     }

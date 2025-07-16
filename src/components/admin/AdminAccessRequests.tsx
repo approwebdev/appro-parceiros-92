@@ -51,7 +51,7 @@ export const AdminAccessRequests = () => {
 
   const handleApproveRequest = async (request: AccessRequest, planType: string) => {
     try {
-      console.log('Iniciando aprovação da solicitação:', request.id);
+      
 
       // Update access request status
       const { error: updateError } = await supabase
@@ -86,7 +86,7 @@ export const AdminAccessRequests = () => {
 
       // Create salon if salon_name is provided
       if (request.salon_name) {
-        console.log('Criando salão:', request.salon_name);
+        
         
         const slug = request.salon_name
           .toLowerCase()
@@ -118,7 +118,7 @@ export const AdminAccessRequests = () => {
           throw salonError;
         }
 
-        console.log('Salão criado com sucesso:', salonData);
+        
       }
 
       toast({
