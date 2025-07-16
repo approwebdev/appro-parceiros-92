@@ -122,49 +122,50 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
     const loadGoogleMaps = async () => {
       if (!mounted) return;
 
-      // Se já carregado, criar mapa
+      // Se já carregado, criar mapa imediatamente
       if (window.google?.maps) {
-        createMap();
+        setTimeout(createMap, 100);
         return;
       }
 
       try {
+        // Buscar chave da API
         const { data: keyData, error } = await supabase.functions.invoke('get-google-maps-key');
         
         if (error || !keyData?.key) {
           throw new Error('Falha ao obter chave da API');
         }
 
-        // Remover scripts existentes
-        document.querySelectorAll('script[src*="maps.googleapis.com"]').forEach(s => s.remove());
+        // Carregar script se ainda não foi carregado
+        if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places&loading=async`;
+          script.async = true;
+          
+          script.onload = () => {
+            if (mounted) {
+              window.googleMapsInitialized = true;
+              setTimeout(createMap, 100);
+            }
+          };
 
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
-        script.async = true;
-        
-        script.onload = () => {
-          if (mounted) {
-            window.googleMapsInitialized = true;
-            createMap();
-          }
-        };
+          script.onerror = () => {
+            if (mounted) {
+              setHasError(true);
+              setIsLoading(false);
+            }
+          };
 
-        script.onerror = () => {
-          if (mounted) {
-            setHasError(true);
-            setIsLoading(false);
-          }
-        };
-
-        document.head.appendChild(script);
+          document.head.appendChild(script);
+        }
 
         // Timeout de segurança
         timeout = setTimeout(() => {
-          if (mounted && !window.google?.maps) {
+          if (mounted && !isLoaded) {
             setHasError(true);
             setIsLoading(false);
           }
-        }, 10000);
+        }, 8000);
 
       } catch (error) {
         console.error('Erro ao carregar Google Maps:', error);
