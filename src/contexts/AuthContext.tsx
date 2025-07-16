@@ -166,9 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
       
-      // Don't force profile fetch here - let onAuthStateChange handle it
-      // to avoid potential conflicts and loops
-      
       return { error: null };
     } catch (err) {
       console.error('Unexpected login error:', err);
