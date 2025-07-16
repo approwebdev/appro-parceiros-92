@@ -41,6 +41,9 @@ const AuthNew = () => {
   } = useToast();
   const navigate = useNavigate();
 
+  // Debug log to see what's happening
+  console.log('AuthNew - User:', user?.id, 'Profile:', profile?.id, 'Loading:', loading);
+
   // Redirect if already authenticated and approved
   if (user && profile) {
     if (profile.role === 'admin') {
