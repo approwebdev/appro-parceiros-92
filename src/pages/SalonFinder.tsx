@@ -52,11 +52,29 @@ const SalonFinder = () => {
   useEffect(() => {
     fetchSalons();
     fetchBanners();
+    // Solicitar localização automaticamente após carregar os salões
     const timer = setTimeout(() => {
-      setShowLocationDialog(true);
-    }, 1000);
+      if (!userLocation) {
+        setShowLocationDialog(true);
+      }
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Recalcular distâncias quando a localização for obtida
+  useEffect(() => {
+    if (userLocation && salons.length > 0) {
+      console.log('Recalculando distâncias para', salons.length, 'salões');
+      setSalons(prevSalons => prevSalons.map(salon => {
+        if (salon.latitude && salon.longitude) {
+          const distance = calculateDistance(userLocation.lat, userLocation.lng, salon.latitude, salon.longitude);
+          console.log(`Distância para ${salon.name}: ${distance.toFixed(1)}km`);
+          return { ...salon, distance };
+        }
+        return salon;
+      }));
+    }
+  }, [userLocation, salons.length]);
 
   const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
     const R = 6371;
@@ -85,15 +103,8 @@ const SalonFinder = () => {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
+        console.log('Localização obtida:', location);
         setUserLocation(location);
-
-        setSalons(prevSalons => prevSalons.map(salon => {
-          if (salon.latitude && salon.longitude) {
-            const distance = calculateDistance(location.lat, location.lng, salon.latitude, salon.longitude);
-            return { ...salon, distance };
-          }
-          return salon;
-        }));
         
         toast({
           title: "Localização obtida!",
@@ -104,9 +115,23 @@ const SalonFinder = () => {
       },
       (error) => {
         console.error('Erro de geolocalização:', error);
+        let errorMessage = "Não foi possível acessar sua localização. Tente novamente.";
+        
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Permissão de localização negada. Habilite nas configurações do navegador.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Localização indisponível. Verifique se o GPS está ativado.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Tempo limite para obter localização. Tente novamente.";
+            break;
+        }
+        
         toast({
           title: "Erro ao obter localização",
-          description: "Não foi possível acessar sua localização. Tente novamente.",
+          description: errorMessage,
           variant: "destructive"
         });
         setGettingLocation(false);
@@ -114,8 +139,8 @@ const SalonFinder = () => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000
+        timeout: 15000,
+        maximumAge: 60000
       }
     );
   };
@@ -203,11 +228,21 @@ const SalonFinder = () => {
     
     return nameMatch || addressMatch || instagramMatch;
   }).filter(salon => {
-    if (distanceFilter === 'all' || !salon.distance) return true;
+    // Debug do filtro de distância
+    console.log(`Filtrando ${salon.name}: distância=${salon.distance}, filtro=${distanceFilter}`);
+    
+    if (distanceFilter === 'all') return true;
+    if (!userLocation || !salon.distance) return true; // Mostrar todos se não há localização
+    
     const maxDistance = parseInt(distanceFilter);
-    return salon.distance <= maxDistance;
+    const withinDistance = salon.distance <= maxDistance;
+    console.log(`${salon.name}: ${salon.distance.toFixed(1)}km <= ${maxDistance}km? ${withinDistance}`);
+    return withinDistance;
   }).sort((a, b) => {
-    if (a.distance && b.distance) return a.distance - b.distance;
+    // Ordenar por distância se houver, senão por nome
+    if (userLocation && a.distance && b.distance) {
+      return a.distance - b.distance;
+    }
     return a.name.localeCompare(b.name);
   });
 
@@ -309,37 +344,48 @@ const SalonFinder = () => {
             {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
           </Button>
 
-          {userLocation && (
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">Distância:</p>
-              <div className="flex gap-2">
-                <Button 
-                  variant={distanceFilter === '50' ? 'default' : 'outline'} 
-                  onClick={() => setDistanceFilter('50')} 
-                  size="sm" 
-                  className={`flex-1 ${distanceFilter === '50' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
-                >
-                  50km
-                </Button>
-                <Button 
-                  variant={distanceFilter === '100' ? 'default' : 'outline'} 
-                  onClick={() => setDistanceFilter('100')} 
-                  size="sm" 
-                  className={`flex-1 ${distanceFilter === '100' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
-                >
-                  100km
-                </Button>
-                <Button 
-                  variant={distanceFilter === 'all' ? 'default' : 'outline'} 
-                  onClick={() => setDistanceFilter('all')} 
-                  size="sm" 
-                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
-                >
-                  Todos
-                </Button>
-              </div>
+          {/* Filtros de distância - sempre visíveis, mas desabilitados sem localização */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-gray-600">Filtrar por distância:</p>
+              {!userLocation && (
+                <p className="text-xs text-gray-400">Obtenha sua localização para filtrar</p>
+              )}
             </div>
-          )}
+            <div className="flex gap-2">
+              <Button 
+                variant={distanceFilter === '50' ? 'default' : 'outline'} 
+                onClick={() => userLocation && setDistanceFilter('50')} 
+                size="sm" 
+                disabled={!userLocation}
+                className={`flex-1 ${distanceFilter === '50' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                50km
+              </Button>
+              <Button 
+                variant={distanceFilter === '100' ? 'default' : 'outline'} 
+                onClick={() => userLocation && setDistanceFilter('100')} 
+                size="sm" 
+                disabled={!userLocation}
+                className={`flex-1 ${distanceFilter === '100' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                100km
+              </Button>
+              <Button 
+                variant={distanceFilter === 'all' ? 'default' : 'outline'} 
+                onClick={() => setDistanceFilter('all')} 
+                size="sm" 
+                className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+              >
+                Todos
+              </Button>
+            </div>
+            {userLocation && distanceFilter !== 'all' && (
+              <p className="text-xs text-green-600 mt-1">
+                ✓ Mostrando salões até {distanceFilter}km de você
+              </p>
+            )}
+          </div>
 
           <div className="flex gap-2 mb-6">
             <Button 
