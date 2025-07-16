@@ -64,26 +64,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('AuthContext - Fetching profile for user:', userId);
       
-      // First try with auth context
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
+      // Use RPC function to get profile data
+      const { data: profiles, error } = await supabase.rpc('get_admin_profiles');
       
-      console.log('AuthContext - Profile fetch result:', { data, error });
+      console.log('AuthContext - Admin profiles result:', { profiles, error });
       
       if (error) {
-        console.error('Error fetching profile:', error);
-        // If profile fetch fails, set a basic profile based on user metadata
+        console.error('AuthContext - Profile fetch error:', error);
         setProfile(null);
         return;
       }
       
-      console.log('AuthContext - Setting profile:', data);
-      setProfile(data as Profile);
+      // Find the current user's profile
+      const userProfile = profiles?.find(p => p.user_id === userId);
+      
+      if (userProfile) {
+        console.log('AuthContext - Setting profile:', userProfile);
+        setProfile({
+          ...userProfile,
+          status: 'approved' // Add missing status field
+        } as Profile);
+      } else {
+        console.log('AuthContext - No profile found for user:', userId);
+        setProfile(null);
+      }
     } catch (error) {
-      console.error('Unexpected error in fetchProfile:', error);
+      console.error('AuthContext - Unexpected error:', error);
       setProfile(null);
     }
   };
