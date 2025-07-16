@@ -208,12 +208,17 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   const nextTreatment = async () => {
     if (isTransitioning) return;
     
+    console.log('Starting next treatment transition');
     setIsTransitioning(true);
     
     // Animação de saída
-    const mainContent = document.querySelector('.treatment-content');
+    const mainContent = document.querySelector('.treatment-content') as HTMLElement;
+    console.log('Main content element:', mainContent);
+    
     if (mainContent) {
-      mainContent.classList.add('animate-fade-out', 'animate-scale-out');
+      mainContent.style.opacity = '0';
+      mainContent.style.transform = 'scale(0.95) translateY(10px)';
+      mainContent.style.transition = 'all 0.2s ease-out';
     }
     
     // Aguardar animação de saída
@@ -221,6 +226,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     
     const nextIndex = (currentTreatmentIndex + 1) % allTreatments.length;
     const nextTreatment = allTreatments[nextIndex];
+    
+    console.log('Updating to treatment:', nextTreatment.name);
     
     // Atualizar todos os dados para o próximo tratamento
     setCurrentTreatmentIndex(nextIndex);
@@ -237,22 +244,29 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     // Animação de entrada
     setTimeout(() => {
       if (mainContent) {
-        mainContent.classList.remove('animate-fade-out', 'animate-scale-out');
-        mainContent.classList.add('animate-fade-in', 'animate-scale-in');
+        mainContent.style.opacity = '1';
+        mainContent.style.transform = 'scale(1) translateY(0)';
       }
-      setIsTransitioning(false);
+      setTimeout(() => {
+        setIsTransitioning(false);
+        console.log('Transition completed');
+      }, 200);
     }, 50);
   };
 
   const prevTreatment = async () => {
     if (isTransitioning) return;
     
+    console.log('Starting prev treatment transition');
     setIsTransitioning(true);
     
     // Animação de saída
-    const mainContent = document.querySelector('.treatment-content');
+    const mainContent = document.querySelector('.treatment-content') as HTMLElement;
+    
     if (mainContent) {
-      mainContent.classList.add('animate-fade-out', 'animate-scale-out');
+      mainContent.style.opacity = '0';
+      mainContent.style.transform = 'scale(0.95) translateY(10px)';
+      mainContent.style.transition = 'all 0.2s ease-out';
     }
     
     // Aguardar animação de saída
@@ -260,6 +274,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     
     const prevIndex = (currentTreatmentIndex - 1 + allTreatments.length) % allTreatments.length;
     const prevTreatment = allTreatments[prevIndex];
+    
+    console.log('Updating to treatment:', prevTreatment.name);
     
     // Atualizar todos os dados para o tratamento anterior
     setCurrentTreatmentIndex(prevIndex);
@@ -276,10 +292,13 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     // Animação de entrada
     setTimeout(() => {
       if (mainContent) {
-        mainContent.classList.remove('animate-fade-out', 'animate-scale-out');
-        mainContent.classList.add('animate-fade-in', 'animate-scale-in');
+        mainContent.style.opacity = '1';
+        mainContent.style.transform = 'scale(1) translateY(0)';
       }
-      setIsTransitioning(false);
+      setTimeout(() => {
+        setIsTransitioning(false);
+        console.log('Transition completed');
+      }, 200);
     }, 50);
   };
 
