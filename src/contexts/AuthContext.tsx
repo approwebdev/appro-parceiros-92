@@ -28,6 +28,8 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUpWithDetails: (data: any) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -96,6 +98,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
   };
 
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
+  };
+
+  const signUpWithDetails = async (data: any) => {
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          name: data.name,
+          phone: data.phone,
+          wants_salon: data.wants_salon,
+          salon_name: data.salon_name,
+          postal_code: data.postal_code,
+          address: data.address,
+          address_number: data.address_number,
+          address_complement: data.address_complement,
+        }
+      }
+    });
+    return { error };
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
@@ -114,6 +144,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     profile,
     loading,
     signOut,
+    signIn,
+    signUpWithDetails,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
