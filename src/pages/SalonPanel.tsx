@@ -80,6 +80,83 @@ const SalonPanel = () => {
     return <Navigate to="/auth" replace />;
   }
 
+  // Se o perfil não tem salão e não quer ter salão, mostrar opção para criar
+  if (profile && !profile.has_salon && !profile.wants_salon) {
+    return (
+      <div className="min-h-screen bg-admin-content flex items-center justify-center">
+        <Card className="bg-admin-card border-admin-border max-w-md w-full mx-4">
+          <CardHeader>
+            <CardTitle className="text-admin-text text-center">Bem-vindo!</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-admin-text-muted">
+              Para acessar o painel do salão, você precisa ter um salão cadastrado.
+            </p>
+            <Button 
+              onClick={async () => {
+                try {
+                  const { error } = await supabase
+                    .from('profiles')
+                    .update({ wants_salon: true })
+                    .eq('user_id', user.id);
+                  
+                  if (error) throw error;
+                  
+                  toast({ title: "Solicitação enviada! Aguarde a aprovação." });
+                  window.location.reload();
+                } catch (error) {
+                  toast({
+                    title: "Erro",
+                    description: "Erro ao solicitar criação do salão",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              className="bg-admin-success hover:bg-admin-success-hover text-white"
+            >
+              Solicitar Criação do Salão
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={signOut}
+              className="w-full"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sair
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Se quer ter salão mas ainda não tem, mostrar que está pendente
+  if (profile && profile.wants_salon && !profile.has_salon) {
+    return (
+      <div className="min-h-screen bg-admin-content flex items-center justify-center">
+        <Card className="bg-admin-card border-admin-border max-w-md w-full mx-4">
+          <CardHeader>
+            <CardTitle className="text-admin-text text-center">Aguardando Aprovação</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-admin-text-muted">
+              Sua solicitação para criação do salão está em análise. 
+              Você receberá um email quando for aprovado.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={signOut}
+              className="w-full"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sair
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const fetchSalonData = async () => {
     try {
       const { data, error } = await supabase
