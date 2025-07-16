@@ -167,28 +167,13 @@ const SalonFinder = () => {
           return salon;
         }
 
-        let lat = -23.5505;
-        let lng = -46.6333;
-        if (salon.address) {
-          let hash = 0;
-          for (let i = 0; i < salon.address.length; i++) {
-            const char = salon.address.charCodeAt(i);
-            hash = (hash << 5) - hash + char;
-            hash = hash & hash;
-          }
-
-          const variation = 0.05;
-          lat += (hash % 1000 / 1000 - 0.5) * variation;
-          lng += ((hash >> 10) % 1000 / 1000 - 0.5) * variation;
-        } else {
-          lat += (Math.random() - 0.5) * 0.1;
-          lng += (Math.random() - 0.5) * 0.1;
-        }
+        // Usar função de geocodificação inteligente
+        const coords = generateSalonCoordinates(salon);
         
         return {
           ...salon,
-          latitude: lat,
-          longitude: lng
+          latitude: coords.lat,
+          longitude: coords.lng
         };
       });
       

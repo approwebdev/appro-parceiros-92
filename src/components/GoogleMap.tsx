@@ -27,19 +27,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
   useEffect(() => {
     let mounted = true;
+    let timeout: NodeJS.Timeout;
 
     const createMap = () => {
-      try {
-        if (!mapRef.current || !window.google?.maps) {
-          return;
-        }
+      if (!mapRef.current || !window.google?.maps || !mounted) return;
 
-        const center = userLocation 
-          ? { lat: userLocation.lat, lng: userLocation.lng }
-          : { lat: -23.5505, lng: -46.6333 };
+      try {
+        const center = userLocation || { lat: -23.5505, lng: -46.6333 };
 
         const map = new window.google.maps.Map(mapRef.current, {
-          center: center,
+          center,
           zoom: 12,
           mapTypeControl: false,
           fullscreenControl: false,
@@ -49,8 +46,8 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         // Marcador do usuário
         if (userLocation) {
           new window.google.maps.Marker({
-            position: { lat: userLocation.lat, lng: userLocation.lng },
-            map: map,
+            position: userLocation,
+            map,
             title: 'Sua localização',
             icon: {
               path: window.google.maps.SymbolPath.CIRCLE,
@@ -74,9 +71,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
         salons.forEach((salon) => {
           if (salon.latitude && salon.longitude) {
+            const position = { lat: salon.latitude, lng: salon.longitude };
+            
             const marker = new window.google.maps.Marker({
-              position: { lat: salon.latitude, lng: salon.longitude },
-              map: map,
+              position,
+              map,
               title: salon.name,
               icon: {
                 path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
@@ -97,10 +96,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
               `
             });
 
-            marker.addListener('click', () => {
-              infoWindow.open(map, marker);
-            });
-
+            marker.addListener('click', () => infoWindow.open(map, marker));
             bounds.extend(new window.google.maps.LatLng(salon.latitude, salon.longitude));
             hasMarkers = true;
           }
@@ -109,68 +105,42 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         if (hasMarkers) {
           map.fitBounds(bounds);
           window.google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-            if (map.getZoom()! > 15) {
-              map.setZoom(15);
-            }
+            if (map.getZoom()! > 15) map.setZoom(15);
           });
         }
 
-        if (mounted) {
-          setIsLoaded(true);
-          setIsLoading(false);
-        }
+        setIsLoaded(true);
+        setIsLoading(false);
 
       } catch (error) {
         console.error('Erro ao criar mapa:', error);
-        if (mounted) {
-          setHasError(true);
-          setIsLoading(false);
-        }
+        setHasError(true);
+        setIsLoading(false);
       }
     };
 
-    const initializeGoogleMaps = async () => {
+    const loadGoogleMaps = async () => {
+      if (!mounted) return;
+
+      // Se já carregado, criar mapa
+      if (window.google?.maps) {
+        createMap();
+        return;
+      }
+
       try {
-        // Se já está carregado, criar mapa diretamente
-        if (window.google?.maps && window.googleMapsInitialized) {
-          createMap();
-          return;
-        }
-
-        // Buscar chave da API apenas uma vez
-        const { data: keyData, error: keyError } = await supabase.functions.invoke('get-google-maps-key');
+        const { data: keyData, error } = await supabase.functions.invoke('get-google-maps-key');
         
-        if (keyError || !keyData?.key) {
-          console.error('Erro ao obter chave do Google Maps:', keyError);
-          if (mounted) {
-            setHasError(true);
-            setIsLoading(false);
-          }
-          return;
+        if (error || !keyData?.key) {
+          throw new Error('Falha ao obter chave da API');
         }
 
-        // Verificar se script já foi adicionado
-        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-        if (existingScript && !window.google?.maps) {
-          // Script existe mas ainda não carregou
-          existingScript.addEventListener('load', () => {
-            if (mounted) {
-              window.googleMapsInitialized = true;
-              createMap();
-            }
-          });
-          return;
-        }
+        // Remover scripts existentes
+        document.querySelectorAll('script[src*="maps.googleapis.com"]').forEach(s => s.remove());
 
-        if (existingScript) {
-          existingScript.remove();
-        }
-
-        // Carregar script do Google Maps
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
         script.async = true;
-        script.defer = true;
         
         script.onload = () => {
           if (mounted) {
@@ -180,7 +150,6 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         };
 
         script.onerror = () => {
-          console.error('Erro ao carregar Google Maps');
           if (mounted) {
             setHasError(true);
             setIsLoading(false);
@@ -189,8 +158,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
         document.head.appendChild(script);
 
+        // Timeout de segurança
+        timeout = setTimeout(() => {
+          if (mounted && !window.google?.maps) {
+            setHasError(true);
+            setIsLoading(false);
+          }
+        }, 10000);
+
       } catch (error) {
-        console.error('Erro ao inicializar Google Maps:', error);
+        console.error('Erro ao carregar Google Maps:', error);
         if (mounted) {
           setHasError(true);
           setIsLoading(false);
@@ -198,10 +175,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
       }
     };
 
-    initializeGoogleMaps();
+    loadGoogleMaps();
 
     return () => {
       mounted = false;
+      if (timeout) clearTimeout(timeout);
     };
   }, [salons, userLocation]);
 
