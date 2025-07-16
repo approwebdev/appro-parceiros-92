@@ -41,26 +41,6 @@ const AuthNew = () => {
   } = useToast();
   const navigate = useNavigate();
 
-  // Handle authentication states
-  useEffect(() => {
-    // Only check for profile error if loading is complete and user exists for more than 5 seconds
-    if (user && !profile && !loading) {
-      const timer = setTimeout(() => {
-        // Double check if profile is still null after loading completed
-        if (user && !profile && !loading) {
-          toast({
-            title: "Erro de autenticação",
-            description: "Perfil não encontrado. Faça login novamente.",
-            variant: "destructive"
-          });
-          signOut();
-        }
-      }, 5000); // Wait 5 seconds after loading completes
-
-      return () => clearTimeout(timer);
-    }
-  }, [user, profile, loading, toast, signOut]);
-
   // Redirect if already authenticated and approved
   if (user && profile) {
     if (profile.role === 'admin') {
