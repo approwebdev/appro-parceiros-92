@@ -444,6 +444,24 @@ export type Database = {
         }
         Returns: string
       }
+      admin_update_user_profile: {
+        Args: {
+          target_user_id: string
+          new_name?: string
+          new_email?: string
+          new_role?: string
+          new_phone?: string
+          new_instagram?: string
+          new_address?: string
+          new_address_number?: string
+          new_address_complement?: string
+          new_postal_code?: string
+          new_has_salon?: boolean
+          new_wants_salon?: boolean
+          new_status?: string
+        }
+        Returns: boolean
+      }
       get_address_from_cep: {
         Args: { cep_input: string }
         Returns: {

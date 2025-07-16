@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, User, Phone, Instagram, Mail } from 'lucide-react';
+import { z } from 'zod';
 
 interface User {
   id: string;
@@ -22,6 +23,26 @@ interface User {
   wants_salon: boolean;
   created_at: string;
 }
+
+// Validation schemas for security
+const userCreateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  email: z.string().email("Invalid email format").max(255, "Email too long"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
+  role: z.enum(['admin', 'salon', 'collaborator']),
+  phone: z.string().max(20, "Phone too long").optional(),
+  instagram: z.string().max(50, "Instagram handle too long").optional(),
+});
+
+const userUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  email: z.string().email("Invalid email format").max(255, "Email too long"),
+  role: z.enum(['admin', 'salon', 'collaborator']),
+  phone: z.string().max(20, "Phone too long").optional(),
+  instagram: z.string().max(50, "Instagram handle too long").optional(),
+});
 
 export const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -67,29 +88,45 @@ export const AdminUsers = () => {
     
     try {
       if (editingUser) {
-        // Atualizar usuário existente - DADOS DO PERFIL
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            name: formData.name,
-            email: formData.email,
-            role: formData.role,
-            phone: formData.phone
-          })
-          .eq('id', editingUser.id);
-        
+        // Validate update data
+        const validatedData = userUpdateSchema.parse({
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          role: formData.role,
+          phone: formData.phone?.trim() || undefined,
+        });
+
+        // Use secure admin function to update user
+        const { error } = await supabase.rpc('admin_update_user_profile', {
+          target_user_id: editingUser.user_id,
+          new_name: validatedData.name,
+          new_email: validatedData.email,
+          new_role: validatedData.role,
+          new_phone: validatedData.phone || null,
+        });
+
         if (error) throw error;
         toast({ title: "Usuário atualizado com sucesso!" });
       } else {
-        // Criar novo usuário usando signUp
-        const { error } = await supabase.auth.signUp({
-          email: formData.email,
+        // Validate creation data
+        const validatedData = userCreateSchema.parse({
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
           password: formData.password,
+          role: formData.role,
+          phone: formData.phone?.trim() || undefined,
+        });
+
+        // Create new user with validated data
+        const { error } = await supabase.auth.signUp({
+          email: validatedData.email,
+          password: validatedData.password,
           options: {
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
-              name: formData.name,
-              role: formData.role,
-              phone: formData.phone
+              name: validatedData.name,
+              role: validatedData.role,
+              phone: validatedData.phone,
             }
           }
         });
@@ -102,19 +139,38 @@ export const AdminUsers = () => {
       setIsDialogOpen(false);
       resetForm();
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao salvar usuário",
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Dados inválidos",
+          description: error.issues[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: error.message || "Erro ao salvar usuário",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const handleDelete = async (userId: string) => {
+    // Check if trying to delete own account
+    const currentUser = await supabase.auth.getUser();
+    if (userId === currentUser.data.user?.id) {
+      toast({
+        title: "Erro",
+        description: "Você não pode deletar sua própria conta",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
     
     try {
-      // Primeiro tenta deletar da tabela profiles
+      // Delete from profiles table first
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -122,12 +178,11 @@ export const AdminUsers = () => {
       
       if (profileError) throw profileError;
       
-      // Então tenta deletar o usuário do auth
+      // Then delete from auth (requires service role)
       const { error: authError } = await supabase.auth.admin.deleteUser(userId);
       
       if (authError) {
-        // Se falhar no auth, mas sucedeu no profile, vamos apenas atualizar a lista
-        
+        console.warn('Failed to delete user from auth:', authError);
       }
       
       toast({ title: "Usuário excluído com sucesso!" });

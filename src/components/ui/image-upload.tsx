@@ -32,7 +32,21 @@ export const ImageUpload = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Verificar tamanho do arquivo
+    // Security: Validate file type by MIME type and extension
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    
+    if (!allowedTypes.includes(file.type) || !allowedExtensions.includes(fileExtension)) {
+      toast({
+        title: "Tipo de arquivo inválido",
+        description: "Apenas imagens JPG, PNG, WebP e GIF são permitidas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Security: Check file size
     if (file.size > maxSize * 1024 * 1024) {
       toast({
         title: "Arquivo muito grande",
@@ -45,13 +59,17 @@ export const ImageUpload = ({
     setUploading(true);
     
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // Security: Generate secure file name
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substring(2);
+      const fileName = `${timestamp}_${randomId}${fileExtension}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -59,7 +77,7 @@ export const ImageUpload = ({
 
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setImageUrl(publicUrl);
       onChange(publicUrl);
@@ -80,8 +98,20 @@ export const ImageUpload = ({
   };
 
   const handleUrlChange = (url: string) => {
-    setImageUrl(url);
-    onChange(url);
+    // Security: Basic URL validation and sanitization
+    const trimmedUrl = url.trim();
+    
+    if (trimmedUrl && !trimmedUrl.match(/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) {
+      toast({
+        title: "URL inválida",
+        description: "Por favor, insira uma URL válida de imagem",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setImageUrl(trimmedUrl);
+    onChange(trimmedUrl);
   };
 
   const clearImage = () => {
