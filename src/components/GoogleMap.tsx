@@ -15,7 +15,7 @@ interface GoogleMapProps {
 declare global {
   interface Window {
     google: any;
-    googleMapsCallback: () => void;
+    googleMapsInitialized?: boolean;
   }
 }
 
@@ -28,93 +28,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   useEffect(() => {
     let mounted = true;
 
-    const initializeMap = async () => {
-      try {
-        setIsLoading(true);
-        
-
-        // Se Google Maps já está carregado, criar mapa diretamente
-        if (window.google && window.google.maps) {
-          
-          if (mounted) {
-            createMap();
-          }
-          return;
-        }
-
-        // Buscar chave da API
-        const { data: keyData, error: keyError } = await supabase.functions.invoke('get-google-maps-key');
-        
-        if (keyError || !keyData?.key) {
-          console.error('Google Maps: Erro ao obter chave:', keyError);
-          if (mounted) {
-            setHasError(true);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        
-
-        // Remover callback anterior se existir
-        if (window.googleMapsCallback) {
-          delete window.googleMapsCallback;
-        }
-
-        // Definir callback global
-        window.googleMapsCallback = () => {
-          
-          if (mounted && mapRef.current) {
-            createMap();
-          }
-        };
-
-        // Verificar se script já existe
-        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-        if (existingScript) {
-          existingScript.remove();
-        }
-
-        // Carregar script do Google Maps
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&callback=googleMapsCallback&libraries=places&loading=async`;
-        script.async = true;
-        script.defer = true;
-        
-        script.onerror = () => {
-          console.error('Google Maps: Erro ao carregar script');
-          if (mounted) {
-            setHasError(true);
-            setIsLoading(false);
-          }
-        };
-
-        document.head.appendChild(script);
-
-      } catch (error) {
-        console.error('Google Maps: Erro geral:', error);
-        if (mounted) {
-          setHasError(true);
-          setIsLoading(false);
-        }
-      }
-    };
-
     const createMap = () => {
       try {
-        
-        
-        if (!mapRef.current) {
-          
+        if (!mapRef.current || !window.google?.maps) {
           return;
         }
-
-        if (!window.google || !window.google.maps) {
-          
-          return;
-        }
-
-        
 
         const center = userLocation 
           ? { lat: userLocation.lat, lng: userLocation.lng }
@@ -197,14 +115,13 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           });
         }
 
-        
         if (mounted) {
           setIsLoaded(true);
           setIsLoading(false);
         }
 
       } catch (error) {
-        console.error('Google Maps: Erro ao criar mapa:', error);
+        console.error('Erro ao criar mapa:', error);
         if (mounted) {
           setHasError(true);
           setIsLoading(false);
@@ -212,13 +129,79 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
       }
     };
 
-    initializeMap();
+    const initializeGoogleMaps = async () => {
+      try {
+        // Se já está carregado, criar mapa diretamente
+        if (window.google?.maps && window.googleMapsInitialized) {
+          createMap();
+          return;
+        }
+
+        // Buscar chave da API apenas uma vez
+        const { data: keyData, error: keyError } = await supabase.functions.invoke('get-google-maps-key');
+        
+        if (keyError || !keyData?.key) {
+          console.error('Erro ao obter chave do Google Maps:', keyError);
+          if (mounted) {
+            setHasError(true);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // Verificar se script já foi adicionado
+        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        if (existingScript && !window.google?.maps) {
+          // Script existe mas ainda não carregou
+          existingScript.addEventListener('load', () => {
+            if (mounted) {
+              window.googleMapsInitialized = true;
+              createMap();
+            }
+          });
+          return;
+        }
+
+        if (existingScript) {
+          existingScript.remove();
+        }
+
+        // Carregar script do Google Maps
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
+        script.async = true;
+        script.defer = true;
+        
+        script.onload = () => {
+          if (mounted) {
+            window.googleMapsInitialized = true;
+            createMap();
+          }
+        };
+
+        script.onerror = () => {
+          console.error('Erro ao carregar Google Maps');
+          if (mounted) {
+            setHasError(true);
+            setIsLoading(false);
+          }
+        };
+
+        document.head.appendChild(script);
+
+      } catch (error) {
+        console.error('Erro ao inicializar Google Maps:', error);
+        if (mounted) {
+          setHasError(true);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    initializeGoogleMaps();
 
     return () => {
       mounted = false;
-      if (window.googleMapsCallback) {
-        delete window.googleMapsCallback;
-      }
     };
   }, [salons, userLocation]);
 
