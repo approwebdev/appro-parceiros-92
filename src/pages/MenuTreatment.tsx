@@ -75,7 +75,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         const result = await supabase
           .from('treatments')
           .select('*')
-          .eq('category', selectedCategory)
+          .ilike('category', `%${selectedCategory.toLowerCase()}%`)
           .eq('is_active', true)
           .limit(1)
           .maybeSingle();
