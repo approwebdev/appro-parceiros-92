@@ -303,7 +303,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   }
 
   return (
-    <div className="menu-container bg-white relative h-screen overflow-hidden">
+    <div className="menu-container bg-white relative h-screen overflow-y-auto sm:landscape:overflow-hidden">
       {/* Header */}
       <div className="sticky top-0 left-0 right-0 z-30 flex justify-between items-center p-4 md:p-6 bg-white border-b shadow-sm animate-fade-in">
         <div className="flex items-center gap-2 md:gap-4">
@@ -340,7 +340,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       </div>
 
       {/* Carrossel horizontal */}
-      <div className="relative h-[calc(100vh-80px)] overflow-hidden">
+      <div className="relative h-auto sm:landscape:h-[calc(100vh-80px)] sm:landscape:overflow-hidden">
         {/* Controles do Carrossel */}
         <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
           <Button
@@ -369,10 +369,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         {/* Container do carrossel */}
         <div className="carousel-container w-full h-full transition-transform duration-300 ease-out">
           <div className="max-w-7xl mx-auto px-6 py-8 h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-auto lg:h-full">
               
               {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
-              <div className="lg:col-span-1 space-y-6 overflow-y-auto">
+              <div className="lg:col-span-1 space-y-6 overflow-y-auto sm:landscape:overflow-y-hidden sm:landscape:h-full">
                 {/* Imagem Principal */}
                 <div className="h-64 md:h-80 lg:h-96 bg-gray-100 rounded-xl overflow-hidden">
                   <img 
@@ -408,14 +408,14 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   ))}
                 </div>
                 
-                {/* Produtos Relacionados */}
-                <div>
+                 {/* Produtos Relacionados */}
+                <div className="sm:landscape:hidden">
                   <h3 className="text-lg font-semibold mb-4 text-black">Produtos Relacionados</h3>
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-3 sm:grid-cols-1 gap-2 sm:gap-3">
                     {relatedTreatments.slice(0, 3).map((related, i) => (
                       <div 
                         key={i} 
-                        className="group cursor-pointer flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="group cursor-pointer flex flex-col sm:flex-row gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition-colors"
                         onClick={async () => {
                           if (isTransitioning) return;
                           
@@ -434,7 +434,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           }, 300);
                         }}
                       >
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="w-full sm:w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                           <img 
                             src={related.images && related.images.length > 0 
                               ? related.images[0] 
@@ -444,8 +444,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-black truncate">{related.name}</h4>
+                        <div className="flex-1 min-w-0 text-center sm:text-left">
+                          <h4 className="text-xs sm:text-sm font-medium text-black truncate">{related.name}</h4>
                           <p className="text-xs text-gray-400 mt-1">R$ {related.custom_price?.toFixed(2)}</p>
                         </div>
                       </div>
@@ -455,7 +455,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               </div>
 
               {/* Centro - Informações */}
-              <div className="lg:col-span-1 overflow-y-auto">
+              <div className="lg:col-span-1 overflow-y-auto sm:landscape:overflow-y-hidden sm:landscape:h-full">
                 <div className="mb-3">
                   <span className="text-sm text-gray-400 uppercase tracking-wide">{treatmentCategory}</span>
                 </div>
