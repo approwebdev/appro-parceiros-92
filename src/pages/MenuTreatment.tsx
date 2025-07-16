@@ -36,6 +36,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [treatmentCategory, setTreatmentCategory] = useState('');
   const [buttonColor, setButtonColor] = useState('#D4AF37');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     if (slug && (treatmentId || selectedCategory)) {
@@ -204,36 +205,82 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     return text.substring(0, maxLength) + '...';
   };
 
-  const nextTreatment = () => {
+  const nextTreatment = async () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    
+    // Animação de saída
+    const mainContent = document.querySelector('.treatment-content');
+    if (mainContent) {
+      mainContent.classList.add('animate-fade-out', 'animate-scale-out');
+    }
+    
+    // Aguardar animação de saída
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
     const nextIndex = (currentTreatmentIndex + 1) % allTreatments.length;
     const nextTreatment = allTreatments[nextIndex];
     
     // Atualizar todos os dados para o próximo tratamento
     setCurrentTreatmentIndex(nextIndex);
     setTreatment(nextTreatment);
-    setShowPrice(false); // Reset price visibility
+    setShowPrice(false);
+    setCurrentImageIndex(0);
     
     // Atualizar produtos relacionados
     const related = allTreatments
       .filter(t => t.id !== nextTreatment.id)
       .slice(0, 3);
     setRelatedTreatments(related);
+    
+    // Animação de entrada
+    setTimeout(() => {
+      if (mainContent) {
+        mainContent.classList.remove('animate-fade-out', 'animate-scale-out');
+        mainContent.classList.add('animate-fade-in', 'animate-scale-in');
+      }
+      setIsTransitioning(false);
+    }, 50);
   };
 
-  const prevTreatment = () => {
+  const prevTreatment = async () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    
+    // Animação de saída
+    const mainContent = document.querySelector('.treatment-content');
+    if (mainContent) {
+      mainContent.classList.add('animate-fade-out', 'animate-scale-out');
+    }
+    
+    // Aguardar animação de saída
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
     const prevIndex = (currentTreatmentIndex - 1 + allTreatments.length) % allTreatments.length;
     const prevTreatment = allTreatments[prevIndex];
     
     // Atualizar todos os dados para o tratamento anterior
     setCurrentTreatmentIndex(prevIndex);
     setTreatment(prevTreatment);
-    setShowPrice(false); // Reset price visibility
+    setShowPrice(false);
+    setCurrentImageIndex(0);
     
     // Atualizar produtos relacionados
     const related = allTreatments
       .filter(t => t.id !== prevTreatment.id)
       .slice(0, 3);
     setRelatedTreatments(related);
+    
+    // Animação de entrada
+    setTimeout(() => {
+      if (mainContent) {
+        mainContent.classList.remove('animate-fade-out', 'animate-scale-out');
+        mainContent.classList.add('animate-fade-in', 'animate-scale-in');
+      }
+      setIsTransitioning(false);
+    }, 50);
   };
 
   if (loading) {
@@ -302,9 +349,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           <div className="hidden lg:block absolute -left-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
               onClick={prevTreatment}
+              disabled={isTransitioning}
               variant="outline"
               size="icon"
-              className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
+              className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white disabled:opacity-50 transition-all duration-300 hover:scale-105"
             >
               <ChevronLeft className="h-6 w-6" />
             </Button>
@@ -313,9 +361,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           <div className="hidden lg:block absolute -right-16 top-1/2 transform -translate-y-1/2 z-20">
             <Button
               onClick={nextTreatment}
+              disabled={isTransitioning}
               variant="outline"
               size="icon"
-              className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white"
+              className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white disabled:opacity-50 transition-all duration-300 hover:scale-105"
             >
               <ChevronRight className="h-6 w-6" />
             </Button>
@@ -325,25 +374,27 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           <div className="flex lg:hidden justify-center gap-4 mb-6">
             <Button
               onClick={prevTreatment}
+              disabled={isTransitioning}
               variant="outline"
               size="sm"
-              className="rounded-full bg-white border-gray-300 hover:bg-gray-50"
+              className="rounded-full bg-white border-gray-300 hover:bg-gray-50 disabled:opacity-50 transition-all duration-300 hover:scale-105"
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
               Anterior
             </Button>
             <Button
               onClick={nextTreatment}
+              disabled={isTransitioning}
               variant="outline"
               size="sm"
-              className="rounded-full bg-white border-gray-300 hover:bg-gray-50"
+              className="rounded-full bg-white border-gray-300 hover:bg-gray-50 disabled:opacity-50 transition-all duration-300 hover:scale-105"
             >
               Próximo
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="treatment-content grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             
             {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
             <div className="lg:col-span-1 space-y-4 md:space-y-6 animate-fade-in">
@@ -390,7 +441,20 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     <div 
                       key={i} 
                       className="group cursor-pointer"
-                      onClick={() => {
+                      onClick={async () => {
+                        if (isTransitioning) return;
+                        
+                        setIsTransitioning(true);
+                        
+                        // Animação de saída
+                        const mainContent = document.querySelector('.treatment-content');
+                        if (mainContent) {
+                          mainContent.classList.add('animate-fade-out', 'animate-scale-out');
+                        }
+                        
+                        // Aguardar animação de saída
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                        
                         const relatedIndex = allTreatments.findIndex(t => t.id === related.id);
                         if (relatedIndex !== -1) {
                           setCurrentTreatmentIndex(relatedIndex);
@@ -403,6 +467,15 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             .slice(0, 3);
                           setRelatedTreatments(newRelated);
                         }
+                        
+                        // Animação de entrada
+                        setTimeout(() => {
+                          if (mainContent) {
+                            mainContent.classList.remove('animate-fade-out', 'animate-scale-out');
+                            mainContent.classList.add('animate-fade-in', 'animate-scale-in');
+                          }
+                          setIsTransitioning(false);
+                        }, 50);
                       }}
                     >
                       <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
