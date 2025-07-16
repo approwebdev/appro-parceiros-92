@@ -50,10 +50,11 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .from('salons')
         .select('id, phone')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
-      if (salonError) {
+      if (salonError || !salonData) {
         console.error('Erro ao buscar salão:', salonError);
+        setLoading(false);
         return;
       }
 
@@ -66,7 +67,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           .from('treatments')
           .select('*')
           .eq('id', treatmentId)
-          .single();
+          .maybeSingle();
         treatmentData = result.data;
         treatmentError = result.error;
       } else if (selectedCategory) {
@@ -77,13 +78,14 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           .eq('category', selectedCategory)
           .eq('is_active', true)
           .limit(1)
-          .single();
+          .maybeSingle();
         treatmentData = result.data;
         treatmentError = result.error;
       }
 
-      if (treatmentError) {
+      if (treatmentError || !treatmentData) {
         console.error('Erro ao buscar tratamento:', treatmentError);
+        setLoading(false);
         return;
       }
 
@@ -93,10 +95,11 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .select('custom_price, is_active')
         .eq('salon_id', salonData.id)
         .eq('treatment_id', treatmentData.id)
-        .single();
+        .maybeSingle();
 
-      if (salonTreatmentError) {
+      if (salonTreatmentError || !salonTreatmentData) {
         console.error('Erro ao buscar preço do tratamento:', salonTreatmentError);
+        setLoading(false);
         return;
       }
 
@@ -131,7 +134,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .from('categories')
         .select('name')
         .eq('name', treatmentData.category)
-        .single();
+        .maybeSingle();
 
       // Montar dados do tratamento
       const fullTreatment = {
