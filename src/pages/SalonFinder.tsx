@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram } from "lucide-react";
@@ -9,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
+
 interface Salon {
   id: string;
   name: string;
@@ -22,6 +24,7 @@ interface Salon {
   plan?: string;
   photo_url?: string;
 }
+
 interface Banner {
   id: string;
   title: string;
@@ -30,6 +33,7 @@ interface Banner {
   is_active: boolean;
   order_position: number;
 }
+
 const SalonFinder = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -42,32 +46,27 @@ const SalonFinder = () => {
   } | null>(null);
   const [distanceFilter, setDistanceFilter] = useState<'50' | '100' | 'all'>('all');
   const [gettingLocation, setGettingLocation] = useState(false);
-  const [isLocationFilterOpen, setIsLocationFilterOpen] = useState(false);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   useEffect(() => {
     fetchSalons();
     fetchBanners();
-    // Mostrar popup de localização após um pequeno delay
     const timer = setTimeout(() => {
       setShowLocationDialog(true);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Função para calcular distância entre dois pontos
   const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-    const R = 6371; // Raio da Terra em km
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distância em km
+    return R * c;
   };
 
-  // Função para obter localização do usuário
   const getUserLocation = () => {
     setGettingLocation(true);
     if (!navigator.geolocation) {
@@ -79,117 +78,94 @@ const SalonFinder = () => {
       setGettingLocation(false);
       return;
     }
-    navigator.geolocation.getCurrentPosition(position => {
-      const location = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-      setUserLocation(location);
-
-      // Calcular distâncias para todos os salões
-      setSalons(prevSalons => prevSalons.map(salon => {
-        if (salon.latitude && salon.longitude) {
-          const distance = calculateDistance(location.lat, location.lng, salon.latitude, salon.longitude);
-          return {
-            ...salon,
-            distance
-          };
-        }
-        return salon;
-      }));
-      toast({
-        title: "Localização obtida!",
-        description: "Mostrando salões próximos a você."
-      });
-      setGettingLocation(false);
-      setShowLocationDialog(false);
-    }, error => {
-      toast({
-        title: "Erro ao obter localização",
-        description: "Não foi possível acessar sua localização. Tente novamente.",
-        variant: "destructive"
-      });
-      setGettingLocation(false);
-      setShowLocationDialog(false);
-    });
-  };
-
-  // Função para geocodificar endereço usando Google Maps
-  const geocodeAddress = async (address: string): Promise<{
-    lat: number;
-    lng: number;
-  } | null> => {
-    try {
-      const {
-        data: keyData
-      } = await supabase.functions.invoke('get-google-maps-key');
-      if (!keyData?.key) return null;
-      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${keyData.key}`);
-      const data = await response.json();
-      if (data.status === 'OK' && data.results.length > 0) {
-        const location = data.results[0].geometry.location;
-        return {
-          lat: location.lat,
-          lng: location.lng
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
         };
+        setUserLocation(location);
+
+        setSalons(prevSalons => prevSalons.map(salon => {
+          if (salon.latitude && salon.longitude) {
+            const distance = calculateDistance(location.lat, location.lng, salon.latitude, salon.longitude);
+            return { ...salon, distance };
+          }
+          return salon;
+        }));
+        
+        toast({
+          title: "Localização obtida!",
+          description: "Mostrando salões próximos a você."
+        });
+        setGettingLocation(false);
+        setShowLocationDialog(false);
+      },
+      (error) => {
+        console.error('Erro de geolocalização:', error);
+        toast({
+          title: "Erro ao obter localização",
+          description: "Não foi possível acessar sua localização. Tente novamente.",
+          variant: "destructive"
+        });
+        setGettingLocation(false);
+        setShowLocationDialog(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000
       }
-      return null;
-    } catch (error) {
-      console.error('Erro no geocoding:', error);
-      return null;
-    }
+    );
   };
+
   const fetchSalons = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('salons').select('*').eq('is_active', true).order('name');
+      const { data, error } = await supabase
+        .from('salons')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+
       if (error) {
         console.error('Erro ao buscar salões:', error);
         return;
       }
-      
 
-      // Processar salões - usar coordenadas do banco ou endereços como texto para distância
       const salonsWithCoords = (data || []).map(salon => {
-        // Se já tem coordenadas válidas no banco, usar elas
-        if (salon.latitude && salon.longitude && typeof salon.latitude === 'number' && typeof salon.longitude === 'number' && salon.latitude !== 0 && salon.longitude !== 0) {
+        if (salon.latitude && salon.longitude && 
+            typeof salon.latitude === 'number' && 
+            typeof salon.longitude === 'number' && 
+            salon.latitude !== 0 && salon.longitude !== 0) {
           return salon;
         }
 
-        // Se não tem coordenadas, gerar baseado no endereço (simulação para demonstração)
-        // Vamos usar uma hash simples do endereço para coordenadas consistentes
-        let lat = -23.5505; // São Paulo base
+        let lat = -23.5505;
         let lng = -46.6333;
         if (salon.address) {
-          // Usar hash do endereço para coordenadas consistentes
           let hash = 0;
           for (let i = 0; i < salon.address.length; i++) {
             const char = salon.address.charCodeAt(i);
             hash = (hash << 5) - hash + char;
-            hash = hash & hash; // Convert to 32-bit integer
+            hash = hash & hash;
           }
 
-          // Converter hash em variação pequena de coordenadas
-          const variation = 0.05; // ~5km de variação
+          const variation = 0.05;
           lat += (hash % 1000 / 1000 - 0.5) * variation;
           lng += ((hash >> 10) % 1000 / 1000 - 0.5) * variation;
         } else {
-          // Coordenadas aleatórias para salões sem endereço
           lat += (Math.random() - 0.5) * 0.1;
           lng += (Math.random() - 0.5) * 0.1;
         }
-        const coords = {
+        
+        return {
+          ...salon,
           latitude: lat,
           longitude: lng
         };
-        return {
-          ...salon,
-          latitude: coords.latitude,
-          longitude: coords.longitude
-        };
       });
+      
       setSalons(salonsWithCoords);
     } catch (error) {
       console.error('Erro ao buscar salões:', error);
@@ -197,12 +173,15 @@ const SalonFinder = () => {
       setLoading(false);
     }
   };
+
   const fetchBanners = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('salon_banners').select('*').eq('is_active', true).order('order_position');
+      const { data, error } = await supabase
+        .from('salon_banners')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_position');
+
       if (error) {
         console.error('Erro ao buscar banners:', error);
         return;
@@ -213,32 +192,46 @@ const SalonFinder = () => {
     }
   };
 
-  // Filtrar salões por busca e distância
-  const filteredSalons = salons.filter(salon => salon.name.toLowerCase().includes(searchTerm.toLowerCase()) || salon.address?.toLowerCase().includes(searchTerm.toLowerCase())).filter(salon => {
+  // Filtro melhorado para busca
+  const filteredSalons = salons.filter(salon => {
+    const searchLower = searchTerm.toLowerCase().trim();
+    if (!searchLower) return true;
+    
+    const nameMatch = salon.name.toLowerCase().includes(searchLower);
+    const addressMatch = salon.address?.toLowerCase().includes(searchLower);
+    const instagramMatch = salon.instagram?.toLowerCase().includes(searchLower);
+    
+    return nameMatch || addressMatch || instagramMatch;
+  }).filter(salon => {
     if (distanceFilter === 'all' || !salon.distance) return true;
     const maxDistance = parseInt(distanceFilter);
     return salon.distance <= maxDistance;
   }).sort((a, b) => {
     if (a.distance && b.distance) return a.distance - b.distance;
-    return 0;
+    return a.name.localeCompare(b.name);
   });
+
   const formatPhone = (phone: string) => {
     if (!phone) return '';
     return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
+
   const openWhatsApp = (phone: string) => {
     if (!phone) return;
     const cleanPhone = phone.replace(/\D/g, '');
     window.open(`https://wa.me/55${cleanPhone}`, '_blank');
   };
+
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2" style={{
-        borderColor: '#F8E7BF'
-      }}></div>
-      </div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2" style={{ borderColor: '#F8E7BF' }}></div>
+      </div>
+    );
   }
-  return <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
+
+  return (
+    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Dialog de Localização */}
       <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
         <DialogContent className="max-w-md mx-auto" aria-describedby="location-dialog-description">
@@ -252,17 +245,26 @@ const SalonFinder = () => {
               Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
             </p>
             <div className="flex gap-3">
-              <Button onClick={getUserLocation} disabled={gettingLocation} className="flex-1 bg-blue-600 text-white hover:bg-blue-700">
+              <Button 
+                onClick={getUserLocation} 
+                disabled={gettingLocation} 
+                className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+              >
                 <Navigation className="h-4 w-4 mr-2" />
                 {gettingLocation ? 'Obtendo...' : 'Usar localização'}
               </Button>
-              <Button variant="outline" onClick={() => setShowLocationDialog(false)} className="flex-1">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowLocationDialog(false)} 
+                className="flex-1"
+              >
                 Agora não
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
       {/* Header */}
       <header className="bg-black border-b border-gray-200 px-4 py-4">
         <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
@@ -272,61 +274,87 @@ const SalonFinder = () => {
 
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
-        {/* Background Image div above the gray container */}
-        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16" style={{
-        backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)'
-      }}></div>
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16" 
+             style={{ backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)' }}>
+        </div>
         
         <div className="text-center mb-6">
-          {/* Search Container with dark gray background */}
-          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{
-          backgroundColor: '#242424'
-        }}>
+          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{ backgroundColor: '#242424' }}>
             <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
               Encontre o Salão mais
             </h1>
-            <h2 style={{
-            color: '#F8E7BF'
-          }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
+            <h2 style={{ color: '#F8E7BF' }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
               próximo de você.
             </h2>
             
-            {/* Search */}
             <div className="relative mb-4">
-              <Input type="text" placeholder="Buscar salão ou endereço..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" />
+              <Input 
+                type="text" 
+                placeholder="Buscar salão, endereço ou Instagram..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" 
+              />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
             </div>
           </div>
 
-          {/* Get Location Button - Always visible */}
-          <Button onClick={getUserLocation} disabled={gettingLocation} variant="outline" className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50">
+          <Button 
+            onClick={getUserLocation} 
+            disabled={gettingLocation} 
+            variant="outline" 
+            className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
             <Navigation className="h-4 w-4 mr-2" />
             {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
           </Button>
 
-          {/* Distance Filters - Compact version */}
-          {userLocation && <div className="mb-4">
+          {userLocation && (
+            <div className="mb-4">
               <p className="text-sm text-gray-600 mb-2">Distância:</p>
               <div className="flex gap-2">
-                <Button variant={distanceFilter === '50' ? 'default' : 'outline'} onClick={() => setDistanceFilter('50')} size="sm" className={`flex-1 ${distanceFilter === '50' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
+                <Button 
+                  variant={distanceFilter === '50' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('50')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === '50' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+                >
                   50km
                 </Button>
-                <Button variant={distanceFilter === '100' ? 'default' : 'outline'} onClick={() => setDistanceFilter('100')} size="sm" className={`flex-1 ${distanceFilter === '100' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
+                <Button 
+                  variant={distanceFilter === '100' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('100')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === '100' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+                >
                   100km
                 </Button>
-                <Button variant={distanceFilter === 'all' ? 'default' : 'outline'} onClick={() => setDistanceFilter('all')} size="sm" className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
+                <Button 
+                  variant={distanceFilter === 'all' ? 'default' : 'outline'} 
+                  onClick={() => setDistanceFilter('all')} 
+                  size="sm" 
+                  className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+                >
                   Todos
                 </Button>
               </div>
-            </div>}
+            </div>
+          )}
 
-          {/* View Type Buttons */}
           <div className="flex gap-2 mb-6">
-            <Button variant={viewType === 'list' ? 'default' : 'outline'} onClick={() => setViewType('list')} className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
+            <Button 
+              variant={viewType === 'list' ? 'default' : 'outline'} 
+              onClick={() => setViewType('list')} 
+              className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+            >
               <List className="h-4 w-4" />
               Lista
             </Button>
-            <Button variant={viewType === 'map' ? 'default' : 'outline'} onClick={() => setViewType('map')} className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
+            <Button 
+              variant={viewType === 'map' ? 'default' : 'outline'} 
+              onClick={() => setViewType('map')} 
+              className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+            >
               <Map className="h-4 w-4" />
               Mapa
             </Button>
@@ -334,65 +362,92 @@ const SalonFinder = () => {
         </div>
 
         {/* Map View */}
-        {viewType === 'map' && <div className="mb-8">
+        {viewType === 'map' && (
+          <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Mapa dos Salões</h3>
             <GoogleMap salons={filteredSalons} userLocation={userLocation} />
-          </div>}
+          </div>
+        )}
 
         {/* Salons List */}
-        {viewType === 'list' && <div className="space-y-4 md:space-y-6 mb-8">
+        {viewType === 'list' && (
+          <div className="space-y-4 md:space-y-6 mb-8">
             <div className="flex items-center justify-between">
               <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
-                {userLocation ? <span>Salões <span style={{
-                color: '#F8E7BF'
-              }}>próximos de você</span></span> : 'Todos os salões'}
+                {userLocation ? (
+                  <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span>
+                ) : (
+                  'Todos os salões'
+                )}
               </h3>
-              {userLocation && filteredSalons.length > 0 && <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
+              {filteredSalons.length > 0 && (
+                <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
                   {filteredSalons.length} encontrados
-                </Badge>}
+                </Badge>
+              )}
             </div>
             
             {filteredSalons.map((salon, index) => {
-          const midPoint = Math.floor(filteredSalons.length / 2);
-          const showMidBanner = index === midPoint && banners.length > 0;
-          const isLastSalon = index === filteredSalons.length - 1;
-          const showEndBanner = isLastSalon && banners.length > 1;
-          return <div key={salon.id}>
+              const midPoint = Math.floor(filteredSalons.length / 2);
+              const showMidBanner = index === midPoint && banners.length > 0;
+              const isLastSalon = index === filteredSalons.length - 1;
+              const showEndBanner = isLastSalon && banners.length > 1;
+              
+              return (
+                <div key={salon.id}>
                   <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
                     <CardContent className="p-6 md:p-8">
                       <div className="flex items-start gap-4 md:gap-6">
-                        {/* Avatar */}
                         <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
-                          {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
+                          {salon.photo_url ? (
+                            <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            salon.name.charAt(0)
+                          )}
                         </div>
                         
-                        {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
-                              {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />}
+                              {salon.plan && salon.plan !== 'basico' && (
+                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                              )}
                             </div>
                           </div>
                           
-                          {salon.phone && <div className="flex items-center gap-2 mb-2">
+                          {salon.phone && (
+                            <div className="flex items-center gap-2 mb-2">
                               <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
-                              <button onClick={() => openWhatsApp(salon.phone!)} className="text-green-600 hover:underline text-base md:text-xl">
+                              <button 
+                                onClick={() => openWhatsApp(salon.phone!)} 
+                                className="text-green-600 hover:underline text-base md:text-xl"
+                              >
                                 {formatPhone(salon.phone)}
                               </button>
-                            </div>}
+                            </div>
+                          )}
                           
-                          {salon.address && <div className="flex items-start gap-2 mb-3">
+                          {salon.address && (
+                            <div className="flex items-start gap-2 mb-3">
                               <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
                               <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
-                            </div>}
+                            </div>
+                          )}
                           
-                          {salon.instagram && <div className="flex items-center gap-2 mb-3">
+                          {salon.instagram && (
+                            <div className="flex items-center gap-2 mb-3">
                               <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
-                              <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline text-base md:text-xl">
+                              <a 
+                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-purple-600 hover:underline text-base md:text-xl"
+                              >
                                 {salon.instagram}
                               </a>
-                            </div>}
+                            </div>
+                          )}
                           
                           <div className="text-base md:text-xl text-gray-500 font-medium">
                             {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
@@ -402,75 +457,89 @@ const SalonFinder = () => {
                     </CardContent>
                   </Card>
                   
-                  {/* Banner no meio dos salões */}
-                  {showMidBanner && <div className="my-6">
+                  {showMidBanner && (
+                    <div className="my-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative">
                           <img src={banners[0].image_url} alt={banners[0].title} className="w-full h-auto object-contain" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                             <div className="p-4 md:p-6 text-white">
                               <h4 className="font-bold text-lg md:text-2xl">{banners[0].title}</h4>
-                              {banners[0].description && <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>}
+                              {banners[0].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>
+                              )}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                    </div>}
+                    </div>
+                  )}
                   
-                  {/* Banner no final */}
-                  {showEndBanner && <div className="mt-6">
+                  {showEndBanner && (
+                    <div className="mt-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative">
                           <img src={banners[1].image_url} alt={banners[1].title} className="w-full h-auto object-contain" />
-                          
                         </CardContent>
                       </Card>
-                    </div>}
-                </div>;
-        })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
-            {filteredSalons.length === 0 && <Card className="bg-white text-black border border-gray-200">
+            {filteredSalons.length === 0 && (
+              <Card className="bg-white text-black border border-gray-200">
                 <CardContent className="p-8 text-center">
                   <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                   <h4 className="font-semibold text-xl mb-3 text-gray-900">Nenhum salão encontrado</h4>
                   <p className="text-gray-600 text-base">
-                    {userLocation ? 'Tente aumentar o raio de busca ou alterar os filtros.' : 'Use sua localização para encontrar salões próximos.'}
+                    {searchTerm 
+                      ? `Nenhum salão encontrado para "${searchTerm}". Tente uma busca diferente.`
+                      : userLocation 
+                        ? 'Tente aumentar o raio de busca ou alterar os filtros.' 
+                        : 'Use sua localização para encontrar salões próximos.'
+                    }
                   </p>
                 </CardContent>
-              </Card>}
-          </div>}
+              </Card>
+            )}
+          </div>
+        )}
 
         {/* Banners */}
-        {banners.length > 0 && <div className="mb-8">
+        {banners.length > 0 && (
+          <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
             <div className="space-y-4">
-              {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden">
+              {banners.slice(0, 2).map(banner => (
+                <Card key={banner.id} className="overflow-hidden">
                   <CardContent className="p-0">
                     <div className="flex h-32">
-                      {/* Lado esquerdo - Fundo preto com título */}
                       <div className="w-1/2 bg-black flex items-center justify-center p-4">
                         <div className="text-center">
                           <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
-                          {banner.description && <p className="text-gray-300 text-sm">{banner.description}</p>}
+                          {banner.description && (
+                            <p className="text-gray-300 text-sm">{banner.description}</p>
+                          )}
                         </div>
                       </div>
-                      
-                      {/* Lado direito - Imagem */}
                       <div className="w-1/2">
                         <img src={banner.image_url} alt={banner.title} className="w-full h-32 object-cover" />
                       </div>
                     </div>
                   </CardContent>
-                </Card>)}
+                </Card>
+              ))}
             </div>
-          </div>}
+          </div>
+        )}
 
         {/* Informativo Section */}
         <div className="mb-8">
           <h3 className="text-lg md:text-2xl font-semibold mb-4 text-gray-900">Informativo para você</h3>
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
             <CardContent className="p-0 relative h-48 md:h-64 bg-black rounded-lg">
-              {/* Espaço para vídeo */}
               <div className="w-full h-full flex items-center justify-center">
                 <div className="text-white text-center">
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -479,7 +548,6 @@ const SalonFinder = () => {
                   <p className="text-sm">Clique para reproduzir o vídeo</p>
                 </div>
               </div>
-              
             </CardContent>
           </Card>
           
@@ -492,10 +560,7 @@ const SalonFinder = () => {
               AP Professional. A responsabilidade pelos serviços prestados é
               exclusivamente do salão listado acima.
             </p>
-            <Button style={{
-            backgroundColor: '#F8E7BF',
-            color: '#000'
-          }} className="text-white hover:opacity-90 w-full bg-zinc-900 hover:bg-zinc-800">
+            <Button style={{ backgroundColor: '#F8E7BF', color: '#000' }} className="text-white hover:opacity-90 w-full bg-zinc-900 hover:bg-zinc-800">
               Saiba mais
             </Button>
           </div>
@@ -505,7 +570,6 @@ const SalonFinder = () => {
       {/* Footer */}
       <footer className="text-center py-6 px-4 bg-zinc-900">
         <div className="max-w-md mx-auto">
-          
           <p className="text-xs text-gray-400">
             A.R.P COSMETICA LTDA - CNPJ: 38.730.230.0001-41
           </p>
@@ -514,6 +578,8 @@ const SalonFinder = () => {
           </p>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default SalonFinder;

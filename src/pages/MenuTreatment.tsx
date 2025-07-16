@@ -46,7 +46,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
   const fetchTreatment = async () => {
     try {
-      // Buscar salão pelo slug
       const { data: salonData, error: salonError } = await supabase
         .from('salons')
         .select('id, phone')
@@ -54,7 +53,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .maybeSingle();
 
       if (salonError || !salonData) {
-        
         setLoading(false);
         return;
       }
@@ -63,7 +61,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       let treatmentError;
 
       if (treatmentId) {
-        // Buscar tratamento específico por ID
         const result = await supabase
           .from('treatments')
           .select('*')
@@ -72,7 +69,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         treatmentData = result.data;
         treatmentError = result.error;
       } else if (selectedCategory) {
-        // Buscar primeiro tratamento da categoria
         const result = await supabase
           .from('treatments')
           .select('*')
@@ -85,12 +81,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       }
 
       if (treatmentError || !treatmentData) {
-        
         setLoading(false);
         return;
       }
 
-      // Buscar preço personalizado do salão
       const { data: salonTreatmentData, error: salonTreatmentError } = await supabase
         .from('salon_treatments')
         .select('custom_price, is_active')
@@ -99,12 +93,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .maybeSingle();
 
       if (salonTreatmentError || !salonTreatmentData) {
-        
         setLoading(false);
         return;
       }
 
-      // Buscar tratamentos relacionados
       const { data: relatedData, error: relatedError } = await supabase
         .from('salon_treatments')
         .select(`
@@ -127,17 +119,15 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .limit(3);
 
       if (relatedError) {
-        
+        console.error('Error fetching related treatments:', relatedError);
       }
 
-      // Buscar dados da categoria
       const { data: categoryData } = await supabase
         .from('categories')
         .select('name')
         .eq('name', treatmentData.category)
         .maybeSingle();
 
-      // Montar dados do tratamento
       const fullTreatment = {
         ...treatmentData,
         custom_price: salonTreatmentData.custom_price,
@@ -155,7 +145,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       setTreatment(fullTreatment);
       setRelatedTreatments(relatedTreatments);
 
-      // Buscar todos os tratamentos do salão para navegação
       const { data: allTreatmentsData, error: allTreatmentsError } = await supabase
         .from('salon_treatments')
         .select(`
@@ -187,7 +176,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         setCurrentTreatmentIndex(currentIndex !== -1 ? currentIndex : 0);
       }
     } catch (error) {
-      
+      console.error('Error fetching treatment:', error);
     } finally {
       setLoading(false);
     }
@@ -208,12 +197,9 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   const nextTreatment = async () => {
     if (isTransitioning) return;
     
-    console.log('Starting next treatment transition');
     setIsTransitioning(true);
     
-    // Animação de saída
     const mainContent = document.querySelector('.treatment-content') as HTMLElement;
-    console.log('Main content element:', mainContent);
     
     if (mainContent) {
       mainContent.style.opacity = '0';
@@ -221,27 +207,21 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       mainContent.style.transition = 'all 0.2s ease-out';
     }
     
-    // Aguardar animação de saída
     await new Promise(resolve => setTimeout(resolve, 200));
     
     const nextIndex = (currentTreatmentIndex + 1) % allTreatments.length;
     const nextTreatment = allTreatments[nextIndex];
     
-    console.log('Updating to treatment:', nextTreatment.name);
-    
-    // Atualizar todos os dados para o próximo tratamento
     setCurrentTreatmentIndex(nextIndex);
     setTreatment(nextTreatment);
     setShowPrice(false);
     setCurrentImageIndex(0);
     
-    // Atualizar produtos relacionados
     const related = allTreatments
       .filter(t => t.id !== nextTreatment.id)
       .slice(0, 3);
     setRelatedTreatments(related);
     
-    // Animação de entrada
     setTimeout(() => {
       if (mainContent) {
         mainContent.style.opacity = '1';
@@ -249,7 +229,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       }
       setTimeout(() => {
         setIsTransitioning(false);
-        console.log('Transition completed');
       }, 200);
     }, 50);
   };
@@ -257,10 +236,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
   const prevTreatment = async () => {
     if (isTransitioning) return;
     
-    console.log('Starting prev treatment transition');
     setIsTransitioning(true);
     
-    // Animação de saída
     const mainContent = document.querySelector('.treatment-content') as HTMLElement;
     
     if (mainContent) {
@@ -269,27 +246,21 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       mainContent.style.transition = 'all 0.2s ease-out';
     }
     
-    // Aguardar animação de saída
     await new Promise(resolve => setTimeout(resolve, 200));
     
     const prevIndex = (currentTreatmentIndex - 1 + allTreatments.length) % allTreatments.length;
     const prevTreatment = allTreatments[prevIndex];
     
-    console.log('Updating to treatment:', prevTreatment.name);
-    
-    // Atualizar todos os dados para o tratamento anterior
     setCurrentTreatmentIndex(prevIndex);
     setTreatment(prevTreatment);
     setShowPrice(false);
     setCurrentImageIndex(0);
     
-    // Atualizar produtos relacionados
     const related = allTreatments
       .filter(t => t.id !== prevTreatment.id)
       .slice(0, 3);
     setRelatedTreatments(related);
     
-    // Animação de entrada
     setTimeout(() => {
       if (mainContent) {
         mainContent.style.opacity = '1';
@@ -297,7 +268,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       }
       setTimeout(() => {
         setIsTransitioning(false);
-        console.log('Transition completed');
       }, 200);
     }, 50);
   };
@@ -465,13 +435,11 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                         
                         setIsTransitioning(true);
                         
-                        // Animação de saída
                         const mainContent = document.querySelector('.treatment-content');
                         if (mainContent) {
                           mainContent.classList.add('animate-fade-out', 'animate-scale-out');
                         }
                         
-                        // Aguardar animação de saída
                         await new Promise(resolve => setTimeout(resolve, 200));
                         
                         const relatedIndex = allTreatments.findIndex(t => t.id === related.id);
@@ -480,14 +448,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           setTreatment(allTreatments[relatedIndex]);
                           setShowPrice(false);
                           setCurrentImageIndex(0);
-                          
-                          const newRelated = allTreatments
-                            .filter(t => t.id !== related.id)
-                            .slice(0, 3);
-                          setRelatedTreatments(newRelated);
                         }
                         
-                        // Animação de entrada
                         setTimeout(() => {
                           if (mainContent) {
                             mainContent.classList.remove('animate-fade-out', 'animate-scale-out');
@@ -521,7 +483,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 <span className="text-sm text-gray-400 uppercase tracking-wide transform transition-all duration-500 hover:text-gray-600 hover:scale-105">{treatmentCategory}</span>
               </div>
               
-              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black animate-fade-in transform transition-all duration-700 hover:text-gray-800">{treatment.name}</h1>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-3 text-black">{treatment.name}</h1>
               
               <p className="text-lg text-gray-600 mb-6 leading-relaxed animate-fade-in transition-all duration-500 hover:text-gray-700">{treatment.subtitle}</p>
               
@@ -586,7 +548,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     </Button>
                   </div>
                   
-                  {/* Botão Saiba Mais */}
                   <Button 
                     className="text-white px-8 py-3 rounded-full text-base font-medium hover:opacity-90 transition-all duration-500 hover:scale-105 hover:shadow-lg transform animate-fade-in"
                     style={{ backgroundColor: buttonColor }}
@@ -611,7 +572,6 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   </div>
                 </div>
                 
-                {/* Video Controls Overlay */}
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="bg-black/50 rounded-lg p-3 flex items-center justify-between text-white text-sm">
                     <div className="flex items-center gap-2">
