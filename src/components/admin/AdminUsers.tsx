@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, User, Phone, Instagram, Mail } from 'lucide-react';
-import { z } from 'zod';
+import * as z from 'zod';
 
 interface User {
   id: string;
