@@ -105,7 +105,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .from('salon_treatments')
         .select(`
           custom_price,
-          treatments (
+          treatments!inner (
             id,
             name,
             subtitle,
@@ -113,7 +113,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
             images,
             video_url,
             rating,
-            rating_count
+            rating_count,
+            category
           )
         `)
         .eq('salon_id', salonData.id)
@@ -154,7 +155,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       const { data: allTreatmentsData, error: allTreatmentsError } = await supabase
         .from('salon_treatments')
         .select(`
-          treatments (
+          treatments!inner (
             id,
             name,
             subtitle,
@@ -162,7 +163,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
             images,
             video_url,
             rating,
-            rating_count
+            rating_count,
+            category
           ),
           custom_price
         `)

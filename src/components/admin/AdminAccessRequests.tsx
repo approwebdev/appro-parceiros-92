@@ -51,6 +51,8 @@ export const AdminAccessRequests = () => {
 
   const handleApproveRequest = async (request: AccessRequest, planType: string) => {
     try {
+      console.log('Iniciando aprovação da solicitação:', request.id);
+
       // Update access request status
       const { error: updateError } = await supabase
         .from('access_requests')
@@ -62,7 +64,10 @@ export const AdminAccessRequests = () => {
         })
         .eq('id', request.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Erro ao atualizar request:', updateError);
+        throw updateError;
+      }
 
       // Update user profile to grant access
       const { error: profileError } = await supabase
@@ -74,10 +79,15 @@ export const AdminAccessRequests = () => {
         })
         .eq('user_id', request.user_id);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Erro ao atualizar perfil:', profileError);
+        throw profileError;
+      }
 
       // Create salon if salon_name is provided
       if (request.salon_name) {
+        console.log('Criando salão:', request.salon_name);
+        
         const slug = request.salon_name
           .toLowerCase()
           .normalize('NFD')
@@ -86,7 +96,7 @@ export const AdminAccessRequests = () => {
           .replace(/\s+/g, '-')
           .trim() + '-' + Date.now();
 
-        const { error: salonError } = await supabase
+        const { data: salonData, error: salonError } = await supabase
           .from('salons')
           .insert([
             {
@@ -100,9 +110,15 @@ export const AdminAccessRequests = () => {
               responsible_name: request.name,
               responsible_email: request.email
             }
-          ]);
+          ])
+          .select();
 
-        if (salonError) throw salonError;
+        if (salonError) {
+          console.error('Erro ao criar salão:', salonError);
+          throw salonError;
+        }
+
+        console.log('Salão criado com sucesso:', salonData);
       }
 
       toast({
@@ -111,10 +127,17 @@ export const AdminAccessRequests = () => {
       });
 
       fetchAccessRequests();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Erro completo na aprovação:', error);
+      
+      let errorMessage = "Erro ao aprovar solicitação";
+      if (error.message) {
+        errorMessage += `: ${error.message}`;
+      }
+      
       toast({
         title: "Erro",
-        description: "Erro ao aprovar solicitação",
+        description: errorMessage,
         variant: "destructive",
       });
     }
