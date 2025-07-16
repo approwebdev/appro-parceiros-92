@@ -43,7 +43,7 @@ const AuthNew = () => {
 
   // Handle authentication states
   useEffect(() => {
-    // Only check for profile error if loading is complete and user exists for more than 2 seconds
+    // Only check for profile error if loading is complete and user exists for more than 5 seconds
     if (user && !profile && !loading) {
       const timer = setTimeout(() => {
         // Double check if profile is still null after loading completed
@@ -55,7 +55,7 @@ const AuthNew = () => {
           });
           signOut();
         }
-      }, 2000); // Wait 2 seconds after loading completes
+      }, 5000); // Wait 5 seconds after loading completes
 
       return () => clearTimeout(timer);
     }
@@ -258,7 +258,7 @@ const AuthNew = () => {
       
       {/* Lado direito - Formulário */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-4 bg-white">
-        <div className="w-full max-w-md max-h-screen overflow-y-auto py-8">
+        <div className="w-full max-w-md h-screen overflow-y-auto py-8 px-2">
           <div className="text-center mb-8">
             <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900">
@@ -354,8 +354,8 @@ const AuthNew = () => {
                   </div>
                   
                   {wantsSalon && (
-                    <div className="space-y-4 p-4 border rounded-lg bg-muted/50 max-h-80 overflow-y-auto">
-                      <h4 className="font-medium">Dados do Salão</h4>
+                    <div className="space-y-4 p-4 border rounded-lg bg-gray-50 max-h-96 overflow-y-auto">
+                      <h4 className="font-medium text-gray-900">Dados do Salão</h4>
                       
                       <div className="space-y-2">
                         <Label htmlFor="salon-name">Nome do Salão</Label>
