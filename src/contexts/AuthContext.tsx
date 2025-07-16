@@ -62,11 +62,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('AuthContext - Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
+      
+      console.log('AuthContext - Profile fetch result:', { data, error });
       
       if (error) {
         console.error('Error fetching profile:', error);
@@ -74,6 +77,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
+      if (!data) {
+        console.log('AuthContext - No profile found for user:', userId);
+        setProfile(null);
+        return;
+      }
+      
+      console.log('AuthContext - Setting profile:', data);
       setProfile(data as Profile);
     } catch (error) {
       console.error('Unexpected error in fetchProfile:', error);
