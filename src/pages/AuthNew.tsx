@@ -7,11 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import axios from 'axios';
 const AuthNew = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loadingAddress, setLoadingAddress] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   // Login fields
   const [email, setEmail] = useState('');
@@ -140,6 +142,47 @@ const AuthNew = () => {
       }
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Email obrigatório",
+        description: "Digite seu email para recuperar a senha.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+      
+      if (error) {
+        toast({
+          title: "Erro ao enviar email",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Email enviado!",
+          description: "Verifique sua caixa de entrada para redefinir sua senha."
+        });
+        setShowForgotPassword(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -215,90 +258,215 @@ const AuthNew = () => {
       
       {/* Lado direito - Formulário */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-4 bg-white">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md max-h-screen overflow-y-auto py-8">
           <div className="text-center mb-8">
             <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900">
-              {isLogin ? 'Entrar na sua conta' : 'Criar nova conta'}
+              {showForgotPassword ? 'Recuperar Senha' : isLogin ? 'Entrar na sua conta' : 'Criar nova conta'}
             </h1>
             <p className="text-gray-600 mt-2">
-              {isLogin ? 'Bem-vindo de volta!' : 'Junte-se à nossa plataforma'}
+              {showForgotPassword ? 'Digite seu email para receber as instruções' : isLogin ? 'Bem-vindo de volta!' : 'Junte-se à nossa plataforma'}
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && <div className="space-y-2">
-                <Label htmlFor="name">Nome completo</Label>
-                <Input id="name" type="text" value={name} onChange={e => setName(e.target.value)} required />
-              </div>}
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-            </div>
-            
-            {!isLogin && <>
+
+          {showForgotPassword ? (
+            <form onSubmit={handleForgotPassword} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+              </div>
+              
+              <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg text-base font-medium" disabled={loading}>
+                {loading ? 'Enviando...' : 'Enviar instruções'}
+              </Button>
+              
+              <div className="text-center">
+                <Button variant="link" onClick={() => setShowForgotPassword(false)} className="text-gray-600 hover:text-gray-900">
+                  Voltar ao login
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="phone">WhatsApp</Label>
-                  <Input id="phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} required placeholder="(00) 00000-0000" />
+                  <Label htmlFor="name">Nome completo</Label>
+                  <Input 
+                    id="name" 
+                    type="text" 
+                    value={name} 
+                    onChange={e => setName(e.target.value)} 
+                    disabled={loadingAddress}
+                    required 
+                  />
                 </div>
-                
-                
-                <div className="flex items-center space-x-2 p-4 border rounded-lg">
-                  <Switch id="wants-salon" checked={wantsSalon} onCheckedChange={setWantsSalon} />
-                  <Label htmlFor="wants-salon" className="text-sm">
-                    Eu já possuo um salão
-                  </Label>
-                </div>
-                
-                {wantsSalon && <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                    <h4 className="font-medium">Dados do Salão</h4>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="salon-name">Nome do Salão</Label>
-                      <Input id="salon-name" type="text" value={salonName} onChange={e => setSalonName(e.target.value)} required placeholder="Ex: Salão Beleza & Cia" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="postal-code">CEP</Label>
-                      <Input id="postal-code" type="text" value={postalCode} onChange={e => setPostalCode(e.target.value.replace(/\D/g, ''))} onBlur={handlePostalCodeBlur} maxLength={8} placeholder="00000000" required />
-                    </div>
-                    
-                    {loadingAddress && <p className="text-sm text-muted-foreground">Buscando endereço...</p>}
-                    
-                    {address && <div className="space-y-2">
-                        <Label htmlFor="address">Endereço</Label>
-                        <Input id="address" type="text" value={address} onChange={e => setAddress(e.target.value)} required />
-                      </div>}
-                    
-                    <div className="grid grid-cols-2 gap-2">
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  disabled={loadingAddress}
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  disabled={loadingAddress}
+                  required 
+                />
+              </div>
+              
+              {!isLogin && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">WhatsApp</Label>
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      value={phone} 
+                      onChange={e => setPhone(e.target.value)} 
+                      disabled={loadingAddress}
+                      required 
+                      placeholder="(00) 00000-0000" 
+                    />
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 p-4 border rounded-lg">
+                    <Switch 
+                      id="wants-salon" 
+                      checked={wantsSalon} 
+                      onCheckedChange={setWantsSalon}
+                      disabled={loadingAddress}
+                    />
+                    <Label htmlFor="wants-salon" className="text-sm">
+                      Eu já possuo um salão
+                    </Label>
+                  </div>
+                  
+                  {wantsSalon && (
+                    <div className="space-y-4 p-4 border rounded-lg bg-muted/50 max-h-80 overflow-y-auto">
+                      <h4 className="font-medium">Dados do Salão</h4>
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="address-number">Número</Label>
-                        <Input id="address-number" type="text" value={addressNumber} onChange={e => setAddressNumber(e.target.value)} required />
+                        <Label htmlFor="salon-name">Nome do Salão</Label>
+                        <Input 
+                          id="salon-name" 
+                          type="text" 
+                          value={salonName} 
+                          onChange={e => setSalonName(e.target.value)} 
+                          disabled={loadingAddress}
+                          required 
+                          placeholder="Ex: Salão Beleza & Cia" 
+                        />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="address-complement">Complemento</Label>
-                        <Input id="address-complement" type="text" value={addressComplement} onChange={e => setAddressComplement(e.target.value)} placeholder="Sala, andar..." />
+                        <Label htmlFor="postal-code">CEP</Label>
+                        <Input 
+                          id="postal-code" 
+                          type="text" 
+                          value={postalCode} 
+                          onChange={e => setPostalCode(e.target.value.replace(/\D/g, ''))} 
+                          onBlur={handlePostalCodeBlur} 
+                          disabled={loadingAddress}
+                          maxLength={8} 
+                          placeholder="00000000" 
+                          required 
+                        />
+                      </div>
+                      
+                      {loadingAddress && (
+                        <p className="text-sm text-muted-foreground">Buscando endereço...</p>
+                      )}
+                      
+                      {address && (
+                        <div className="space-y-2">
+                          <Label htmlFor="address">Endereço</Label>
+                          <Input 
+                            id="address" 
+                            type="text" 
+                            value={address} 
+                            onChange={e => setAddress(e.target.value)} 
+                            disabled={loadingAddress}
+                            required 
+                          />
+                        </div>
+                      )}
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="address-number">Número</Label>
+                          <Input 
+                            id="address-number" 
+                            type="text" 
+                            value={addressNumber} 
+                            onChange={e => setAddressNumber(e.target.value)} 
+                            disabled={loadingAddress}
+                            required 
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="address-complement">Complemento</Label>
+                          <Input 
+                            id="address-complement" 
+                            type="text" 
+                            value={addressComplement} 
+                            onChange={e => setAddressComplement(e.target.value)} 
+                            disabled={loadingAddress}
+                            placeholder="Sala, andar..." 
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>}
-              </>}
-            
-            <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg text-base font-medium" disabled={loading}>
-              {loading ? 'Carregando...' : isLogin ? 'Entrar' : 'Cadastrar'}
-            </Button>
-          </form>
+                  )}
+                </>
+              )}
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg text-base font-medium" 
+                disabled={loading || loadingAddress}
+              >
+                {loading ? 'Carregando...' : isLogin ? 'Entrar' : 'Cadastrar'}
+              </Button>
+              
+              {isLogin && (
+                <div className="text-center">
+                  <Button 
+                    type="button"
+                    variant="link" 
+                    onClick={() => setShowForgotPassword(true)} 
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    Esqueci minha senha
+                  </Button>
+                </div>
+              )}
+            </form>
+          )}
           
-          <div className="mt-6 text-center">
-            <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="text-gray-600 hover:text-gray-900">
-              {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
-            </Button>
-          </div>
+          {!showForgotPassword && (
+            <div className="mt-6 text-center">
+              <Button 
+                variant="link" 
+                onClick={() => setIsLogin(!isLogin)} 
+                className="text-gray-600 hover:text-gray-900"
+              >
+                {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>;

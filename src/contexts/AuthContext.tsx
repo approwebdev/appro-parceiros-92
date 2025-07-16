@@ -119,11 +119,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('Login error:', error);
+        return { error };
+      }
+      
+      // Force a profile fetch after successful login
+      if (data.user) {
+        await fetchProfile(data.user.id);
+      }
+      
+      return { error: null };
+    } catch (err) {
+      console.error('Unexpected login error:', err);
+      return { error: err };
+    }
   };
 
   const signUp = async (email: string, password: string, name: string, role: string = 'salon') => {
