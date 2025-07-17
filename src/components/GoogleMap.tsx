@@ -15,7 +15,7 @@ interface GoogleMapProps {
 declare global {
   interface Window {
     google: any;
-    googleMapsInitialized?: boolean;
+    googleMapsLoaded?: boolean;
   }
 }
 
@@ -24,15 +24,107 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingStep, setLoadingStep] = useState('Iniciando...');
+  const mountedRef = useRef(true);
 
+  // Effect para carregar a API do Google Maps (apenas uma vez)
   useEffect(() => {
-    let mounted = true;
-    let timeout: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout;
+
+    const loadGoogleMapsAPI = async () => {
+      try {
+        console.log('[GoogleMap] Iniciando carregamento da API...');
+        setLoadingStep('Obtendo chave da API...');
+
+        // Verificar se já está carregado
+        if (window.google?.maps) {
+          console.log('[GoogleMap] API já carregada');
+          window.googleMapsLoaded = true;
+          return;
+        }
+
+        // Verificar se já existe um script carregando
+        const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        if (existingScript) {
+          console.log('[GoogleMap] Script já existe, aguardando carregamento...');
+          setLoadingStep('Aguardando carregamento...');
+          return;
+        }
+
+        // Buscar chave da API
+        const { data: keyData, error } = await supabase.functions.invoke('get-google-maps-key');
+        
+        if (error || !keyData?.key) {
+          console.error('[GoogleMap] Erro ao obter chave:', error);
+          throw new Error('Falha ao obter chave da API');
+        }
+
+        console.log('[GoogleMap] Chave obtida, carregando script...');
+        setLoadingStep('Carregando script do Google Maps...');
+
+        // Carregar script
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
+        script.async = true;
+        script.defer = true;
+        
+        script.onload = () => {
+          console.log('[GoogleMap] Script carregado com sucesso');
+          window.googleMapsLoaded = true;
+        };
+
+        script.onerror = (e) => {
+          console.error('[GoogleMap] Erro ao carregar script:', e);
+          if (mountedRef.current) {
+            setHasError(true);
+            setIsLoading(false);
+            setLoadingStep('Erro no carregamento');
+          }
+        };
+
+        document.head.appendChild(script);
+
+        // Timeout de segurança para carregamento da API
+        timeoutId = setTimeout(() => {
+          if (mountedRef.current && !window.googleMapsLoaded) {
+            console.error('[GoogleMap] Timeout no carregamento da API');
+            setHasError(true);
+            setIsLoading(false);
+            setLoadingStep('Timeout na API');
+          }
+        }, 15000);
+
+      } catch (error) {
+        console.error('[GoogleMap] Erro ao carregar API:', error);
+        if (mountedRef.current) {
+          setHasError(true);
+          setIsLoading(false);
+          setLoadingStep('Erro ao carregar API');
+        }
+      }
+    };
+
+    loadGoogleMapsAPI();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []); // Sem dependências - carrega apenas uma vez
+
+  // Effect para criar o mapa quando a API estiver pronta
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout;
 
     const createMap = () => {
-      if (!mapRef.current || !window.google?.maps || !mounted) return;
+      if (!mapRef.current || !window.google?.maps || !mountedRef.current) {
+        return false;
+      }
 
       try {
+        console.log('[GoogleMap] Criando mapa...');
+        setLoadingStep('Criando mapa...');
+
         const center = userLocation || { lat: -23.5505, lng: -46.6333 };
 
         const map = new window.google.maps.Map(mapRef.current, {
@@ -109,87 +201,82 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
           });
         }
 
+        console.log('[GoogleMap] Mapa criado com sucesso');
         setIsLoaded(true);
         setIsLoading(false);
+        setLoadingStep('Concluído');
+        return true;
 
       } catch (error) {
-        console.error('Erro ao criar mapa:', error);
-        setHasError(true);
-        setIsLoading(false);
-      }
-    };
-
-    const loadGoogleMaps = async () => {
-      if (!mounted) return;
-
-      // Se já carregado, criar mapa imediatamente
-      if (window.google?.maps) {
-        setTimeout(createMap, 100);
-        return;
-      }
-
-      try {
-        // Buscar chave da API
-        const { data: keyData, error } = await supabase.functions.invoke('get-google-maps-key');
-        
-        if (error || !keyData?.key) {
-          throw new Error('Falha ao obter chave da API');
-        }
-
-        // Carregar script se ainda não foi carregado
-        if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places&loading=async`;
-          script.async = true;
-          
-          script.onload = () => {
-            if (mounted) {
-              window.googleMapsInitialized = true;
-              setTimeout(createMap, 100);
-            }
-          };
-
-          script.onerror = () => {
-            if (mounted) {
-              setHasError(true);
-              setIsLoading(false);
-            }
-          };
-
-          document.head.appendChild(script);
-        }
-
-        // Timeout de segurança
-        timeout = setTimeout(() => {
-          if (mounted && !isLoaded) {
-            setHasError(true);
-            setIsLoading(false);
-          }
-        }, 8000);
-
-      } catch (error) {
-        console.error('Erro ao carregar Google Maps:', error);
-        if (mounted) {
+        console.error('[GoogleMap] Erro ao criar mapa:', error);
+        if (mountedRef.current) {
           setHasError(true);
           setIsLoading(false);
+          setLoadingStep('Erro na criação');
         }
+        return false;
       }
     };
 
-    loadGoogleMaps();
+    const waitForGoogleMaps = () => {
+      console.log('[GoogleMap] Aguardando Google Maps estar pronto...');
+      setLoadingStep('Aguardando Google Maps...');
+
+      // Verificar a cada 500ms se o Google Maps está disponível
+      intervalId = setInterval(() => {
+        if (window.google?.maps && window.googleMapsLoaded) {
+          console.log('[GoogleMap] Google Maps está pronto');
+          clearInterval(intervalId);
+          createMap();
+        }
+      }, 500);
+
+      // Timeout de segurança para criação do mapa
+      timeoutId = setTimeout(() => {
+        clearInterval(intervalId);
+        if (mountedRef.current && !isLoaded) {
+          console.error('[GoogleMap] Timeout aguardando Google Maps');
+          setHasError(true);
+          setIsLoading(false);
+          setLoadingStep('Timeout aguardando Maps');
+        }
+      }, 20000);
+    };
+
+    // Só tentar criar o mapa se os dados estão disponíveis
+    if (salons.length > 0 || userLocation) {
+      if (window.google?.maps && window.googleMapsLoaded) {
+        createMap();
+      } else {
+        waitForGoogleMaps();
+      }
+    }
 
     return () => {
-      mounted = false;
-      if (timeout) clearTimeout(timeout);
+      if (intervalId) clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [salons, userLocation]);
+  }, [salons, userLocation, isLoaded]); // Depende dos dados
+
+  // Cleanup no unmount
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   if (isLoading) {
     return (
       <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-2">Carregando mapa...</p>
+          <p className="text-gray-600 mb-2">{loadingStep}</p>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+          >
+            Tentar novamente
+          </button>
         </div>
       </div>
     );
