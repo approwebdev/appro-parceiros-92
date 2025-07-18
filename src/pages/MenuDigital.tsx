@@ -73,11 +73,11 @@ const MenuDigital = ({
           {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
               <Instagram className="h-5 w-5 md:h-6 md:w-6" />
             </a>}
-          <div className="text-white">
-            <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-white/20 flex items-center justify-center">
-              <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-white"></div>
-            </div>
-          </div>
+          {salon.address && <LocationDialog address={salon.address}>
+              <button className="text-white hover:text-gold transition-colors">
+                <MapPin className="h-5 w-5 md:h-6 md:w-6" />
+              </button>
+            </LocationDialog>}
         </div>
       </div>
 
@@ -105,21 +105,6 @@ const MenuDigital = ({
               {salon.name}
             </h2>
             
-            {/* Informações do Salão */}
-            <div className="space-y-2 mb-6 md:mb-8">
-              {salon.address && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
-                  <LocationDialog address={salon.address}>
-                    <button className="flex items-center gap-2 hover:text-white transition-colors">
-                      <MapPin className="h-4 w-4" />
-                      <span className="text-sm md:text-base">Ver localização</span>
-                    </button>
-                  </LocationDialog>
-                </div>}
-              {salon.phone && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
-                  <Phone className="h-4 w-4" />
-                  <span className="text-sm md:text-base">{salon.phone}</span>
-                </div>}
-            </div>
 
             {/* Botão Entrar */}
             <Button onClick={onEnter} className="bg-white text-black hover:bg-gray-100 px-6 py-4 md:px-8 md:py-6 text-base md:text-lg font-semibold rounded-full w-full md:w-auto">
@@ -130,8 +115,8 @@ const MenuDigital = ({
 
         {/* Lado Direito - Modelo */}
         <div className="flex-1 relative h-64 md:h-full order-1 md:order-2">
-          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black/20 via-transparent to-black/60 md:to-black/20"></div>
-          <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Profissional de beleza" className="w-full h-full object-cover object-center md:object-center" />
+          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black/20 via-transparent to-black/60 md:to-black/20 z-0"></div>
+          <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Profissional de beleza" className="w-full h-full object-cover object-center md:object-center relative z-10" />
         </div>
       </div>
 
