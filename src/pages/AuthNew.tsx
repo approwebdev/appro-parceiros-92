@@ -48,7 +48,7 @@ const AuthNew = () => {
   if (user && profile) {
     if (profile.role === 'admin') {
       return <Navigate to="/admin" replace />;
-    } else if (profile.status === 'approved' && profile.has_salon) {
+    } else if (profile.status === 'approved') {
       return <Navigate to="/salon-panel" replace />;
     } else if (profile.status === 'pending') {
       // Show pending message
