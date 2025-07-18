@@ -156,51 +156,36 @@ export const AdminUsers = () => {
   };
 
   const handleDelete = async (userId: string) => {
-    // Check if trying to delete own account
-    const currentUser = await supabase.auth.getUser();
-    if (userId === currentUser.data.user?.id) {
-      toast({
-        title: "Erro",
-        description: "Você não pode deletar sua própria conta",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+    if (!confirm('Tem certeza que deseja excluir este usuário? Isso também excluirá o salão associado se houver.')) return;
     
     try {
-      // First, delete related data
-      const { error: salonError } = await supabase
-        .from('salons')
-        .delete()
-        .eq('user_id', userId);
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (salonError) console.warn('Failed to delete user salons:', salonError);
+      if (!session) {
+        toast({
+          title: "Erro",
+          description: "Sessão expirada",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      const { error: accessRequestError } = await supabase
-        .from('access_requests')
-        .delete()
-        .eq('user_id', userId);
-      
-      if (accessRequestError) console.warn('Failed to delete access requests:', accessRequestError);
+      const response = await fetch(`https://vibhcunfdtdosqzalnqx.supabase.co/functions/v1/delete-user`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
 
-      // Then delete from profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('user_id', userId);
-      
-      if (profileError) throw profileError;
-      
-      // Finally try to delete from auth (this might fail due to permissions)
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
-      
-      if (authError) {
-        console.warn('Failed to delete user from auth:', authError);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao excluir usuário');
       }
       
-      toast({ title: "Usuário excluído com sucesso!" });
+      toast({ title: "Usuário e salão excluídos com sucesso!" });
       fetchUsers();
     } catch (error: any) {
       toast({
