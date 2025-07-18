@@ -121,28 +121,27 @@ const MenuDigital = ({
           paddingTop: 'clamp(2rem, 5vh, 5rem)', // Reduzido no mobile
           paddingBottom: 'clamp(1rem, 2vh, 2rem)' // Reduzido no mobile
         }}>
-          <div className="text-center md:text-left">
-            <h1 className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4" style={{
-              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)',
-              marginLeft: 'clamp(1rem, 4vw, 4rem)' // Alinhado com o padding da esquerda
+          <div className="text-left">
+            <h1 className="flex flex-col md:flex-row items-start justify-start gap-2 md:gap-4" style={{
+              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
             }}>
-              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2">
+              <div className="flex flex-col md:flex-row items-start gap-1 md:gap-2">
                 <span className="font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  fontSize: 'clamp(3.5rem, 12vw, 5.5rem)' // Maior no mobile
+                  fontSize: 'clamp(4rem, 14vw, 7rem)' // Aumentado ainda mais
                 }}>
                   Menu
                 </span>
                 <span className="font-bold text-white" style={{
-                  fontSize: 'clamp(3rem, 10vw, 5rem)' // Maior no mobile
+                  fontSize: 'clamp(3.5rem, 12vw, 6rem)' // Aumentado proporcionalmente
                 }}>Digital</span>
               </div>
             </h1>
             
             {/* Nome do Salão */}
-            <h2 className="font-bold text-white" style={{
+            <h2 className="font-bold text-white text-left" style={{
               fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
               marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
             }}>
@@ -150,16 +149,18 @@ const MenuDigital = ({
             </h2>
 
             {/* Botão Entrar */}
-            <Button 
-              onClick={onEnter} 
-              className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full w-full md:w-auto relative z-40"
-              style={{
-                padding: 'clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3rem)',
-                fontSize: 'clamp(1rem, 2vw, 1.25rem)'
-              }}
-            >
-              Entrar
-            </Button>
+            <div className="flex justify-start">
+              <Button 
+                onClick={onEnter} 
+                className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full relative z-40"
+                style={{
+                  padding: 'clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3rem)',
+                  fontSize: 'clamp(1rem, 2vw, 1.25rem)'
+                }}
+              >
+                Entrar
+              </Button>
+            </div>
           </div>
         </div>
 
