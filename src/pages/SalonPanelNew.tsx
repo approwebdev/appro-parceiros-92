@@ -339,132 +339,173 @@ const SalonPanelNew = () => {
                   Bem-vindo ao seu painel de controle! Aqui você pode gerenciar seu salão.
                 </p>
                 {!profile.has_salon ? (
-                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <h4 className="font-medium text-yellow-800">Desbloqueie seu salão</h4>
-                    <p className="text-yellow-700 text-sm mt-1">
-                      Você ainda não tem um salão ativo. Clique no botão abaixo para cadastrar seu salão.
-                    </p>
-                    <Dialog open={createSalonOpen} onOpenChange={setCreateSalonOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white">
-                          Desbloquear Salão
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[500px]">
-                        <DialogHeader>
-                          <DialogTitle>Cadastrar Salão</DialogTitle>
-                        </DialogHeader>
-                        <Form {...salonForm}>
-                          <form onSubmit={salonForm.handleSubmit(handleCreateSalon)} className="space-y-4">
-                            <FormField
-                              control={salonForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Nome do Salão *</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Nome do seu salão" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={salonForm.control}
-                              name="address"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Endereço *</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Rua, Avenida..." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <div className="flex gap-2">
-                              <FormField
-                                control={salonForm.control}
-                                name="address_number"
-                                render={({ field }) => (
-                                  <FormItem className="flex-1">
-                                    <FormLabel>Número *</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="123" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={salonForm.control}
-                                name="postal_code"
-                                render={({ field }) => (
-                                  <FormItem className="flex-1">
-                                    <FormLabel>CEP</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="00000-000" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
+                  <div className="mt-6 space-y-4">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                      <div className="flex items-start gap-6">
+                        {/* Ícone placeholder */}
+                        <div className="flex-shrink-0">
+                          <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg border border-red-300 flex items-center justify-center">
+                            <User className="h-16 w-16 text-gray-400" />
+                          </div>
+                        </div>
+                        
+                        {/* Informações do Salão */}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="font-bold text-red-800 text-xl">❌ Salão Desativado</h4>
+                            <Dialog open={createSalonOpen} onOpenChange={setCreateSalonOpen}>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  size="sm" 
+                                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Desbloquear Salão
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden">
+                                <DialogHeader>
+                                  <DialogTitle>Cadastrar Salão</DialogTitle>
+                                </DialogHeader>
+                                <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                  <Form {...salonForm}>
+                                    <form onSubmit={salonForm.handleSubmit(handleCreateSalon)} className="space-y-4">
+                                      <FormField
+                                        control={salonForm.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Nome do Salão *</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Nome do seu salão" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={salonForm.control}
+                                        name="address"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Endereço *</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Rua, Avenida..." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <div className="flex gap-2">
+                                        <FormField
+                                          control={salonForm.control}
+                                          name="address_number"
+                                          render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                              <FormLabel>Número *</FormLabel>
+                                              <FormControl>
+                                                <Input placeholder="123" {...field} />
+                                              </FormControl>
+                                              <FormMessage />
+                                            </FormItem>
+                                          )}
+                                        />
+                                        <FormField
+                                          control={salonForm.control}
+                                          name="postal_code"
+                                          render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                              <FormLabel>CEP</FormLabel>
+                                              <FormControl>
+                                                <Input placeholder="00000-000" {...field} />
+                                              </FormControl>
+                                              <FormMessage />
+                                            </FormItem>
+                                          )}
+                                        />
+                                      </div>
+                                      <FormField
+                                        control={salonForm.control}
+                                        name="address_complement"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Complemento</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Apartamento, sala..." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={salonForm.control}
+                                        name="phone"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Telefone</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="(11) 99999-9999" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={salonForm.control}
+                                        name="instagram"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Instagram</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="@seuinstagram" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <div className="flex justify-end gap-2">
+                                        <Button type="button" variant="outline" onClick={() => setCreateSalonOpen(false)}>
+                                          Cancelar
+                                        </Button>
+                                        <Button 
+                                          type="submit" 
+                                          className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                                          disabled={isCreatingSalon}
+                                        >
+                                          {isCreatingSalon ? 'Criando...' : 'Criar Salão'}
+                                        </Button>
+                                      </div>
+                                    </form>
+                                  </Form>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <div>
+                              <p className="text-red-700 text-sm">
+                                <strong>✨ Plano:</strong> <span className="capitalize">Básico</span>
+                              </p>
                             </div>
-                            <FormField
-                              control={salonForm.control}
-                              name="address_complement"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Complemento</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Apartamento, sala..." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={salonForm.control}
-                              name="phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Telefone</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="(11) 99999-9999" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={salonForm.control}
-                              name="instagram"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Instagram</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="@seuinstagram" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <div className="flex justify-end gap-2">
-                              <Button type="button" variant="outline" onClick={() => setCreateSalonOpen(false)}>
-                                Cancelar
-                              </Button>
-                              <Button 
-                                type="submit" 
-                                className="bg-yellow-600 hover:bg-yellow-700 text-white"
-                                disabled={isCreatingSalon}
-                              >
-                                {isCreatingSalon ? 'Criando...' : 'Criar Salão'}
-                              </Button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <p className="text-red-700 text-sm">
+                                  <strong>📍 Status:</strong><br />
+                                  Salão não cadastrado. Clique em "Desbloquear Salão" para começar.
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-red-700 text-sm">
+                                  <strong>🎯 Próximo passo:</strong><br />
+                                  Cadastre as informações do seu salão para ativar o menu digital.
+                                </p>
+                              </div>
                             </div>
-                          </form>
-                        </Form>
-                      </DialogContent>
-                    </Dialog>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="mt-6 space-y-4">
