@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LocationDialog } from "@/components/ui/location-dialog";
 import { Phone, Instagram, MapPin } from "lucide-react";
+
 interface Salon {
   id: string;
   name: string;
@@ -12,9 +13,11 @@ interface Salon {
   address: string;
   instagram: string;
 }
+
 interface MenuDigitalProps {
   onEnter: () => void;
 }
+
 const MenuDigital = ({
   onEnter
 }: MenuDigitalProps) => {
@@ -25,11 +28,13 @@ const MenuDigital = ({
   }>();
   const [salon, setSalon] = useState<Salon | null>(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (slug) {
       fetchSalon();
     }
   }, [slug]);
+
   const fetchSalon = async () => {
     try {
       const {
@@ -44,11 +49,13 @@ const MenuDigital = ({
       setLoading(false);
     }
   };
+
   if (loading) {
     return <div className="menu-container bg-menu-dark flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gold"></div>
       </div>;
   }
+
   if (!salon) {
     return <div className="menu-container bg-menu-dark flex items-center justify-center">
         <div className="text-center">
@@ -57,6 +64,7 @@ const MenuDigital = ({
         </div>
       </div>;
   }
+
   return <div className="menu-container bg-black relative min-h-screen">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-center p-4 md:p-6">
@@ -116,10 +124,15 @@ const MenuDigital = ({
         {/* Lado Direito - Modelo */}
         <div className="flex-1 relative h-64 md:h-full order-1 md:order-2">
           <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black/20 via-transparent to-black/60 md:to-black/20 z-0"></div>
-          <img src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" alt="Profissional de beleza" className="w-full h-full object-cover object-right md:object-center relative z-10 pointer-events-none" />
+          <img 
+            src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" 
+            alt="Profissional de beleza" 
+            className="w-full h-full object-cover object-[center_top] sm:object-[70%_center] md:object-center relative z-10 pointer-events-none" 
+          />
         </div>
       </div>
 
     </div>;
 };
+
 export default MenuDigital;

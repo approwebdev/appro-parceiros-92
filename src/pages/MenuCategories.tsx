@@ -83,7 +83,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
               <img 
                 src={category.cover_image_url || '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png'}
                 alt={category.name}
-                className="w-full h-full object-cover transition-transform duration-700 ease-out 
+                className="w-full h-full object-cover object-center transition-transform duration-700 ease-out 
                           group-hover:scale-110 group-hover:brightness-110"
               />
               
