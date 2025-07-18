@@ -378,31 +378,30 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         </div>
 
         {/* Controles do Carrossel Mobile */}
-        <div className="md:hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-4">
+        <div className="md:hidden absolute top-20 left-1/2 transform -translate-x-1/2 z-20 flex gap-4 mb-4">
           <Button
             onClick={prevTreatment}
             disabled={isTransitioning}
             variant="outline"
-            className="bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white disabled:opacity-50 px-4 py-2 text-sm"
+            size="sm"
+            className="bg-white/90 backdrop-blur-sm border-gray-200 hover:bg-white"
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
             Anterior
           </Button>
-          
           <Button
             onClick={nextTreatment}
             disabled={isTransitioning}
             variant="outline"
-            className="bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white disabled:opacity-50 px-4 py-2 text-sm"
+            size="sm"
+            className="bg-white/90 backdrop-blur-sm border-gray-200 hover:bg-white"
           >
             Próximo
-            <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
 
         {/* Container do carrossel */}
         <div className="carousel-container w-full h-full transition-transform duration-300 ease-out">
-          <div className="max-w-7xl mx-auto px-6 py-8 h-full md:pt-8 pt-20">
+          <div className="max-w-7xl mx-auto px-6 py-8 h-full md:pt-8 pt-32">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-auto lg:h-full">
               
               {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
@@ -535,35 +534,25 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   <span className="text-sm text-gray-400">({treatment.rating_count})</span>
                 </div>
                 
-                {/* Preço e Botões */}
+                 {/* Preço e Botões */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm text-gray-400">de</span>
-                    <span className="text-lg line-through text-gray-500">
+                    <span className="text-lg line-through text-gray-500 relative">
                       {showPrice ? `R$ ${(treatment.custom_price * 1.5).toFixed(2)}` : 'R$ ********'}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPrice(!showPrice)}
+                        className="text-gray-400 hover:text-gray-300 p-1 ml-2 inline-flex absolute -top-1 -right-8"
+                      >
+                        {showPrice ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </Button>
                     </span>
                   </div>
                   <div className="md:flex md:items-center md:justify-between">
-                    <div className="flex items-center gap-3 md:block">
-                      <div className="text-3xl font-bold text-black text-center md:text-left">
-                        {showPrice ? formatPrice(treatment.custom_price) : 'R$ ********'}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowPrice(!showPrice)}
-                        className="text-gray-400 hover:text-gray-300 p-2 md:hidden"
-                      >
-                        {showPrice ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowPrice(!showPrice)}
-                        className="text-gray-400 hover:text-gray-300 p-2 hidden md:inline-flex md:ml-3"
-                      >
-                        {showPrice ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </Button>
+                    <div className="text-3xl font-bold text-black text-center md:text-left">
+                      {showPrice ? formatPrice(treatment.custom_price) : 'R$ ********'}
                     </div>
                     
                     <Button 
