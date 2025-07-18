@@ -170,7 +170,22 @@ export const AdminUsers = () => {
     if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
     
     try {
-      // Delete from profiles table first
+      // First, delete related data
+      const { error: salonError } = await supabase
+        .from('salons')
+        .delete()
+        .eq('user_id', userId);
+      
+      if (salonError) console.warn('Failed to delete user salons:', salonError);
+
+      const { error: accessRequestError } = await supabase
+        .from('access_requests')
+        .delete()
+        .eq('user_id', userId);
+      
+      if (accessRequestError) console.warn('Failed to delete access requests:', accessRequestError);
+
+      // Then delete from profiles table
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -178,7 +193,7 @@ export const AdminUsers = () => {
       
       if (profileError) throw profileError;
       
-      // Then delete from auth (requires service role)
+      // Finally try to delete from auth (this might fail due to permissions)
       const { error: authError } = await supabase.auth.admin.deleteUser(userId);
       
       if (authError) {

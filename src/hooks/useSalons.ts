@@ -96,17 +96,19 @@ export const useSalons = () => {
       };
 
       if (editingSalon) {
-        
-        const { error } = await supabase
+        console.log('Atualizando salão:', editingSalon.id, 'com dados:', dataToSave);
+        const { data, error } = await supabase
           .from('salons')
           .update(dataToSave)
-          .eq('id', editingSalon.id);
+          .eq('id', editingSalon.id)
+          .select();
         
         if (error) {
           console.error('Erro ao atualizar salão:', error);
           throw error;
         }
         
+        console.log('Salão atualizado:', data);
         toast({ title: "Salão atualizado com sucesso!" });
       } else {
         const { error } = await supabase

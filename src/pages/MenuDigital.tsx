@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { LocationDialog } from "@/components/ui/location-dialog";
 import { Phone, Instagram, MapPin } from "lucide-react";
 interface Salon {
   id: string;
@@ -71,6 +72,9 @@ const MenuDigital = ({
           {salon.phone && <a href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
               <Phone className="h-5 w-5 md:h-6 md:w-6" />
             </a>}
+          {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
+              <Instagram className="h-5 w-5 md:h-6 md:w-6" />
+            </a>}
           <div className="text-white">
             <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-white/20 flex items-center justify-center">
               <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-white"></div>
@@ -105,10 +109,16 @@ const MenuDigital = ({
             
             {/* Informações do Salão */}
             <div className="space-y-2 mb-6 md:mb-8">
-              {salon.address && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
-                  <MapPin className="h-4 w-4" />
-                  <span className="text-sm md:text-base">{salon.address}</span>
-                </div>}
+              {salon.address && (
+                <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
+                  <LocationDialog address={salon.address}>
+                    <button className="flex items-center gap-2 hover:text-white transition-colors">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm md:text-base">Ver localização</span>
+                    </button>
+                  </LocationDialog>
+                </div>
+              )}
               {salon.phone && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
                   <Phone className="h-4 w-4" />
                   <span className="text-sm md:text-base">{salon.phone}</span>
@@ -129,12 +139,6 @@ const MenuDigital = ({
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="absolute bottom-4 md:bottom-6 right-4 md:right-6 z-10">
-        {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-            <Instagram className="h-5 w-5 md:h-6 md:w-6" />
-          </a>}
-      </div>
     </div>;
 };
 export default MenuDigital;

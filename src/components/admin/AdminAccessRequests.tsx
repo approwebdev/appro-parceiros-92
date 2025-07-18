@@ -256,21 +256,34 @@ export const AdminAccessRequests = () => {
 
               {request.status === 'pending' && (
                 <div className="flex gap-2 pt-4 border-t">
-                  <Select onValueChange={(planType) => handleApproveRequest(request, planType)}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Selecionar plano" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="basico">Básico</SelectItem>
-                      <SelectItem value="verificado_azul">Verificado Azul</SelectItem>
-                      <SelectItem value="verificado_dourado">Verificado Dourado</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex gap-2 items-center flex-1">
+                    <Select 
+                      onValueChange={(planType) => {
+                        const confirmMessage = `Confirma a aprovação de ${request.name} com o plano ${planType}?`;
+                        if (confirm(confirmMessage)) {
+                          handleApproveRequest(request, planType);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Selecionar plano para aprovar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basico">Básico</SelectItem>
+                        <SelectItem value="verificado_azul">Verificado Azul</SelectItem>
+                        <SelectItem value="verificado_dourado">Verificado Dourado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleRejectRequest(request.id, request.user_id)}
+                    onClick={() => {
+                      if (confirm(`Confirma a rejeição da solicitação de ${request.name}?`)) {
+                        handleRejectRequest(request.id, request.user_id);
+                      }
+                    }}
                   >
                     <X className="h-4 w-4 mr-1" />
                     Rejeitar
