@@ -59,12 +59,12 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
       {/* Conteúdo Principal */}
       <div className="h-full min-h-screen">
         {/* Carrossel de Categorias */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 h-full min-h-screen gap-0 md:gap-0">
+        <div className="flex overflow-x-auto gap-0 h-full min-h-screen snap-x snap-mandatory scrollbar-hide">
           {categories.map((category, index) => (
             <div
               key={category.id}
               className={`relative overflow-hidden cursor-pointer group bg-gradient-to-br from-blue-600 to-purple-700 
-                         h-64 sm:h-80 lg:h-full min-h-[300px] lg:min-h-screen
+                         flex-shrink-0 w-80 sm:w-96 h-full min-h-screen snap-center
                          animate-fade-in transition-all duration-700 ease-out transform hover:scale-[1.02] hover:-translate-y-1
                          hover:shadow-2xl hover:z-10`}
               style={{ 
