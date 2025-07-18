@@ -307,7 +307,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       {/* Header */}
       <div className="sticky top-0 left-0 right-0 z-30 flex justify-between items-center p-4 md:p-6 bg-white border-b shadow-sm animate-fade-in">
         <div className="flex items-center gap-2 md:gap-4">
-          <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-6 md:h-8" />
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-6 md:h-8" />
           <Button 
             onClick={onBack}
             variant="ghost"
@@ -329,13 +329,18 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               }
             }}
           >
-            <Phone className="h-5 w-5 md:h-6 md:w-6" />
+            <Phone className="h-5 w-5 md:h-6 md:w-6 text-black" />
           </button>
-          <div className="text-black">
-            <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-black/20 flex items-center justify-center">
-              <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-black"></div>
-            </div>
-          </div>
+          <button className="text-black hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100">
+            <svg className="h-5 w-5 md:h-6 md:w-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </button>
+          <button className="text-black hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100">
+            <svg className="h-5 w-5 md:h-6 md:w-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -409,13 +414,13 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 </div>
                 
                  {/* Produtos Relacionados */}
-                <div className="sm:landscape:hidden">
-                  <h3 className="text-lg font-semibold mb-4 text-black">Produtos Relacionados</h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-1 gap-2 sm:gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold mb-3 text-black">Produtos Relacionados</h3>
+                  <div className="flex gap-2 overflow-x-auto">
                     {relatedTreatments.slice(0, 3).map((related, i) => (
                       <div 
                         key={i} 
-                        className="group cursor-pointer flex flex-col sm:flex-row gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="group cursor-pointer flex-shrink-0 w-24"
                         onClick={async () => {
                           if (isTransitioning) return;
                           
@@ -434,7 +439,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           }, 300);
                         }}
                       >
-                        <div className="w-full sm:w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="w-24 h-16 bg-gray-100 rounded-lg overflow-hidden mb-2">
                           <img 
                             src={related.images && related.images.length > 0 
                               ? related.images[0] 
@@ -444,10 +449,8 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                         </div>
-                        <div className="flex-1 min-w-0 text-center sm:text-left">
-                          <h4 className="text-xs sm:text-sm font-medium text-black truncate">{related.name}</h4>
-                          <p className="text-xs text-gray-400 mt-1">R$ {related.custom_price?.toFixed(2)}</p>
-                        </div>
+                        <h4 className="text-xs font-medium text-black truncate leading-tight">{related.name}</h4>
+                        <p className="text-xs text-gray-400">R$ {related.custom_price?.toFixed(2)}</p>
                       </div>
                     ))}
                   </div>

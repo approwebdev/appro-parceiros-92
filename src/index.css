@@ -43,7 +43,7 @@ All colors MUST be HSL.
     --menu-white: 0 0% 100%;
     --menu-gray: 0 0% 50%;
     
-    /* Admin Panel Design System */
+/* Admin Panel Design System */
     --admin-sidebar: 0 0% 0%;
     --admin-sidebar-hover: 0 0% 6%;
     --admin-sidebar-active: 41 58% 67%;
@@ -303,5 +303,15 @@ All colors MUST be HSL.
 
   .admin-card-hover {
     @apply hover:bg-admin-sidebar-hover transition-colors duration-200;
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

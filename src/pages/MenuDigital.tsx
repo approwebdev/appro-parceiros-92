@@ -113,29 +113,30 @@ const MenuDigital = ({
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-full flex flex-col md:flex-row">
+      <div className="h-full flex flex-col-reverse md:flex-row">
         {/* Lado Esquerdo - Texto */}
         <div className="flex-1 flex flex-col justify-center order-2 md:order-1 relative z-30" style={{
           paddingLeft: 'clamp(1rem, 4vw, 4rem)',
           paddingRight: 'clamp(1rem, 2vw, 2rem)',
-          paddingTop: 'clamp(5rem, 10vh, 8rem)',
-          paddingBottom: 'clamp(2rem, 4vh, 4rem)'
+          paddingTop: 'clamp(2rem, 5vh, 5rem)', // Reduzido no mobile
+          paddingBottom: 'clamp(1rem, 2vh, 2rem)' // Reduzido no mobile
         }}>
           <div className="text-center md:text-left">
             <h1 className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4" style={{
-              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
+              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)',
+              marginLeft: 'clamp(1rem, 4vw, 4rem)' // Alinhado com o padding da esquerda
             }}>
               <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2">
                 <span className="font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  fontSize: 'clamp(2.5rem, 8vw, 5rem)'
+                  fontSize: 'clamp(3.5rem, 12vw, 5.5rem)' // Maior no mobile
                 }}>
                   Menu
                 </span>
                 <span className="font-bold text-white" style={{
-                  fontSize: 'clamp(2rem, 6vw, 4.5rem)'
+                  fontSize: 'clamp(3rem, 10vw, 5rem)' // Maior no mobile
                 }}>Digital</span>
               </div>
             </h1>
@@ -163,12 +164,12 @@ const MenuDigital = ({
         </div>
 
         {/* Lado Direito - Modelo */}
-        <div className="flex-1 relative h-full order-1 md:order-2">
-          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black/20 via-transparent to-black/60 md:to-black/20 z-0"></div>
+        <div className="flex-1 relative h-1/2 md:h-full order-1 md:order-2">
+          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-black/60 via-transparent to-transparent md:from-black/20 md:to-black/20 z-0"></div>
           <img 
             src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" 
             alt="Profissional de beleza" 
-            className="w-full h-full object-cover object-[center_top] sm:object-[70%_center] md:object-center relative z-10 pointer-events-none" 
+            className="w-full h-full object-cover object-[center_bottom] md:object-center relative z-10 pointer-events-none" 
           />
         </div>
       </div>
