@@ -107,7 +107,8 @@ const SalonPanelNew = () => {
     defaultValues: {
       name: profile?.name || '',
       phone: profile?.phone || '',
-      instagram: profile?.instagram || ''
+      email: profile?.email || '',
+      password: ''
     }
   });
 
@@ -217,13 +218,31 @@ const SalonPanelNew = () => {
 
   const handleUpdateProfile = async (data: any) => {
     try {
+      const updateData: any = {
+        name: data.name,
+        phone: data.phone
+      };
+
+      // Atualizar email se fornecido
+      if (data.email && data.email !== profile.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: data.email
+        });
+        if (emailError) throw emailError;
+        updateData.email = data.email;
+      }
+
+      // Atualizar senha se fornecida
+      if (data.password) {
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: data.password
+        });
+        if (passwordError) throw passwordError;
+      }
+
       const { error } = await supabase
         .from('profiles')
-        .update({
-          name: data.name,
-          phone: data.phone,
-          instagram: data.instagram
-        })
+        .update(updateData)
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -247,12 +266,24 @@ const SalonPanelNew = () => {
 
   const handleUpdateTreatment = async (data: any) => {
     try {
+      const updateData: any = {
+        custom_price: parseFloat(data.custom_price),
+        is_active: data.is_active
+      };
+
+      // Atualizar cor do botão se fornecida
+      if (data.button_color) {
+        const { error: treatmentError } = await supabase
+          .from('treatments')
+          .update({ button_color: data.button_color })
+          .eq('id', editingTreatment.treatment.id);
+
+        if (treatmentError) throw treatmentError;
+      }
+
       const { error } = await supabase
         .from('salon_treatments')
-        .update({
-          custom_price: parseFloat(data.custom_price),
-          is_active: data.is_active
-        })
+        .update(updateData)
         .eq('id', editingTreatment.id);
 
       if (error) throw error;
@@ -470,20 +501,22 @@ const SalonPanelNew = () => {
                                     Editar Informações
                                   </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[500px]">
-                                  <DialogHeader>
-                                    <DialogTitle>Editar Salão</DialogTitle>
-                                  </DialogHeader>
-                                  {salonData && (
-                                    <SalonInfoForm
-                                      salon={salonData}
-                                      onUpdate={(data) => {
-                                        handleUpdateSalon(data);
-                                        setEditSalonOpen(false);
-                                      }}
-                                    />
-                                  )}
-                                </DialogContent>
+                                 <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden">
+                                   <DialogHeader>
+                                     <DialogTitle>Editar Salão</DialogTitle>
+                                   </DialogHeader>
+                                   <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                     {salonData && (
+                                       <SalonInfoForm
+                                         salon={salonData}
+                                         onUpdate={(data) => {
+                                           handleUpdateSalon(data);
+                                           setEditSalonOpen(false);
+                                         }}
+                                       />
+                                     )}
+                                   </div>
+                                 </DialogContent>
                               </Dialog>
                             )}
                           </div>
@@ -724,19 +757,32 @@ const SalonPanelNew = () => {
                             </FormItem>
                           )}
                         />
-                        <FormField
-                          control={profileForm.control}
-                          name="instagram"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Instagram</FormLabel>
-                              <FormControl>
-                                <Input placeholder="@seuinstagram" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                         <FormField
+                           control={profileForm.control}
+                           name="email"
+                           render={({ field }) => (
+                             <FormItem>
+                               <FormLabel>Email</FormLabel>
+                               <FormControl>
+                                 <Input placeholder="seu@email.com" {...field} />
+                               </FormControl>
+                               <FormMessage />
+                             </FormItem>
+                           )}
+                         />
+                         <FormField
+                           control={profileForm.control}
+                           name="password"
+                           render={({ field }) => (
+                             <FormItem>
+                               <FormLabel>Nova Senha (deixe em branco para não alterar)</FormLabel>
+                               <FormControl>
+                                 <Input type="password" placeholder="Nova senha" {...field} />
+                               </FormControl>
+                               <FormMessage />
+                             </FormItem>
+                           )}
+                         />
                         <div className="flex justify-end gap-2">
                           <Button type="button" variant="outline" onClick={() => setEditProfileOpen(false)}>
                             Cancelar
@@ -796,39 +842,49 @@ const SalonPanelNew = () => {
             </DialogHeader>
             {editingTreatment && (
               <form 
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  handleUpdateTreatment({
-                    custom_price: formData.get('custom_price'),
-                    is_active: formData.get('is_active') === 'on'
-                  });
-                }}
+                 onSubmit={(e) => {
+                   e.preventDefault();
+                   const formData = new FormData(e.currentTarget);
+                   handleUpdateTreatment({
+                     custom_price: formData.get('custom_price'),
+                     is_active: formData.get('is_active') === 'on',
+                     button_color: formData.get('button_color')
+                   });
+                 }}
                 className="space-y-4"
               >
                 <div className="space-y-2">
                   <Label>Nome do Tratamento</Label>
                   <Input value={editingTreatment.treatment?.name || ''} disabled />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="custom_price">Preço (R$)</Label>
-                  <Input
-                    id="custom_price"
-                    name="custom_price"
-                    type="number"
-                    step="0.01"
-                    defaultValue={editingTreatment.custom_price}
-                    required
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_active"
-                    name="is_active"
-                    defaultChecked={editingTreatment.is_active}
-                  />
-                  <Label htmlFor="is_active">Ativo no menu</Label>
-                </div>
+                 <div className="space-y-2">
+                   <Label htmlFor="custom_price">Preço (R$)</Label>
+                   <Input
+                     id="custom_price"
+                     name="custom_price"
+                     type="number"
+                     step="0.01"
+                     defaultValue={editingTreatment.custom_price}
+                     required
+                   />
+                 </div>
+                 <div className="space-y-2">
+                   <Label htmlFor="button_color">Cor do Botão</Label>
+                   <Input
+                     id="button_color"
+                     name="button_color"
+                     type="color"
+                     defaultValue={editingTreatment.treatment?.button_color || '#D4AF37'}
+                   />
+                 </div>
+                 <div className="flex items-center space-x-2">
+                   <Switch
+                     id="is_active"
+                     name="is_active"
+                     defaultChecked={editingTreatment.is_active}
+                   />
+                   <Label htmlFor="is_active">Ativo no menu</Label>
+                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setEditTreatmentOpen(false)}>
                     Cancelar
