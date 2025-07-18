@@ -121,8 +121,8 @@ const MenuDigital = ({
           paddingTop: 'clamp(2rem, 5vh, 5rem)', // Reduzido no mobile
           paddingBottom: 'clamp(1rem, 2vh, 2rem)' // Reduzido no mobile
         }}>
-          <div className="text-left">
-            <h1 className="flex items-baseline gap-4" style={{
+          <div className="text-center md:text-left">
+            <h1 className="flex flex-col md:flex-row md:items-baseline md:gap-4" style={{
               marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
             }}>
               <span className="font-black bg-gradient-to-r from-[#D4B08A] to-[#E6C7A3]" style={{
@@ -139,13 +139,13 @@ const MenuDigital = ({
             </h1>
 
             {/* Botão Entrar */}
-            <div className="flex justify-start">
+            <div className="flex justify-center md:justify-start">
               <Button 
                 onClick={onEnter} 
                 className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full relative z-40"
                 style={{
-                  padding: 'clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3rem)',
-                  fontSize: 'clamp(1rem, 2vw, 1.25rem)'
+                  padding: 'clamp(1.5rem, 3vw, 1.5rem) clamp(3rem, 6vw, 3rem)',
+                  fontSize: 'clamp(1.25rem, 3vw, 1.25rem)'
                 }}
               >
                 Entrar
