@@ -40,9 +40,7 @@ const MenuDigital = ({
         return;
       }
       setSalon(data);
-    } catch (error) {
-      
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };
@@ -89,7 +87,7 @@ const MenuDigital = ({
         <div className="flex-1 flex flex-col justify-center px-4 py-20 md:pl-16 md:py-0 order-2 md:order-1">
           <div className="mb-8 text-center md:text-left">
             <h1 className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4 mb-6 md:mb-4">
-              <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8 md:h-12" />
+              
               <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2">
                 <span className="text-4xl md:text-8xl font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
                 WebkitBackgroundClip: 'text',
@@ -109,16 +107,14 @@ const MenuDigital = ({
             
             {/* Informações do Salão */}
             <div className="space-y-2 mb-6 md:mb-8">
-              {salon.address && (
-                <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
+              {salon.address && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
                   <LocationDialog address={salon.address}>
                     <button className="flex items-center gap-2 hover:text-white transition-colors">
                       <MapPin className="h-4 w-4" />
                       <span className="text-sm md:text-base">Ver localização</span>
                     </button>
                   </LocationDialog>
-                </div>
-              )}
+                </div>}
               {salon.phone && <div className="flex items-center justify-center md:justify-start gap-2 text-white/80">
                   <Phone className="h-4 w-4" />
                   <span className="text-sm md:text-base">{salon.phone}</span>
