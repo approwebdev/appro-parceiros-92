@@ -63,15 +63,24 @@ Deno.serve(async (req) => {
     }
 
     // Delete related data first (in correct order due to foreign keys)
+    console.log('Starting deletion process for user:', userId)
     
     // Get salon IDs first
-    const { data: salonIds } = await supabaseAdmin
+    const { data: salonIds, error: salonSelectError } = await supabaseAdmin
       .from('salons')
-      .select('id')
+      .select('id, name')
       .eq('user_id', userId)
+
+    console.log('Found salons:', salonIds)
+
+    if (salonSelectError) {
+      console.error('Error selecting salons:', salonSelectError)
+    }
 
     // Delete salon treatments if there are salons
     if (salonIds && salonIds.length > 0) {
+      console.log('Deleting salon treatments for salons:', salonIds.map(s => s.id))
+      
       const { error: treatmentError } = await supabaseAdmin
         .from('salon_treatments')
         .delete()
@@ -79,10 +88,13 @@ Deno.serve(async (req) => {
 
       if (treatmentError) {
         console.error('Error deleting salon treatments:', treatmentError)
+      } else {
+        console.log('Successfully deleted salon treatments')
       }
     }
 
     // Delete salons
+    console.log('Deleting salons for user:', userId)
     const { error: salonError } = await supabaseAdmin
       .from('salons')
       .delete()
@@ -90,6 +102,8 @@ Deno.serve(async (req) => {
 
     if (salonError) {
       console.error('Error deleting salons:', salonError)
+    } else {
+      console.log('Successfully deleted salons')
     }
 
     // Delete access requests
