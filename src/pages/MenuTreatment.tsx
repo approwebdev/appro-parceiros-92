@@ -378,7 +378,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         </div>
 
         {/* Controles do Carrossel Mobile */}
-        <div className="md:hidden absolute top-4 left-1/2 transform -translate-x-1/2 z-20 flex gap-4">
+        <div className="md:hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-4">
           <Button
             onClick={prevTreatment}
             disabled={isTransitioning}
@@ -402,7 +402,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
         {/* Container do carrossel */}
         <div className="carousel-container w-full h-full transition-transform duration-300 ease-out">
-          <div className="max-w-7xl mx-auto px-6 py-8 h-full">
+          <div className="max-w-7xl mx-auto px-6 py-8 h-full md:pt-8 pt-20">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-auto lg:h-full">
               
               {/* Lado Esquerdo - Imagens e Produtos Relacionados */}
@@ -420,7 +420,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 </div>
                 
                 {/* Galeria de Miniaturas */}
-                <div className="grid grid-cols-3 gap-2 p-2">
+                <div className="grid grid-cols-3 gap-2">
                   {(treatment.images && treatment.images.length > 0 ? treatment.images : [
                     "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
                     "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80",
@@ -428,15 +428,16 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   ]).slice(0, 3).map((img, i) => (
                     <div 
                       key={i} 
-                      className={`aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden cursor-pointer transition-all p-1 ${
+                      className={`aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer transition-all ${
                         i === currentImageIndex ? 'ring-2 ring-blue-500' : ''
                       }`}
+                      style={{ transform: 'scale(0.85)' }}
                       onClick={() => setCurrentImageIndex(i)}
                     >
                       <img 
                         src={img}
                         alt={`${treatment.name} ${i + 1}`}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform rounded-md"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
                     </div>
                   ))}
@@ -542,23 +543,31 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                       {showPrice ? `R$ ${(treatment.custom_price * 1.5).toFixed(2)}` : 'R$ ********'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl font-bold text-black">
+                  <div className="md:flex md:items-center md:justify-between">
+                    <div className="flex items-center gap-3 md:block">
+                      <div className="text-3xl font-bold text-black text-center md:text-left">
                         {showPrice ? formatPrice(treatment.custom_price) : 'R$ ********'}
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowPrice(!showPrice)}
-                        className="text-gray-400 hover:text-gray-300 p-2"
+                        className="text-gray-400 hover:text-gray-300 p-2 md:hidden"
+                      >
+                        {showPrice ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPrice(!showPrice)}
+                        className="text-gray-400 hover:text-gray-300 p-2 hidden md:inline-flex md:ml-3"
                       >
                         {showPrice ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </Button>
                     </div>
                     
                     <Button 
-                      className="text-white px-8 py-3 rounded-full text-base font-medium hover:opacity-90 transition-all"
+                      className="text-white px-8 py-3 rounded-full text-base font-medium hover:opacity-90 transition-all w-full md:w-auto mt-4 md:mt-0"
                       style={{ backgroundColor: buttonColor }}
                     >
                       Saiba mais...
