@@ -72,6 +72,8 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
     return categories.slice(startIndex, endIndex);
   };
 
+  console.log('MenuCategories render - currentPageIndex:', currentPageIndex, 'totalPages:', totalPages, 'categories.length:', categories.length);
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
