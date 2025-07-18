@@ -73,7 +73,7 @@ const SalonPanelNew = () => {
             setMenuLink(`${window.location.origin}/menu/${salon.slug}`);
           }
         } catch (error) {
-          
+          console.error('Erro ao buscar dados do salão:', error);
         }
       }
     };
