@@ -130,23 +130,15 @@ const MenuDigital = ({
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  fontSize: 'clamp(4rem, 14vw, 7rem)' // Aumentado ainda mais
+                  fontSize: 'clamp(5rem, 16vw, 8rem)' // Aumentado ainda mais
                 }}>
                   Menu
                 </span>
                 <span className="font-bold text-white" style={{
-                  fontSize: 'clamp(3.5rem, 12vw, 6rem)' // Aumentado proporcionalmente
+                  fontSize: 'clamp(3rem, 10vw, 5rem)' // Diminuído um pouco
                 }}>Digital</span>
               </div>
             </h1>
-            
-            {/* Nome do Salão */}
-            <h2 className="font-bold text-white text-left" style={{
-              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
-              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
-            }}>
-              {salon.name}
-            </h2>
 
             {/* Botão Entrar */}
             <div className="flex justify-start">

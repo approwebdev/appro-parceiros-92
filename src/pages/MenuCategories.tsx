@@ -72,8 +72,6 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
     return categories.slice(startIndex, endIndex);
   };
 
-  console.log('MenuCategories render - currentPageIndex:', currentPageIndex, 'totalPages:', totalPages, 'categories.length:', categories.length);
-
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -86,7 +84,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
     <div className="fixed inset-0 bg-black overflow-hidden">
       {/* Page Container */}
       <div className="relative w-full h-full">
-        {/* Categories Grid - 4 per page */}
+        {/* Categories Container - Horizontal layout */}
         <div 
           className="flex h-full transition-transform duration-500 ease-out"
           style={{ 
@@ -100,11 +98,13 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             
             return (
               <div key={pageIndex} className="w-screen h-full flex-shrink-0">
-                <div className="grid grid-cols-2 grid-rows-2 h-full gap-0">
+                {/* 4 categories in horizontal line, each taking 25% width and full height */}
+                <div className="flex h-full">
                   {pageCategories.map((category, index) => (
                     <div
                       key={category.id}
-                      className="relative cursor-pointer group overflow-hidden"
+                      className="relative cursor-pointer group overflow-hidden flex-1"
+                      style={{ width: '25%' }}
                       onClick={() => onCategorySelect(category.name, category.name)}
                     >
                       {/* Background Image */}
@@ -166,7 +166,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
                   {/* Fill empty slots if less than 4 categories on last page */}
                   {pageCategories.length < categoriesPerPage && 
                     Array.from({ length: categoriesPerPage - pageCategories.length }, (_, emptyIndex) => (
-                      <div key={`empty-${emptyIndex}`} className="relative bg-black/20"></div>
+                      <div key={`empty-${emptyIndex}`} className="relative bg-black/20 flex-1" style={{ width: '25%' }}></div>
                     ))
                   }
                 </div>
