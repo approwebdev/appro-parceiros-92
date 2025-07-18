@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,78 +52,118 @@ const MenuDigital = ({
   };
 
   if (loading) {
-    return <div className="menu-container bg-menu-dark flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gold"></div>
+    return <div className="h-screen w-screen bg-menu-dark flex items-center justify-center overflow-hidden">
+        <div className="animate-spin rounded-full border-b-2 border-gold" style={{
+          width: 'clamp(2rem, 4vw, 8rem)',
+          height: 'clamp(2rem, 4vw, 8rem)'
+        }}></div>
       </div>;
   }
 
   if (!salon) {
-    return <div className="menu-container bg-menu-dark flex items-center justify-center">
+    return <div className="h-screen w-screen bg-menu-dark flex items-center justify-center overflow-hidden">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Salão não encontrado</h2>
-          <p className="text-gray-400">Verifique o link e tente novamente.</p>
+          <h2 className="font-bold text-white mb-4" style={{
+            fontSize: 'clamp(1.5rem, 3vw, 2rem)'
+          }}>Salão não encontrado</h2>
+          <p className="text-gray-400" style={{
+            fontSize: 'clamp(1rem, 2vw, 1.25rem)'
+          }}>Verifique o link e tente novamente.</p>
         </div>
       </div>;
   }
 
-  return <div className="menu-container bg-black relative min-h-screen">
+  return <div className="h-screen w-screen bg-black relative overflow-hidden">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-center p-4 md:p-6">
+      <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-center" style={{
+        padding: 'clamp(1rem, 2vw, 1.5rem)'
+      }}>
         {/* Logo Appro */}
         <div className="flex items-center z-50">
-          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-6 md:h-8" />
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" style={{
+            height: 'clamp(1.5rem, 3vw, 2rem)'
+          }} />
         </div>
 
         {/* Ícones superiores */}
-        <div className="flex items-center gap-3 md:gap-4 z-50">
+        <div className="flex items-center z-50" style={{
+          gap: 'clamp(0.75rem, 1.5vw, 1rem)'
+        }}>
           {salon.phone && <a href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-              <Phone className="h-5 w-5 md:h-6 md:w-6" />
+              <Phone style={{
+                width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+              }} />
             </a>}
           {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-              <Instagram className="h-5 w-5 md:h-6 md:w-6" />
+              <Instagram style={{
+                width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+              }} />
             </a>}
           {salon.address && <LocationDialog address={salon.address}>
               <button className="text-white hover:text-gold transition-colors">
-                <MapPin className="h-5 w-5 md:h-6 md:w-6" />
+                <MapPin style={{
+                  width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                  height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                }} />
               </button>
             </LocationDialog>}
         </div>
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="h-screen flex flex-col md:flex-row">
+      <div className="h-full flex flex-col md:flex-row">
         {/* Lado Esquerdo - Texto */}
-        <div className="flex-1 flex flex-col justify-center px-4 py-20 md:pl-16 md:py-0 order-2 md:order-1 relative z-30">
-          <div className="mb-8 text-center md:text-left">
-            <h1 className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4 mb-6 md:mb-4">
-              
+        <div className="flex-1 flex flex-col justify-center order-2 md:order-1 relative z-30" style={{
+          paddingLeft: 'clamp(1rem, 4vw, 4rem)',
+          paddingRight: 'clamp(1rem, 2vw, 2rem)',
+          paddingTop: 'clamp(5rem, 10vh, 8rem)',
+          paddingBottom: 'clamp(2rem, 4vh, 4rem)'
+        }}>
+          <div className="text-center md:text-left">
+            <h1 className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4" style={{
+              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
+            }}>
               <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2">
-                <span className="text-4xl md:text-8xl font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
+                <span className="font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontSize: 'clamp(2.5rem, 8vw, 5rem)'
+                }}>
                   Menu
                 </span>
-                <span className="text-3xl md:text-7xl font-bold text-white">Digital</span>
+                <span className="font-bold text-white" style={{
+                  fontSize: 'clamp(2rem, 6vw, 4.5rem)'
+                }}>Digital</span>
               </div>
             </h1>
             
             {/* Nome do Salão */}
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+            <h2 className="font-bold text-white" style={{
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
+            }}>
               {salon.name}
             </h2>
-            
 
             {/* Botão Entrar */}
-            <Button onClick={onEnter} className="bg-white text-black hover:bg-gray-100 px-6 py-4 md:px-8 md:py-6 text-base md:text-lg font-semibold rounded-full w-full md:w-auto relative z-40">
+            <Button 
+              onClick={onEnter} 
+              className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full w-full md:w-auto relative z-40"
+              style={{
+                padding: 'clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3rem)',
+                fontSize: 'clamp(1rem, 2vw, 1.25rem)'
+              }}
+            >
               Entrar
             </Button>
           </div>
         </div>
 
         {/* Lado Direito - Modelo */}
-        <div className="flex-1 relative h-64 md:h-full order-1 md:order-2">
+        <div className="flex-1 relative h-full order-1 md:order-2">
           <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black/20 via-transparent to-black/60 md:to-black/20 z-0"></div>
           <img 
             src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" 
@@ -131,7 +172,6 @@ const MenuDigital = ({
           />
         </div>
       </div>
-
     </div>;
 };
 
