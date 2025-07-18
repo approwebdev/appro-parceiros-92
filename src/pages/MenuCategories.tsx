@@ -86,8 +86,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
           {categories.map((category, index) => (
             <div
               key={category.id}
-              className="relative flex-shrink-0 cursor-pointer group"
-              style={{ width: `${100 / categories.length}%` }}
+              className="relative flex-shrink-0 cursor-pointer group w-screen h-full"
               onClick={() => onCategorySelect(category.name, category.name)}
             >
               {/* Background Image */}
