@@ -522,10 +522,13 @@ const SalonPanelNew = () => {
                           </div>
                           
                           {salonData && (
-                            <div className="space-y-3">
-                              <div>
-                                <h5 className="font-semibold text-green-800 text-lg">{salonData.name}</h5>
-                              </div>
+                             <div className="space-y-3">
+                               <div>
+                                 <h5 className="font-semibold text-green-800 text-lg">{salonData.name}</h5>
+                                 <p className="text-green-700 text-sm">
+                                   <strong>✨ Plano:</strong> <span className="capitalize">{salonData.plan_type?.replace('_', ' ') || 'Básico'}</span>
+                                 </p>
+                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                  <div>
                                    <p className="text-green-700 text-sm">
