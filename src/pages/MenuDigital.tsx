@@ -122,22 +122,20 @@ const MenuDigital = ({
           paddingBottom: 'clamp(1rem, 2vh, 2rem)' // Reduzido no mobile
         }}>
           <div className="text-left">
-            <h1 className="flex flex-col md:flex-row items-start justify-start gap-2 md:gap-4" style={{
+            <h1 className="flex items-baseline gap-4" style={{
               marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
             }}>
-              <div className="flex flex-col md:flex-row items-start gap-1 md:gap-2">
-                <span className="font-black bg-gradient-to-r from-[#FBD18F] to-[#FFDDA6]" style={{
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  fontSize: 'clamp(5rem, 16vw, 8rem)' // Aumentado ainda mais
-                }}>
-                  Menu
-                </span>
-                <span className="font-bold text-white" style={{
-                  fontSize: 'clamp(3rem, 10vw, 5rem)' // Diminuído um pouco
-                }}>Digital</span>
-              </div>
+              <span className="font-black bg-gradient-to-r from-[#D4B08A] to-[#E6C7A3]" style={{
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontSize: 'clamp(6rem, 20vw, 12rem)'
+              }}>
+                Menu
+              </span>
+              <span className="font-medium text-white" style={{
+                fontSize: 'clamp(2rem, 6vw, 4rem)'
+              }}>Digital</span>
             </h1>
 
             {/* Botão Entrar */}

@@ -23,11 +23,24 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
   const [loading, setLoading] = useState(true);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   
-  const categoriesPerPage = 4;
+  const getCategoriesPerPage = () => {
+    if (window.innerWidth < 640) return 1; // Mobile: 1 categoria + preview
+    if (window.innerWidth < 1024) return 2; // Tablet: 2 categorias
+    return 4; // Desktop: 4 categorias
+  };
+  
+  const [categoriesPerPage, setCategoriesPerPage] = useState(getCategoriesPerPage());
   const totalPages = Math.ceil(categories.length / categoriesPerPage);
 
   useEffect(() => {
     fetchCategories();
+    
+    const handleResize = () => {
+      setCategoriesPerPage(getCategoriesPerPage());
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchCategories = async () => {
@@ -98,13 +111,13 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             
             return (
               <div key={pageIndex} className="w-screen h-full flex-shrink-0">
-                {/* 4 categories in horizontal line, each taking 25% width and full height */}
+                {/* Responsive categories: Desktop 4, Tablet 2, Mobile 1 + preview */}
                 <div className="flex h-full">
                   {pageCategories.map((category, index) => (
                     <div
                       key={category.id}
-                      className="relative cursor-pointer group overflow-hidden flex-1"
-                      style={{ width: '25%' }}
+                      className="relative cursor-pointer group overflow-hidden 
+                        w-full sm:w-1/2 lg:w-1/4 flex-shrink-0"
                       onClick={() => onCategorySelect(category.name, category.name)}
                     >
                       {/* Background Image */}
