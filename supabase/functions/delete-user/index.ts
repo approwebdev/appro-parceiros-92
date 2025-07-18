@@ -64,16 +64,23 @@ Deno.serve(async (req) => {
 
     // Delete related data first (in correct order due to foreign keys)
     
-    // Delete salon treatments first
-    await supabaseAdmin
-      .from('salon_treatments')
-      .delete()
-      .in('salon_id', 
-        supabaseAdmin
-          .from('salons')
-          .select('id')
-          .eq('user_id', userId)
-      )
+    // Get salon IDs first
+    const { data: salonIds } = await supabaseAdmin
+      .from('salons')
+      .select('id')
+      .eq('user_id', userId)
+
+    // Delete salon treatments if there are salons
+    if (salonIds && salonIds.length > 0) {
+      const { error: treatmentError } = await supabaseAdmin
+        .from('salon_treatments')
+        .delete()
+        .in('salon_id', salonIds.map(salon => salon.id))
+
+      if (treatmentError) {
+        console.error('Error deleting salon treatments:', treatmentError)
+      }
+    }
 
     // Delete salons
     const { error: salonError } = await supabaseAdmin
