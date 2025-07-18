@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Upload } from "lucide-react";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SalonData {
   id: string;
@@ -41,24 +42,64 @@ const formatPhoneNumber = (value: string) => {
 };
 
 export function SalonInfoForm({ salon, onUpdate }: SalonInfoFormProps) {
+  const { profile } = useAuth();
+  
+  // Função para extrair cidade e estado do endereço completo do profile
+  const extractCityState = (address: string | null) => {
+    if (!address) return { city: '', state: '' };
+    
+    // Procura por padrões como "Campo Grande - MS" ou "São Paulo - SP"
+    const match = address.match(/,\s*([^,]+)\s*-\s*([A-Z]{2})\s*$/);
+    if (match) {
+      return {
+        city: match[1].trim(),
+        state: match[2].trim()
+      };
+    }
+    
+    return { city: '', state: '' };
+  };
+
+  const { city: profileCity, state: profileState } = extractCityState(profile?.address);
+
   const [formData, setFormData] = useState({
     name: salon.name || '',
     phone: salon.phone || '',
     address: salon.address || '',
-    city: salon.city || '',
-    state: salon.state || '',
-    postal_code: salon.postal_code || '',
-    instagram: salon.instagram || '',
+    city: salon.city || profileCity || '',
+    state: salon.state || profileState || '',
+    postal_code: salon.postal_code || profile?.postal_code || '',
+    instagram: salon.instagram || '@',
     photo_url: salon.photo_url || ''
   });
   
   const { toast } = useToast();
+
+  // Atualizar dados quando o perfil carregar
+  useEffect(() => {
+    if (profile && !salon.city && !salon.state && !salon.postal_code) {
+      const { city: extractedCity, state: extractedState } = extractCityState(profile.address);
+      setFormData(prev => ({
+        ...prev,
+        city: prev.city || extractedCity || '',
+        state: prev.state || extractedState || '',
+        postal_code: prev.postal_code || profile.postal_code || ''
+      }));
+    }
+  }, [profile, salon]);
 
   const handleInputChange = (field: string, value: string) => {
     let processedValue = value;
     
     if (field === 'phone') {
       processedValue = formatPhoneNumber(value);
+    } else if (field === 'instagram') {
+      // Garantir que sempre comece com @
+      if (value && !value.startsWith('@')) {
+        processedValue = '@' + value.replace('@', '');
+      } else if (!value) {
+        processedValue = '@';
+      }
     }
     
     setFormData(prev => ({ ...prev, [field]: processedValue }));
