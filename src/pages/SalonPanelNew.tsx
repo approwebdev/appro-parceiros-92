@@ -340,11 +340,11 @@ const SalonPanelNew = () => {
                 </p>
                 {!profile.has_salon ? (
                   <div className="mt-6 space-y-4">
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                       <div className="flex items-start gap-6">
                         {/* Ícone placeholder */}
                         <div className="flex-shrink-0">
-                          <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg border border-red-300 flex items-center justify-center">
+                          <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg border border-gray-300 flex items-center justify-center">
                             <User className="h-16 w-16 text-gray-400" />
                           </div>
                         </div>
@@ -352,7 +352,7 @@ const SalonPanelNew = () => {
                         {/* Informações do Salão */}
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-4">
-                            <h4 className="font-bold text-red-800 text-xl">❌ Salão Desativado</h4>
+                            <h4 className="font-bold text-gray-700 text-xl">❌ Salão Desativado</h4>
                             <Dialog open={createSalonOpen} onOpenChange={setCreateSalonOpen}>
                               <DialogTrigger asChild>
                                 <Button 
@@ -484,19 +484,19 @@ const SalonPanelNew = () => {
                           
                           <div className="space-y-3">
                             <div>
-                              <p className="text-red-700 text-sm">
+                              <p className="text-gray-600 text-sm">
                                 <strong>✨ Plano:</strong> <span className="capitalize">Básico</span>
                               </p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
-                                <p className="text-red-700 text-sm">
+                                <p className="text-gray-600 text-sm">
                                   <strong>📍 Status:</strong><br />
                                   Salão não cadastrado. Clique em "Desbloquear Salão" para começar.
                                 </p>
                               </div>
                               <div>
-                                <p className="text-red-700 text-sm">
+                                <p className="text-gray-600 text-sm">
                                   <strong>🎯 Próximo passo:</strong><br />
                                   Cadastre as informações do seu salão para ativar o menu digital.
                                 </p>
