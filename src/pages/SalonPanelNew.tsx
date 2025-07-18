@@ -437,41 +437,90 @@ const SalonPanelNew = () => {
                   </div>
                 ) : (
                   <div className="mt-6 space-y-4">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium text-green-800">✅ Salão Ativo</h4>
-                          <p className="text-green-700 text-sm mt-1">
-                            Seu salão está ativo e funcionando! 
-                          </p>
-                        </div>
-                        {salonData && (
-                          <SalonInfoForm
-                            salon={salonData}
-                            onUpdate={handleUpdateSalon}
-                          />
-                        )}
-                      </div>
-                      
-                      {salonData && (
-                        <div className="mt-3 space-y-2">
-                          <p className="text-green-700 text-sm">
-                            <strong>Nome:</strong> {salonData.name}
-                          </p>
-                           <p className="text-green-700 text-sm">
-                             <strong>Endereço:</strong> {salonData.address}
-                             {salonData.city && `, ${salonData.city}`}
-                             {salonData.state && ` - ${salonData.state}`}
-                             {salonData.postal_code && ` - CEP: ${salonData.postal_code}`}
-                           </p>
-                          {salonData.phone && (
-                            <p className="text-green-700 text-sm">
-                              <strong>Telefone:</strong> {salonData.phone}
-                            </p>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                      <div className="flex items-start gap-6">
+                        {/* Foto do Salão */}
+                        <div className="flex-shrink-0">
+                          {salonData?.photo_url ? (
+                            <img 
+                              src={salonData.photo_url} 
+                              alt={salonData.name}
+                              className="w-32 h-32 object-cover rounded-lg border border-green-300"
+                            />
+                          ) : (
+                            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg border border-green-300 flex items-center justify-center">
+                              <User className="h-16 w-16 text-gray-400" />
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
+                        
+                        {/* Informações do Salão */}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="font-bold text-green-800 text-xl">✅ Salão Ativo</h4>
+                            {salonData && (
+                              <Dialog open={editSalonOpen} onOpenChange={setEditSalonOpen}>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="bg-white border-green-300 text-green-700 hover:bg-green-50"
+                                  >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Editar Informações
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[500px]">
+                                  <DialogHeader>
+                                    <DialogTitle>Editar Salão</DialogTitle>
+                                  </DialogHeader>
+                                  {salonData && (
+                                    <SalonInfoForm
+                                      salon={salonData}
+                                      onUpdate={(data) => {
+                                        handleUpdateSalon(data);
+                                        setEditSalonOpen(false);
+                                      }}
+                                    />
+                                  )}
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </div>
+                          
+                          {salonData && (
+                            <div className="space-y-3">
+                              <div>
+                                <h5 className="font-semibold text-green-800 text-lg">{salonData.name}</h5>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                 <div>
+                                   <p className="text-green-700 text-sm">
+                                     <strong>📍 Endereço:</strong><br />
+                                     {salonData.address}
+                                     {salonData.city && `, ${salonData.city}`}
+                                     {salonData.state && ` - ${salonData.state}`}
+                                     {salonData.postal_code && ` - CEP: ${salonData.postal_code}`}
+                                   </p>
+                                 </div>
+                                 <div>
+                                   {salonData.phone && (
+                                     <p className="text-green-700 text-sm">
+                                       <strong>📞 Telefone:</strong> {salonData.phone}
+                                     </p>
+                                   )}
+                                   {salonData.instagram && (
+                                     <p className="text-green-700 text-sm">
+                                       <strong>📱 Instagram:</strong> {salonData.instagram}
+                                     </p>
+                                   )}
+                                 </div>
+                               </div>
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                     </div>
                      
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <Card className="bg-admin-card border-admin-border">
