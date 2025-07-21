@@ -300,23 +300,23 @@ const SalonFinder = () => {
         </div>
         
         <div className="text-center mb-6">
-          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{ backgroundColor: '#242424' }}>
-            <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
-              Encontre o Salão mais
+          <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black">
+            <h1 className="font-bold mb-4 text-white text-2xl md:text-3xl">
+              Encontre os salões que utilizam
             </h1>
-            <h2 style={{ color: '#F8E7BF' }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
-              próximo de você.
+            <h2 className="font-bold mb-6 text-white text-2xl md:text-3xl">
+              Ap Professional!
             </h2>
             
             <div className="relative mb-4">
               <Input 
                 type="text" 
-                placeholder="Buscar salão, endereço ou Instagram..." 
+                placeholder="Digite um endereço." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
-                className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" 
+                className="bg-white text-gray-500 pl-4 pr-12 py-3 md:py-4 rounded-xl w-full border-0 text-base placeholder:text-gray-500" 
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             </div>
           </div>
 
@@ -404,90 +404,70 @@ const SalonFinder = () => {
         {/* Salons List */}
         {viewType === 'list' && (
           <div className="space-y-4 md:space-y-6 mb-8">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
-                {userLocation ? (
-                  <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span>
-                ) : (
-                  'Todos os salões'
-                )}
+            <div className="flex items-center justify-center mb-4">
+              <h3 className="text-xl md:text-2xl font-semibold text-black flex items-center gap-2">
+                Salões mais próximo de você
+                <ChevronDown className="h-6 w-6" />
               </h3>
-              {filteredSalons.length > 0 && (
-                <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
-                  {filteredSalons.length} encontrados
-                </Badge>
-              )}
             </div>
             
-            {filteredSalons.map((salon, index) => {
-              const midPoint = Math.floor(filteredSalons.length / 2);
-              const showMidBanner = index === midPoint && banners.length > 0;
-              const isLastSalon = index === filteredSalons.length - 1;
-              const showEndBanner = isLastSalon && banners.length > 1;
-              
-              return (
-                <div key={salon.id}>
-                  <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6 md:p-8">
-                      <div className="flex items-start gap-4 md:gap-6">
-                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
-                          {salon.photo_url ? (
-                            <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
-                          ) : (
-                            salon.name.charAt(0)
-                          )}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
-                              {salon.plan && salon.plan !== 'basico' && (
-                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
-                              )}
-                            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredSalons.map((salon, index) => {
+                const midPoint = Math.floor(filteredSalons.length / 2);
+                const showMidBanner = index === midPoint && banners.length > 0;
+                const isLastSalon = index === filteredSalons.length - 1;
+                const showEndBanner = isLastSalon && banners.length > 1;
+                
+                return (
+                  <div key={salon.id}>
+                    <Card className="bg-white border border-gray-200 hover:shadow-lg transition-shadow rounded-[20px] p-4">
+                      <CardContent className="p-0">
+                        <div className="flex items-start gap-4">
+                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
+                            {salon.photo_url ? (
+                              <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
+                            ) : (
+                              salon.name.charAt(0)
+                            )}
                           </div>
                           
-                          {salon.phone && (
-                            <div className="flex items-center gap-2 mb-2">
-                              <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
-                              <button 
-                                onClick={() => openWhatsApp(salon.phone!)} 
-                                className="text-green-600 hover:underline text-base md:text-xl"
-                              >
-                                {formatPhone(salon.phone)}
-                              </button>
+                           <div className="flex-1 min-w-0">
+                             <div className="flex items-center gap-2 mb-2">
+                               <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
+                               {salon.plan && salon.plan !== 'basico' && (
+                                 <CheckCircle className={`h-5 w-5 ${salon.plan === 'premium' ? 'text-yellow-500' : 'text-blue-500'}`} />
+                               )}
+                             </div>
+                           
+                            {salon.phone && (
+                              <div className="flex items-center gap-2 mb-1">
+                                <Phone className="h-4 w-4 text-gray-500" />
+                                <span className="text-sm text-gray-700">{formatPhone(salon.phone)}</span>
+                              </div>
+                            )}
+                            
+                            {salon.instagram && (
+                              <div className="flex items-center gap-2 mb-1">
+                                <Instagram className="h-4 w-4 text-gray-500" />
+                                <span className="text-sm text-gray-700">{salon.instagram}</span>
+                              </div>
+                            )}
+                            
+                            {salon.address && (
+                              <div className="flex items-start gap-2 mb-2">
+                                <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm text-blue-500">{salon.address}</span>
+                              </div>
+                            )}
+                            
+                            <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+                              <MapPin className="h-4 w-4 text-blue-500" />
+                              {salon.distance ? `A ${salon.distance.toFixed(0)}km de você` : 'A 5km de você'}
                             </div>
-                          )}
-                          
-                          {salon.address && (
-                            <div className="flex items-start gap-2 mb-3">
-                              <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
-                              <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
-                            </div>
-                          )}
-                          
-                          {salon.instagram && (
-                            <div className="flex items-center gap-2 mb-3">
-                              <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
-                              <a 
-                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="text-purple-600 hover:underline text-base md:text-xl"
-                              >
-                                {salon.instagram}
-                              </a>
-                            </div>
-                          )}
-                          
-                          <div className="text-base md:text-xl text-gray-500 font-medium">
-                            {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
                   
                   {showMidBanner && (
                     <div className="my-6">
@@ -516,9 +496,10 @@ const SalonFinder = () => {
                       </Card>
                     </div>
                   )}
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })}
+            </div>
 
             {filteredSalons.length === 0 && (
               <Card className="bg-white text-black border border-gray-200">
