@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram, Store } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram, Store, Award } from "lucide-react";
 import { generateSalonCoordinates } from "@/utils/geocoding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -382,9 +382,9 @@ const SalonFinder = () => {
                           </div>
                           
                            <div className="flex-1 min-w-0">
-                               <div className="flex items-center gap-2 mb-2">
+                               <div className="flex items-center justify-between mb-2">
                                 <h4 className="font-bold text-xl text-gray-900">{salon.name}</h4>
-                                <CheckCircle className="h-5 w-5 text-yellow-500" />
+                                <Award className="h-6 w-6 text-yellow-500" />
                               </div>
                            
                             {/* Primeira linha: WhatsApp e Instagram */}
