@@ -263,7 +263,7 @@ const SalonFinder = () => {
           className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
             backgroundImage: 'url(/lovable-uploads/b1459855-6ccd-4b81-9144-e120fef5dece.png)',
-            backgroundSize: 'cover',
+            backgroundSize: 'contain',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
           }}
