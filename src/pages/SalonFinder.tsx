@@ -374,41 +374,41 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-2 md:p-4 w-full">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-3 md:p-5 w-full">
                       <CardContent className="p-0">
-                        <div className="flex items-center gap-3 md:gap-6">
-                          <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-sm md:text-lg overflow-hidden">
+                        <div className="flex items-center gap-4 md:gap-7">
+                          <div className="w-20 h-20 md:w-28 md:h-28 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-base md:text-xl overflow-hidden">
                             {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
                           </div>
                           
                            <div className="flex-1 min-w-0">
-                               <div className="flex items-center gap-2 mb-1 md:mb-2">
-                                <h4 className="font-bold text-lg md:text-xl text-gray-900">{salon.name}</h4>
-                                <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-5 w-5 md:h-6 md:w-6" />
+                               <div className="flex items-center gap-2 mb-2 md:mb-3">
+                                <h4 className="font-bold text-xl md:text-2xl text-gray-900">{salon.name}</h4>
+                                <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-6 w-6 md:h-8 md:w-8" />
                               </div>
                            
                             {/* Primeira linha: WhatsApp e Instagram */}
-                            <div className="flex items-center gap-2 md:gap-4 mb-1">
-                              {salon.phone && <div className="flex items-center gap-1 md:gap-2">
-                                  <Phone className="h-3 w-3 md:h-4 md:w-4 text-gray-600" />
-                                  <span className="text-xs md:text-sm text-gray-600">{formatPhone(salon.phone)}</span>
+                            <div className="flex items-center gap-3 md:gap-5 mb-2">
+                              {salon.phone && <div className="flex items-center gap-2 md:gap-3">
+                                  <Phone className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
+                                  <span className="text-sm md:text-base text-gray-600">{formatPhone(salon.phone)}</span>
                                 </div>}
                               
-                              {salon.instagram && <div className="flex items-center gap-1 md:gap-2">
-                                  <Instagram className="h-3 w-3 md:h-4 md:w-4 text-gray-600" />
-                                  <span className="text-xs md:text-sm text-gray-600">{salon.instagram}</span>
+                              {salon.instagram && <div className="flex items-center gap-2 md:gap-3">
+                                  <Instagram className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
+                                  <span className="text-sm md:text-base text-gray-600">{salon.instagram}</span>
                                 </div>}
                             </div>
                             
                             {/* Segunda linha: Endereço */}
-                            {salon.address && <div className="flex items-start gap-1 md:gap-2 mb-1 md:mb-2">
-                                <Store className="h-3 w-3 md:h-4 md:w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                                <span className="text-xs md:text-sm text-blue-500">{salon.address}</span>
+                            {salon.address && <div className="flex items-start gap-2 md:gap-3 mb-2 md:mb-3">
+                                <Store className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm md:text-base text-blue-500">{salon.address}</span>
                               </div>}
                             
                             {/* Terceira linha: Distância */}
-                            <div className="flex items-center gap-1 md:gap-2 text-sm md:text-lg text-gray-700 font-medium">
-                              <MapPin className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
+                            <div className="flex items-center gap-2 md:gap-3 text-base md:text-xl text-gray-700 font-medium">
+                              <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
                               {salon.distance ? `A ${salon.distance.toFixed(0)}km de você` : 'A 5km de você'}
                             </div>
                           </div>
