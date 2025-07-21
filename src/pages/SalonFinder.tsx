@@ -259,7 +259,7 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8 relative z-10">
         
-        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-64 relative z-10" style={{
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-64 -mt-8 relative z-10" style={{
         backgroundImage: 'url(/lovable-uploads/97fb24e2-cd79-438d-9fcb-d9e51311a96d.png)'
       }}>
         </div>
