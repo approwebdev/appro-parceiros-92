@@ -454,13 +454,13 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     <div className="flex flex-col items-center justify-start w-full lg:w-1/2">
                       <div className="w-full max-w-md mx-auto">
                         {/* Imagem principal */}
-                        <div className="rounded-xl shadow-lg overflow-hidden bg-gray-50 mb-4 w-[250px] mx-auto">
-                          <img
-                            src={imagemAtiva || (item.images && item.images.length > 0 ? item.images[0] : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80")}
-                            alt={typeof item.name === 'string' ? item.name : 'Tratamento'}
-                            className="w-full h-[300px] object-cover"
-                          />
-                        </div>
+                         <div className="rounded-xl shadow-lg overflow-hidden bg-gray-50 mb-4 w-[280px] mx-auto">
+                           <img
+                             src={imagemAtiva || (item.images && item.images.length > 0 ? item.images[0] : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80")}
+                             alt={typeof item.name === 'string' ? item.name : 'Tratamento'}
+                             className="w-full h-[400px] object-cover"
+                           />
+                         </div>
                         
                         {/* Miniaturas */}
                         {item.images && item.images.length > 1 && (
