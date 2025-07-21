@@ -87,25 +87,25 @@ const MenuDigital = ({
 
         {/* Ícones superiores */}
         <div className="flex items-center z-50" style={{
-          gap: 'clamp(0.75rem, 1.5vw, 1rem)'
+          gap: 'clamp(1rem, 2vw, 1.5rem)'
         }}>
           {salon.phone && <a href={`https://wa.me/${salon.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
               <Phone style={{
-                width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
-                height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                width: 'clamp(1.5rem, 3vw, 2rem)',
+                height: 'clamp(1.5rem, 3vw, 2rem)'
               }} />
             </a>}
           {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
               <Instagram style={{
-                width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
-                height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                width: 'clamp(1.5rem, 3vw, 2rem)',
+                height: 'clamp(1.5rem, 3vw, 2rem)'
               }} />
             </a>}
           {salon.address && <LocationDialog address={salon.address}>
               <button className="text-white hover:text-gold transition-colors">
                 <MapPin style={{
-                  width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
-                  height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                  width: 'clamp(1.5rem, 3vw, 2rem)',
+                  height: 'clamp(1.5rem, 3vw, 2rem)'
                 }} />
               </button>
             </LocationDialog>}
@@ -133,7 +133,7 @@ const MenuDigital = ({
                 Menu
               </span>
               <span className="font-medium text-white" style={{
-                fontSize: 'clamp(3rem, 8vw, 6rem)',
+                fontSize: 'clamp(2rem, 5vw, 4rem)',
                 lineHeight: '1.0'
               }}>Digital</span>
             </h1>
@@ -144,8 +144,8 @@ const MenuDigital = ({
                 onClick={onEnter} 
                 className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full relative z-40"
                 style={{
-                  padding: 'clamp(1.2rem, 2.5vw, 1.5rem) clamp(2.5rem, 5vw, 3rem)',
-                  fontSize: 'clamp(1.1rem, 2.5vw, 1.25rem)'
+                  padding: 'clamp(1.5rem, 3vw, 2rem) clamp(3rem, 6vw, 4rem)',
+                  fontSize: 'clamp(1.3rem, 3vw, 1.5rem)'
                 }}
               >
                 Entrar
