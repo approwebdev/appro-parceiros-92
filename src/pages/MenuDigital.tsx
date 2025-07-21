@@ -122,19 +122,19 @@ const MenuDigital = ({
           paddingBottom: 'clamp(1rem, 2vh, 2rem)'
         }}>
           <div className="text-center md:text-left">
-            <h1 className="flex flex-col md:flex-row md:items-center md:gap-6" style={{
-              marginBottom: 'clamp(2rem, 4vh, 3rem)'
+            <h1 className="flex flex-col md:flex-row md:items-center md:gap-8" style={{
+              marginBottom: 'clamp(2.5rem, 5vh, 4rem)'
             }}>
               <span className="font-black" style={{
                 color: '#F8E7BF',
-                fontSize: 'clamp(5rem, 18vw, 10rem)',
-                lineHeight: '0.9'
+                fontSize: 'clamp(8rem, 25vw, 16rem)',
+                lineHeight: '0.8'
               }}>
                 Menu
               </span>
               <span className="font-medium text-white" style={{
-                fontSize: 'clamp(1.8rem, 5vw, 3.5rem)',
-                lineHeight: '1.1'
+                fontSize: 'clamp(3rem, 8vw, 6rem)',
+                lineHeight: '1.0'
               }}>Digital</span>
             </h1>
 
