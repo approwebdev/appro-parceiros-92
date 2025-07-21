@@ -410,7 +410,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               }}
             >
                <FaWhatsapp
-                 className="transition-all duration-200 text-green-500"
+                 className="transition-all duration-200 text-black"
                  style={{ 
                    width: "clamp(24px, 2vw, 32px)", 
                    height: "auto"
@@ -695,13 +695,17 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 </div>
 
                 {/* Vídeo em Desktop */}
-                <div className="hidden lg:flex items-center justify-center h-full relative">
-                  {/* Imagem de fundo */}
+                <div className="hidden lg:flex items-center justify-center h-full relative overflow-visible">
+                  {/* Imagem de fundo expandida */}
                   <div 
                     className="absolute inset-0 bg-no-repeat bg-center opacity-30 z-0"
                     style={{
                       backgroundImage: `url(/lovable-uploads/1ac586b1-3175-4a7d-8e81-692161f57930.png)`,
-                      backgroundSize: 'contain'
+                      backgroundSize: 'cover',
+                      width: '150%',
+                      height: '120%',
+                      left: '-25%',
+                      top: '-10%'
                     }}
                   />
                   

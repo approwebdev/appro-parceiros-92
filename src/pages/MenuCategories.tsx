@@ -175,7 +175,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             onDragEnd={handleDragEnd}
             style={{
               x: isMobile ? `calc(${currentIndex * -100}% + ${currentIndex * 8}px)` : currentIndex * -25 + "%",
-              paddingRight: isMobile ? '50%' : '0',
+              paddingRight: isMobile ? '20%' : '0',
             }}
             animate={{
               x: isMobile ? `calc(${currentIndex * -100}% + ${currentIndex * 8}px)` : currentIndex * -25 + "%",
