@@ -1,15 +1,13 @@
 
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, Phone, List, Map, Navigation, CheckCircle, Instagram, BellIcon, ChevronDown, Filter } from "lucide-react";
-import { FaWhatsapp, FaBell } from "react-icons/fa";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram } from "lucide-react";
 import { generateSalonCoordinates } from "@/utils/geocoding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +36,6 @@ interface Banner {
 }
 
 const SalonFinder = () => {
-  const navigate = useNavigate();
   const [salons, setSalons] = useState<Salon[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +48,6 @@ const SalonFinder = () => {
   const [distanceFilter, setDistanceFilter] = useState<'50' | '100' | 'all'>('all');
   const [gettingLocation, setGettingLocation] = useState(false);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -247,393 +243,361 @@ const SalonFinder = () => {
     window.open(`https://wa.me/55${cleanPhone}`, '_blank');
   };
 
-  const handleLogoClick = () => {
-    navigate('/menu-digital');
-  };
-
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2" style={{ borderColor: '#F8E7BF' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black text-white font-figtree overflow-y-auto">
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @media (max-width: 768px) {
-            .search-container {
-              padding: 1rem !important;
-            }
-            
-            .salon-title {
-              font-size: 3.5rem !important;
-            }
-            
-            .search-text {
-              font-size: 2.5rem !important;
-            }
-          }
-        `
-      }} />
-
+    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Dialog de Localização */}
-      <AnimatePresence>
-        {showLocationDialog && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-zinc-900/95 border border-zinc-800 rounded-xl p-6 max-w-md w-full"
-            >
-              <h3 className="text-xl font-bold text-white text-center mb-4">
-                🎯 Encontre salões próximos!
-              </h3>
-              <p className="text-zinc-400 text-center mb-6">
-                Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
-              </p>
-              <div className="flex gap-3">
-                <button 
-                  onClick={getUserLocation} 
-                  disabled={gettingLocation}
-                  className="flex-1 bg-white text-black font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
-                >
-                  <Navigation className="h-4 w-4 mr-2 inline" />
-                  {gettingLocation ? 'Obtendo...' : 'Usar localização'}
-                </button>
-                <button 
-                  onClick={() => setShowLocationDialog(false)}
-                  className="flex-1 border border-zinc-700 text-white py-3 px-4 rounded-lg hover:bg-zinc-800 transition-colors"
-                >
-                  Agora não
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
+        <DialogContent className="max-w-md mx-auto" aria-describedby="location-dialog-description">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold">
+              🎯 Encontre salões próximos!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4" id="location-dialog-description">
+            <p className="text-center text-gray-600">
+              Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={getUserLocation} 
+                disabled={gettingLocation} 
+                className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+              >
+                <Navigation className="h-4 w-4 mr-2" />
+                {gettingLocation ? 'Obtendo...' : 'Usar localização'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowLocationDialog(false)} 
+                className="flex-1"
+              >
+                Agora não
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Header */}
-      <motion.header 
-        className="relative w-full pt-[clamp(3rem,5vh,4rem)]" 
-        style={{ height: "clamp(100px, 12vh, 140px)" }}
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex justify-between items-center w-full h-full px-[8%]">
-          {/* LOGO APPRO */}
-          <motion.div 
-            className="relative" 
-            style={{ width: "clamp(90px, 8vw, 120px)" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <button 
-              className="w-full transform transition duration-200 ease-in-out hover:scale-110"
-              onClick={handleLogoClick}
-            >
-              <img
-                src="/catalogo/icons/logo appro cinza.svg"
-                alt="Logo Appro"
-                className="w-full h-auto"
-              />
-            </button>
-          </motion.div>
-
-          {/* WHATSAPP + SINO */}
-          <motion.div 
-            className="flex items-center relative" 
-            style={{ gap: "clamp(1.2rem, 2vw, 1.8rem)" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <a 
-              href="https://wa.me/5511999999999" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group transform transition-all duration-200 ease-in-out hover:scale-110"
-            >
-              <FaWhatsapp
-                className="transition-all duration-200 text-gray-400"
-                style={{ 
-                  width: "clamp(24px, 2vw, 32px)", 
-                  height: "auto"
-                }}
-              />
-              <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-zinc-900 text-white text-xs py-1 px-2 rounded-md -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                Fale conosco
-              </div>
-            </a>
-
-            <button 
-              className="group transform transition-all duration-200 ease-in-out hover:scale-110 relative"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <FaBell
-                className="transition-all duration-200 text-gray-400"
-                style={{ 
-                  width: "clamp(24px, 2vw, 32px)", 
-                  height: "auto"
-                }}
-              />
-              <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-zinc-900 text-white text-xs py-1 px-2 rounded-md -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                Notificações
-              </div>
-            </button>
-          </motion.div>
+      <header className="bg-black border-b border-gray-200 px-4 py-4">
+        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
-      </motion.header>
+      </header>
 
-      {/* Main Content Section */}
-      <motion.div 
-        className="relative w-full min-h-[calc(100vh-clamp(100px,12vh,140px))] px-[8%] py-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        {/* Hero Title */}
-        <motion.div 
-          className="text-center mb-8"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <h1 className="font-bold mb-2 text-white salon-title" style={{ fontSize: "clamp(4rem, 8vw, 6rem)", lineHeight: "1" }}>
-            Encontre o Salão
-          </h1>
-          <h2 className="font-bold mb-8 search-text" style={{ 
-            fontSize: "clamp(3rem, 6vw, 4.5rem)", 
-            lineHeight: "1",
-            color: "#E8D2A9" 
-          }}>
-            mais próximo de você
-          </h2>
-        </motion.div>
-
-        {/* Search Container */}
-        <motion.div 
-          className="max-w-2xl mx-auto mb-8 search-container"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          {/* Search Input */}
-          <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Buscar salão, endereço ou Instagram..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-4 text-white placeholder-white/60 text-lg focus:outline-none focus:ring-2 focus:ring-white/30 transition-all"
-            />
-            <Search className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white/60 h-6 w-6" />
+      {/* Hero Section */}
+      <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16" 
+             style={{ backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)' }}>
+        </div>
+        
+        <div className="text-center mb-6">
+          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{ backgroundColor: '#242424' }}>
+            <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
+              Encontre o Salão mais
+            </h1>
+            <h2 style={{ color: '#F8E7BF' }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
+              próximo de você.
+            </h2>
+            
+            <div className="relative mb-4">
+              <Input 
+                type="text" 
+                placeholder="Buscar salão, endereço ou Instagram..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" 
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+            </div>
           </div>
 
-          {/* Location Button */}
-          <motion.button
-            onClick={getUserLocation}
-            disabled={gettingLocation}
-            className="w-full bg-white text-black font-semibold py-4 px-6 rounded-xl hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-6 text-lg"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <Button 
+            onClick={getUserLocation} 
+            disabled={gettingLocation} 
+            variant="outline" 
+            className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
-            <Navigation className="h-5 w-5 mr-3 inline" />
+            <Navigation className="h-4 w-4 mr-2" />
             {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
-          </motion.button>
+          </Button>
 
-          {/* Distance Filters */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-white/80 text-sm font-medium">Filtrar por distância:</p>
+          {/* Filtros de distância - sempre visíveis, mas desabilitados sem localização */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-gray-600">Filtrar por distância:</p>
               {!userLocation && (
-                <p className="text-white/50 text-xs">Obtenha sua localização para filtrar</p>
+                <p className="text-xs text-gray-400">Obtenha sua localização para filtrar</p>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              {['50', '100', 'all'].map((distance) => (
-                <motion.button
-                  key={distance}
-                  onClick={() => userLocation || distance === 'all' ? setDistanceFilter(distance as any) : null}
-                  disabled={!userLocation && distance !== 'all'}
-                  className={`py-3 px-4 rounded-lg font-medium transition-all ${
-                    distanceFilter === distance
-                      ? 'bg-white text-black'
-                      : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
-                  } ${(!userLocation && distance !== 'all') ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                  whileHover={userLocation || distance === 'all' ? { scale: 1.05 } : {}}
-                  whileTap={userLocation || distance === 'all' ? { scale: 0.95 } : {}}
-                >
-                  {distance === 'all' ? 'Todos' : `${distance}km`}
-                </motion.button>
-              ))}
+            <div className="flex gap-2">
+              <Button 
+                variant={distanceFilter === '50' ? 'default' : 'outline'} 
+                onClick={() => userLocation && setDistanceFilter('50')} 
+                size="sm" 
+                disabled={!userLocation}
+                className={`flex-1 ${distanceFilter === '50' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                50km
+              </Button>
+              <Button 
+                variant={distanceFilter === '100' ? 'default' : 'outline'} 
+                onClick={() => userLocation && setDistanceFilter('100')} 
+                size="sm" 
+                disabled={!userLocation}
+                className={`flex-1 ${distanceFilter === '100' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                100km
+              </Button>
+              <Button 
+                variant={distanceFilter === 'all' ? 'default' : 'outline'} 
+                onClick={() => setDistanceFilter('all')} 
+                size="sm" 
+                className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+              >
+                Todos
+              </Button>
             </div>
             {userLocation && distanceFilter !== 'all' && (
-              <p className="text-green-400 text-xs mt-2 text-center">
+              <p className="text-xs text-green-600 mt-1">
                 ✓ Mostrando salões até {distanceFilter}km de você
               </p>
             )}
           </div>
 
-          {/* View Toggle */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
-            {[
-              { type: 'list', icon: List, label: 'Lista' },
-              { type: 'map', icon: Map, label: 'Mapa' }
-            ].map(({ type, icon: Icon, label }) => (
-              <motion.button
-                key={type}
-                onClick={() => setViewType(type as any)}
-                className={`flex items-center justify-center gap-3 py-3 px-4 rounded-lg font-medium transition-all ${
-                  viewType === type
-                    ? 'bg-white text-black'
-                    : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Icon className="h-5 w-5" />
-                {label}
-              </motion.button>
-            ))}
+          <div className="flex gap-2 mb-6">
+            <Button 
+              variant={viewType === 'list' ? 'default' : 'outline'} 
+              onClick={() => setViewType('list')} 
+              className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+            >
+              <List className="h-4 w-4" />
+              Lista
+            </Button>
+            <Button 
+              variant={viewType === 'map' ? 'default' : 'outline'} 
+              onClick={() => setViewType('map')} 
+              className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Map className="h-4 w-4" />
+              Mapa
+            </Button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Map View */}
         {viewType === 'map' && (
-          <motion.div 
-            className="mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="text-xl font-semibold mb-4 text-white">Mapa dos Salões</h3>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden">
-              <GoogleMap salons={filteredSalons} userLocation={userLocation} />
-            </div>
-          </motion.div>
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Mapa dos Salões</h3>
+            <GoogleMap salons={filteredSalons} userLocation={userLocation} />
+          </div>
         )}
 
         {/* Salons List */}
         {viewType === 'list' && (
-          <motion.div 
-            className="space-y-6 mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-semibold text-white mb-2">
+          <div className="space-y-4 md:space-y-6 mb-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
                 {userLocation ? (
-                  <>Salões <span style={{ color: '#E8D2A9' }}>próximos de você</span></>
+                  <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span>
                 ) : (
                   'Todos os salões'
                 )}
               </h3>
               {filteredSalons.length > 0 && (
-                <p className="text-white/60">{filteredSalons.length} salões encontrados</p>
+                <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
+                  {filteredSalons.length} encontrados
+                </Badge>
               )}
             </div>
             
-            {filteredSalons.map((salon, index) => (
-              <motion.div
-                key={salon.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all"
-              >
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 text-xl overflow-hidden">
-                    {salon.photo_url ? (
-                      <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
-                    ) : (
-                      salon.name.charAt(0)
-                    )}
-                  </div>
+            {filteredSalons.map((salon, index) => {
+              const midPoint = Math.floor(filteredSalons.length / 2);
+              const showMidBanner = index === midPoint && banners.length > 0;
+              const isLastSalon = index === filteredSalons.length - 1;
+              const showEndBanner = isLastSalon && banners.length > 1;
+              
+              return (
+                <div key={salon.id}>
+                  <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex items-start gap-4 md:gap-6">
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
+                          {salon.photo_url ? (
+                            <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            salon.name.charAt(0)
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
+                              {salon.plan && salon.plan !== 'basico' && (
+                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                              )}
+                            </div>
+                          </div>
+                          
+                          {salon.phone && (
+                            <div className="flex items-center gap-2 mb-2">
+                              <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                              <button 
+                                onClick={() => openWhatsApp(salon.phone!)} 
+                                className="text-green-600 hover:underline text-base md:text-xl"
+                              >
+                                {formatPhone(salon.phone)}
+                              </button>
+                            </div>
+                          )}
+                          
+                          {salon.address && (
+                            <div className="flex items-start gap-2 mb-3">
+                              <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
+                            </div>
+                          )}
+                          
+                          {salon.instagram && (
+                            <div className="flex items-center gap-2 mb-3">
+                              <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                              <a 
+                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-purple-600 hover:underline text-base md:text-xl"
+                              >
+                                {salon.instagram}
+                              </a>
+                            </div>
+                          )}
+                          
+                          <div className="text-base md:text-xl text-gray-500 font-medium">
+                            {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                   
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-xl text-white">{salon.name}</h4>
-                        {salon.plan && salon.plan !== 'basico' && (
-                          <CheckCircle className="h-6 w-6 text-green-400" />
-                        )}
-                      </div>
+                  {showMidBanner && (
+                    <div className="my-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative">
+                          <img src={banners[0].image_url} alt={banners[0].title} className="w-full h-auto object-contain" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                            <div className="p-4 md:p-6 text-white">
+                              <h4 className="font-bold text-lg md:text-2xl">{banners[0].title}</h4>
+                              {banners[0].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                    
-                    {salon.phone && (
-                      <div className="flex items-center gap-2 mb-2">
-                        <Phone className="h-5 w-5 text-green-400" />
-                        <button 
-                          onClick={() => openWhatsApp(salon.phone!)} 
-                          className="text-green-400 hover:text-green-300 transition-colors"
-                        >
-                          {formatPhone(salon.phone)}
-                        </button>
-                      </div>
-                    )}
-                    
-                    {salon.address && (
-                      <div className="flex items-start gap-2 mb-3">
-                        <MapPin className="h-5 w-5 text-white/60 mt-0.5 flex-shrink-0" />
-                        <span className="text-white/80">{salon.address}</span>
-                      </div>
-                    )}
-                    
-                    {salon.instagram && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <Instagram className="h-5 w-5 text-purple-400" />
-                        <a 
-                          href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="text-purple-400 hover:text-purple-300 transition-colors"
-                        >
-                          {salon.instagram}
-                        </a>
-                      </div>
-                    )}
-                    
-                    <div className="text-white/60 font-medium">
-                      {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
+                  )}
+                  
+                  {showEndBanner && (
+                    <div className="mt-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative">
+                          <img src={banners[1].image_url} alt={banners[1].title} className="w-full h-auto object-contain" />
+                        </CardContent>
+                      </Card>
                     </div>
-                  </div>
+                  )}
                 </div>
-              </motion.div>
-            ))}
+              );
+            })}
 
             {filteredSalons.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-8 text-center"
-              >
-                <MapPin className="h-16 w-16 text-white/40 mx-auto mb-4" />
-                <h4 className="font-semibold text-xl mb-3 text-white">Nenhum salão encontrado</h4>
-                <p className="text-white/60">
-                  {searchTerm 
-                    ? `Nenhum salão encontrado para "${searchTerm}". Tente uma busca diferente.`
-                    : userLocation 
-                      ? 'Tente aumentar o raio de busca ou alterar os filtros.' 
-                      : 'Use sua localização para encontrar salões próximos.'
-                  }
-                </p>
-              </motion.div>
+              <Card className="bg-white text-black border border-gray-200">
+                <CardContent className="p-8 text-center">
+                  <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h4 className="font-semibold text-xl mb-3 text-gray-900">Nenhum salão encontrado</h4>
+                  <p className="text-gray-600 text-base">
+                    {searchTerm 
+                      ? `Nenhum salão encontrado para "${searchTerm}". Tente uma busca diferente.`
+                      : userLocation 
+                        ? 'Tente aumentar o raio de busca ou alterar os filtros.' 
+                        : 'Use sua localização para encontrar salões próximos.'
+                    }
+                  </p>
+                </CardContent>
+              </Card>
             )}
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+
+        {/* Banners */}
+        {banners.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
+            <div className="space-y-4">
+              {banners.slice(0, 2).map(banner => (
+                <Card key={banner.id} className="overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="flex h-32">
+                      <div className="w-1/2 bg-black flex items-center justify-center p-4">
+                        <div className="text-center">
+                          <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
+                          {banner.description && (
+                            <p className="text-gray-300 text-sm">{banner.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-1/2">
+                        <img src={banner.image_url} alt={banner.title} className="w-full h-32 object-cover" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Informativo Section */}
+        <div className="mb-8">
+          <h3 className="text-lg md:text-2xl font-semibold mb-4 text-gray-900">Informativo para você</h3>
+          <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
+            <CardContent className="p-0 relative h-48 md:h-64 bg-black rounded-lg">
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+                  </div>
+                  <p className="text-sm">Clique para reproduzir o vídeo</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="mt-4 text-center">
+            <p className="text-sm mb-2 text-gray-900">
+              <strong>Atenção:</strong>
+            </p>
+            <p className="text-xs text-gray-600 mb-4">
+              Este site apenas indica onde utilizam os produtos
+              AP Professional. A responsabilidade pelos serviços prestados é
+              exclusivamente do salão listado acima.
+            </p>
+            <Button style={{ backgroundColor: '#F8E7BF', color: '#000' }} className="text-white hover:opacity-90 w-full bg-zinc-900 hover:bg-zinc-800">
+              Saiba mais
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="text-center py-6 px-4 bg-zinc-900">
