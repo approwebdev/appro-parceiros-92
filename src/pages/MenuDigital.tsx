@@ -305,8 +305,6 @@ const MenuDigital = ({
           </div>
         </motion.div>
 
-        {/* INSTAGRAM */}
-        {salon.instagram}
       </div>
     </div>;
 };
