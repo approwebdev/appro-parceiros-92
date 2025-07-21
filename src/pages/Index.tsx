@@ -133,10 +133,9 @@ const Index = () => {
                     <Scissors className="h-6 w-6 text-primary" />
                     {salon.name}
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="space-y-1 md:space-y-0">
                     {salon.address && <div>📍 {salon.address}</div>}
                     {salon.phone && <div>📞 {salon.phone}</div>}
-                    {salon.instagram && <div>📷 {salon.instagram}</div>}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

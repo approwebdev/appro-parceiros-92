@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Phone, Star } from "lucide-react";
+import { ArrowLeft, Phone, Star, Eye, EyeOff } from "lucide-react";
 import { FaWhatsapp, FaFacebookF, FaTwitter, FaPinterestP, FaEnvelope, FaCopy, FaShareAlt, FaBell } from "react-icons/fa";
 
 interface Treatment {
@@ -409,13 +409,13 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 }
               }}
             >
-              <FaWhatsapp
-                className="transition-all duration-200 text-green-600"
-                style={{ 
-                  width: "clamp(24px, 2vw, 32px)", 
-                  height: "auto"
-                }}
-              />
+               <FaWhatsapp
+                 className="transition-all duration-200 text-green-500"
+                 style={{ 
+                   width: "clamp(24px, 2vw, 32px)", 
+                   height: "auto"
+                 }}
+               />
             </button>
 
             <button 
@@ -582,16 +582,16 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                                   "de ********"
                                 )}
                               </span>
-                              <button 
-                                onClick={() => setShowPrice(!showPrice)}
-                                className="transform hover:scale-110 transition-all duration-300"
-                              >
-                                <img
-                                  src={showPrice ? "/catalogo/Olho aberto.svg" : "/catalogo/olho fechado.svg"}
-                                  alt="Visualizar"
-                                  className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600"
-                                />
-                              </button>
+                               <button 
+                                 onClick={() => setShowPrice(!showPrice)}
+                                 className="transform hover:scale-110 transition-all duration-300"
+                               >
+                                 {showPrice ? (
+                                   <Eye className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600" />
+                                 ) : (
+                                   <EyeOff className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600" />
+                                 )}
+                               </button>
                             </div>
                             <h2 className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold text-black">
                               {showPrice ? (
@@ -696,6 +696,14 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
                 {/* Vídeo em Desktop */}
                 <div className="hidden lg:flex items-center justify-center h-full relative">
+                  {/* Imagem de fundo */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center opacity-20 z-0"
+                    style={{
+                      backgroundImage: `url(/lovable-uploads/1ac586b1-3175-4a7d-8e81-692161f57930.png)`
+                    }}
+                  />
+                  
                   <div className="w-[clamp(220px,35vw,400px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100">
                     {typeof item.video_url === 'string' && item.video_url ? (
                       <video className="w-full h-full object-cover" controls>

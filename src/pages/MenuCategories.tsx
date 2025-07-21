@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface MenuCategoriesProps {
@@ -137,7 +138,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
         </div>
       ) : (
         <>
-          {total > (isMobile ? 1 : 4) && (
+          {!isMobile && total > 4 && (
             <>
               <motion.button
                 onClick={prev}
@@ -165,7 +166,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
           )}
 
           <motion.div 
-            className={`flex h-full ${isMobile ? 'gap-4 px-4' : 'gap-0'}`}
+            className={`flex h-full ${isMobile ? 'gap-4 px-2' : 'gap-0'}`}
             ref={constraintsRef}
             drag="x"
             dragConstraints={constraintsRef}
@@ -173,10 +174,11 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             style={{
-              x: isMobile ? currentIndex * -100 + "%" : currentIndex * -25 + "%"
+              x: isMobile ? `calc(${currentIndex * -100}% + ${currentIndex * 8}px)` : currentIndex * -25 + "%",
+              paddingRight: isMobile ? '50%' : '0',
             }}
             animate={{
-              x: isMobile ? currentIndex * -100 + "%" : currentIndex * -25 + "%",
+              x: isMobile ? `calc(${currentIndex * -100}% + ${currentIndex * 8}px)` : currentIndex * -25 + "%",
               opacity: 1
             }}
             initial={{ opacity: 0 }}
@@ -231,6 +233,21 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             ))}
           </motion.div>
 
+          {/* Dots para mobile */}
+          {isMobile && total > 1 && (
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-40 flex gap-2">
+              {Array.from({ length: total }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    index === currentIndex ? 'bg-white' : 'bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+
           <motion.button
             onClick={handleHomeClick}
             className="absolute bottom-8 left-8 z-50 p-3 rounded-full bg-black/50 hover:scale-110 transition-all duration-200"
@@ -240,7 +257,7 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <img src="/catalogo/Home.svg" alt="Home" className="w-6 h-6" />
+            <Home className="w-6 h-6 text-white" />
           </motion.button>
         </>
       )}

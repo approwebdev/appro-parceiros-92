@@ -267,7 +267,7 @@ const SalonFinder = () => {
             <h1 className="font-bold mb-4 text-white text-2xl md:text-3xl">
               Encontre os salões que utilizam
             </h1>
-            <h2 className="font-bold mb-6 text-white text-2xl md:text-3xl">
+            <h2 className="font-bold mb-6 text-2xl md:text-3xl" style={{ color: '#F8E7BF' }}>
               Ap Professional!
             </h2>
             
@@ -338,7 +338,7 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-[20px] p-4">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-4">
                       <CardContent className="p-0">
                         <div className="flex items-start gap-4">
                           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
@@ -351,22 +351,27 @@ const SalonFinder = () => {
                                {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-5 w-5 text-yellow-500" />}
                              </div>
                            
-                            {salon.phone && <div className="flex items-center gap-2 mb-1">
-                                <Phone className="h-4 w-4 text-gray-600" />
-                                <span className="text-sm text-gray-600">{formatPhone(salon.phone)}</span>
-                              </div>}
+                            {/* Primeira linha: WhatsApp e Instagram */}
+                            <div className="flex items-center gap-4 mb-1">
+                              {salon.phone && <div className="flex items-center gap-2">
+                                  <Phone className="h-4 w-4 text-gray-600" />
+                                  <span className="text-sm text-gray-600">{formatPhone(salon.phone)}</span>
+                                </div>}
+                              
+                              {salon.instagram && <div className="flex items-center gap-2">
+                                  <Instagram className="h-4 w-4 text-gray-600" />
+                                  <span className="text-sm text-gray-600">{salon.instagram}</span>
+                                </div>}
+                            </div>
                             
-                            {salon.instagram && <div className="flex items-center gap-2 mb-1">
-                                <Instagram className="h-4 w-4 text-gray-600" />
-                                <span className="text-sm text-gray-600">{salon.instagram}</span>
-                              </div>}
-                            
+                            {/* Segunda linha: Endereço */}
                             {salon.address && <div className="flex items-start gap-2 mb-2">
                                 <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-sm text-blue-500">{salon.address}</span>
                               </div>}
                             
-                            <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+                            {/* Terceira linha: Distância */}
+                            <div className="flex items-center gap-2 text-lg text-gray-700 font-medium">
                               <MapPin className="h-4 w-4 text-blue-500" />
                               {salon.distance ? `A ${salon.distance.toFixed(0)}km de você` : 'A 5km de você'}
                             </div>
@@ -380,7 +385,9 @@ const SalonFinder = () => {
                   {showEndBanner && <div className="mt-6">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0 relative">
-                          
+                          <div className="h-32 md:h-48 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                            <p className="text-white text-lg font-semibold">Banner promocional</p>
+                          </div>
                         </CardContent>
                       </Card>
                     </div>}
