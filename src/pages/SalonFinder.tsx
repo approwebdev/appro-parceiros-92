@@ -275,16 +275,16 @@ const SalonFinder = () => {
         </div>
         
         <div className="text-center mb-6">
-          <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black">
-            <h1 className="font-bold mb-4 text-white text-2xl md:text-3xl">
+          <div className="rounded-[20px] p-8 mb-6 md:p-10 relative z-10 bg-black max-w-lg mx-auto">
+            <h1 className="font-bold mb-4 text-white text-2xl md:text-3xl leading-tight">
               Encontre os salões que utilizam
             </h1>
-            <h2 className="font-bold mb-6 text-2xl md:text-3xl" style={{ color: '#F8E7BF' }}>
+            <h2 className="font-bold mb-8 text-2xl md:text-3xl" style={{ color: '#F8E7BF' }}>
               Ap Professional!
             </h2>
             
-            <div className="relative mb-4">
-              <Input type="text" placeholder="Digite um endereço." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-gray-500 pl-4 pr-12 py-3 md:py-4 rounded-xl w-full border-0 text-base placeholder:text-gray-500" />
+            <div className="relative mb-6">
+              <Input type="text" placeholder="Digite um endereço..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-gray-500 pl-4 pr-12 py-4 md:py-5 rounded-xl w-full border-0 text-base placeholder:text-gray-400" />
               <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             </div>
           </div>
