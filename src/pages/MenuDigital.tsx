@@ -272,9 +272,9 @@ const MenuDigital = ({
           </div>
 
           <motion.button onClick={onEnter} className="mt-[clamp(3rem,5vh,4rem)] bg-white text-black font-semibold rounded-full shadow-lg transform transition duration-200 ease-in-out hover:scale-110" style={{
-          fontSize: "clamp(1.1rem, 1.6vw, 1.4rem)",
-          paddingInline: "clamp(2.5rem, 7vw, 5rem)",
-          paddingBlock: "clamp(1rem, 1.8vw, 1.5rem)",
+          fontSize: "clamp(0.99rem, 1.44vw, 1.26rem)",
+          paddingInline: "clamp(2.25rem, 6.3vw, 4.5rem)",
+          paddingBlock: "clamp(0.9rem, 1.62vw, 1.35rem)",
           marginLeft: "clamp(0.5rem, 1vw, 1rem)"
         }} initial={{
           opacity: 0
