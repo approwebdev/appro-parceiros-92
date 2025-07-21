@@ -118,23 +118,23 @@ const MenuDigital = ({
         <div className="flex-1 flex flex-col justify-center order-2 md:order-1 relative z-30" style={{
           paddingLeft: 'clamp(1rem, 4vw, 4rem)',
           paddingRight: 'clamp(1rem, 2vw, 2rem)',
-          paddingTop: 'clamp(2rem, 5vh, 5rem)', // Reduzido no mobile
-          paddingBottom: 'clamp(1rem, 2vh, 2rem)' // Reduzido no mobile
+          paddingTop: 'clamp(2rem, 5vh, 5rem)',
+          paddingBottom: 'clamp(1rem, 2vh, 2rem)'
         }}>
           <div className="text-center md:text-left">
-            <h1 className="flex flex-col md:flex-row md:items-baseline md:gap-4" style={{
-              marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
+            <h1 className="flex flex-col md:flex-row md:items-center md:gap-6" style={{
+              marginBottom: 'clamp(2rem, 4vh, 3rem)'
             }}>
-              <span className="font-black bg-gradient-to-r from-[#D4B08A] to-[#E6C7A3]" style={{
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontSize: 'clamp(6rem, 20vw, 12rem)'
+              <span className="font-black" style={{
+                color: '#F8E7BF',
+                fontSize: 'clamp(5rem, 18vw, 10rem)',
+                lineHeight: '0.9'
               }}>
                 Menu
               </span>
               <span className="font-medium text-white" style={{
-                fontSize: 'clamp(2rem, 6vw, 4rem)'
+                fontSize: 'clamp(1.8rem, 5vw, 3.5rem)',
+                lineHeight: '1.1'
               }}>Digital</span>
             </h1>
 
@@ -144,8 +144,8 @@ const MenuDigital = ({
                 onClick={onEnter} 
                 className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full relative z-40"
                 style={{
-                  padding: 'clamp(1.5rem, 3vw, 1.5rem) clamp(3rem, 6vw, 3rem)',
-                  fontSize: 'clamp(1.25rem, 3vw, 1.25rem)'
+                  padding: 'clamp(1.2rem, 2.5vw, 1.5rem) clamp(2.5rem, 5vw, 3rem)',
+                  fontSize: 'clamp(1.1rem, 2.5vw, 1.25rem)'
                 }}
               >
                 Entrar
