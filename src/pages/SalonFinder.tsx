@@ -250,14 +250,26 @@ const SalonFinder = () => {
 
       {/* Header */}
       <header className="bg-black border-b border-gray-200 px-4 py-4">
-        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
+        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-between">
           <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
+          <Navigation className="h-6 w-6 text-white cursor-pointer" onClick={getUserLocation} />
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
-        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16" style={{
+      <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8 relative">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: 'url(/lovable-uploads/b1459855-6ccd-4b81-9144-e120fef5dece.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16 relative z-10" style={{
         backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)'
       }}>
         </div>
@@ -277,58 +289,47 @@ const SalonFinder = () => {
             </div>
           </div>
 
-          <Button onClick={getUserLocation} disabled={gettingLocation} variant="outline" className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50">
-            <Navigation className="h-4 w-4 mr-2" />
-            {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
-          </Button>
-
-          {/* Filtros de distância - sempre visíveis, mas desabilitados sem localização */}
+          {/* Filtros de distância - dropdown style */}
           <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-gray-600">Filtrar por distância:</p>
-              {!userLocation && <p className="text-xs text-gray-400">Obtenha sua localização para filtrar</p>}
-            </div>
-            <div className="bg-gray-100 rounded-full p-1 flex gap-1">
-              <Button 
-                variant={distanceFilter === '50' ? 'default' : 'ghost'} 
-                onClick={() => userLocation && setDistanceFilter('50')} 
-                size="sm" 
-                disabled={!userLocation} 
-                className={`flex-1 rounded-full text-sm ${
-                  distanceFilter === '50' && userLocation 
-                    ? 'bg-white text-black shadow-sm' 
-                    : 'text-gray-600 hover:text-black hover:bg-white/50'
-                } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                50km
-              </Button>
-              <Button 
-                variant={distanceFilter === '100' ? 'default' : 'ghost'} 
-                onClick={() => userLocation && setDistanceFilter('100')} 
-                size="sm" 
-                disabled={!userLocation} 
-                className={`flex-1 rounded-full text-sm ${
-                  distanceFilter === '100' && userLocation 
-                    ? 'bg-white text-black shadow-sm' 
-                    : 'text-gray-600 hover:text-black hover:bg-white/50'
-                } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                100km
-              </Button>
-              <Button 
-                variant={distanceFilter === 'all' ? 'default' : 'ghost'} 
-                onClick={() => setDistanceFilter('all')} 
-                size="sm" 
-                className={`flex-1 rounded-full text-sm ${
-                  distanceFilter === 'all' 
-                    ? 'bg-white text-black shadow-sm' 
-                    : 'text-gray-600 hover:text-black hover:bg-white/50'
-                }`}
-              >
-                Todos
-              </Button>
-            </div>
-            {userLocation && distanceFilter !== 'all' && <p className="text-xs text-green-600 mt-1">
+            <Collapsible>
+              <CollapsibleTrigger className="w-full bg-gray-100 rounded-lg p-3 flex items-center justify-between text-left">
+                <span className="text-gray-700 font-medium">
+                  {distanceFilter === 'all' ? 'Todos os salões' : `Até ${distanceFilter}km`}
+                </span>
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-2 space-y-1">
+                  <button
+                    onClick={() => setDistanceFilter('50')}
+                    disabled={!userLocation}
+                    className={`w-full text-left p-2 rounded hover:bg-gray-50 ${
+                      distanceFilter === '50' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    Até 50km
+                  </button>
+                  <button
+                    onClick={() => setDistanceFilter('100')}
+                    disabled={!userLocation}
+                    className={`w-full text-left p-2 rounded hover:bg-gray-50 ${
+                      distanceFilter === '100' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    Até 100km
+                  </button>
+                  <button
+                    onClick={() => setDistanceFilter('all')}
+                    className={`w-full text-left p-2 rounded hover:bg-gray-50 ${
+                      distanceFilter === 'all' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    }`}
+                  >
+                    Todos os salões
+                  </button>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+            {userLocation && distanceFilter !== 'all' && <p className="text-xs text-green-600 mt-2">
                 ✓ Mostrando salões até {distanceFilter}km de você
               </p>}
           </div>
@@ -385,8 +386,8 @@ const SalonFinder = () => {
             return <div key={salon.id}>
                     <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-4 w-full">
                       <CardContent className="p-0">
-                        <div className="flex items-center gap-4">
-                          <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
+                        <div className="flex items-center gap-6">
+                          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
                             {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
                           </div>
                           
@@ -446,7 +447,7 @@ const SalonFinder = () => {
         {banners.length > 0 && <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
             <div className="space-y-4">
-              {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden">
+              {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden rounded-none">
                   <CardContent className="p-0">
                     <div className="flex h-48">
                       <div className="w-1/2 bg-black flex items-center justify-center p-4">
