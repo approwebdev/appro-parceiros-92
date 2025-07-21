@@ -1,15 +1,8 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Home, ChevronLeft, ChevronRight } from "lucide-react";
-
-interface Treatment {
-  id: string;
-  name: string;
-  category: string;
-  custom_price: number;
-}
 
 interface MenuCategoriesProps {
   onBack: () => void;
@@ -17,268 +10,239 @@ interface MenuCategoriesProps {
 }
 
 const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
-  const { slug } = useParams<{ slug: string }>();
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  
-  const getCategoriesPerPage = () => {
-    if (window.innerWidth < 640) return 1; // Mobile: 1 categoria
-    if (window.innerWidth < 1024) return Math.min(categories.length, 2); // Tablet: até 2 categorias
-    return Math.min(categories.length, 4); // Desktop: até 4 categorias
-  };
-  
-  const [categoriesPerPage, setCategoriesPerPage] = useState(1);
+  const navigate = useNavigate();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [categorias, setCategorias] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const constraintsRef = useRef(null);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    fetchCategories();
-    
     const handleResize = () => {
-      if (categories.length > 0) {
-        setCategoriesPerPage(getCategoriesPerPage());
-      }
+      setIsMobile(window.innerWidth < 768);
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    if (categories.length > 0) {
-      setCategoriesPerPage(getCategoriesPerPage());
-      setCurrentPageIndex(0);
-    }
-  }, [categories]);
+    async function loadCategories() {
+      try {
+        console.log("Iniciando carregamento das categorias...");
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('order_position');
 
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('order_position');
-
-      if (error) {
-        return;
+        if (error) {
+          throw error;
+        }
+        
+        if (data && data.length > 0) {
+          console.log("Categorias carregadas:", data);
+          setCategorias(data || []);
+        } else {
+          setCategorias([]);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
       }
+    }
 
-      setCategories(data || []);
-    } catch (error) {
-      
-    } finally {
-      setLoading(false);
+    loadCategories();
+  }, []);
+
+  const total = categorias.length;
+
+  const getSlides = () => {
+    let slides = [];
+    for (let i = 0; i < total; i++) {
+      slides.push({ ...categorias[i], position: i });
+    }
+    return slides;
+  };
+
+  const next = () => {
+    setCurrentIndex((prev) => {
+      if (prev >= total - (isMobile ? 1 : 4)) return prev;
+      return prev + 1;
+    });
+  };
+
+  const prev = () => {
+    setCurrentIndex((prev) => {
+      if (prev <= 0) return prev;
+      return prev - 1;
+    });
+  };
+
+  const handleDragStart = (event, info) => {
+    setDragStartX(info.point.x);
+  };
+
+  const handleDragEnd = (event, info) => {
+    const dragEndX = info.point.x;
+    const diff = dragStartX - dragEndX;
+
+    // Detectar arrastos significativos (mais de 50px)
+    if (Math.abs(diff) > 50) {
+      // Movimentar apenas 1 slide por vez, independente da distância arrastada
+      if (diff > 0) {
+        // Arrastar para a esquerda (próximo slide)
+        next();
+      } else {
+        // Arrastar para a direita (slide anterior)
+        prev();
+      }
+    } else {
+      // Se o arrasto foi pequeno, voltar para a posição original
+      // Reset animado para a posição atual
+      const container = constraintsRef.current;
+      if (container) {
+        container.style.transition = 'transform 0.3s ease';
+        container.style.transform = isMobile 
+          ? `translateX(${-currentIndex * 100}%)` 
+          : `translateX(${-currentIndex * 25}%)`;
+      }
     }
   };
 
-  const needsNavigation = categoriesPerPage < categories.length;
-
-  const goToPrevious = () => {
-    if (needsNavigation) {
-      setCurrentPageIndex((prevIndex) => 
-        prevIndex === 0 ? categories.length - categoriesPerPage : prevIndex - 1
-      );
-    }
+  // Função para ir para a página de catálogo
+  const handleHomeClick = () => {
+    onBack();
   };
-
-  const goToNext = () => {
-    if (needsNavigation) {
-      setCurrentPageIndex((prevIndex) => 
-        prevIndex + categoriesPerPage >= categories.length ? 0 : prevIndex + 1
-      );
-    }
-  };
-
-  const getCurrentPageCategories = () => {
-    return categories.slice(currentPageIndex, currentPageIndex + categoriesPerPage);
-  };
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
-      </div>
-    );
-  }
-
-  const currentCategories = getCurrentPageCategories();
 
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden">
-      <div className="relative w-full h-full">
-        {/* Categories Container */}
-        <div className="flex h-full">
-          {currentCategories.map((category, index) => (
-            <div
-              key={category.id}
-              className={`relative cursor-pointer group overflow-hidden 
-                ${categoriesPerPage === 1 ? 'w-full' : 
-                  categoriesPerPage === 2 ? 'w-1/2' : 
-                  categoriesPerPage === 3 ? 'w-1/3' : 'w-1/4'
-                }`}
-              onClick={() => onCategorySelect(category.name, category.name)}
-            >
-              {/* Category Name at Top */}
-              <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-20 bg-white/90 backdrop-blur-sm rounded-full px-6 py-2">
-                <h2 className="text-black text-center font-bold" style={{
-                  fontSize: 'clamp(1.2rem, 3vw, 2rem)'
-                }}>
-                  {category.name}
-                </h2>
-              </div>
-
-              {/* Background Image */}
-              <div className="absolute inset-0">
-                <img 
-                  src={category.cover_image_url || '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png'}
-                  alt={category.name}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out 
-                            group-hover:scale-110"
-                />
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80"></div>
-                
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300"></div>
-              </div>
-              
-              {/* Content */}
-              <div className="relative z-10 h-full flex flex-col justify-end items-center p-6">
-                {category.description && (
-                  <p className="text-white/80 text-center max-w-xs opacity-0 group-hover:opacity-100 
-                               transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100 mb-4"
-                     style={{
-                       fontSize: 'clamp(0.8rem, 2vw, 1rem)',
-                       textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
-                     }}>
-                    {category.description}
-                  </p>
-                )}
-                
-                {/* Click indicator */}
-                <div className="opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 border border-white/30">
-                    <span className="text-white text-xs font-medium">Toque aqui</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Shimmer effect on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-30 
-                            transition-opacity duration-500 
-                            bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                            -skew-x-12 -translate-x-full group-hover:translate-x-full 
-                            transform transition-transform duration-1000"></div>
-            </div>
-          ))}
+    <div className="w-screen h-screen overflow-hidden bg-black text-white font-figtree relative">
+      {error && (
+        <div className="absolute top-4 left-4 right-4 bg-red-500/80 text-white p-4 rounded-lg z-50">
+          Erro ao carregar dados: {error}
         </div>
+      )}
+      
+      {isLoading ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+        </div>
+      ) : categorias.length === 0 ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="text-white text-xl">Nenhuma categoria encontrada</div>
+        </div>
+      ) : (
+        <>
+          {total > (isMobile ? 1 : 4) && (
+            <>
+              <motion.button
+                onClick={prev}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40 text-white p-4 rounded-full bg-black/50 transition-all duration-200"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FaChevronLeft size={24} />
+              </motion.button>
+              <motion.button
+                onClick={next}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40 text-white p-4 rounded-full bg-black/50 transition-all duration-200"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <FaChevronRight size={24} />
+              </motion.button>
+            </>
+          )}
 
-        {/* Navigation Arrows - Only show when needed */}
-        {needsNavigation && (
-          <>
-            <button 
-              onClick={goToPrevious}
-              className="absolute left-6 top-1/2 transform -translate-y-1/2 z-30 
-                       bg-white/10 backdrop-blur-md rounded-full p-4 
-                       border border-white/20 hover:bg-white/20 hover:border-white/40
-                       transition-all duration-300 hover:scale-110 
-                       hidden md:flex items-center justify-center group"
-            >
-              <ChevronLeft className="w-6 h-6 text-white group-hover:text-white transition-colors" />
-            </button>
-            
-            <button 
-              onClick={goToNext}
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 z-30 
-                       bg-white/10 backdrop-blur-md rounded-full p-4 
-                       border border-white/20 hover:bg-white/20 hover:border-white/40
-                       transition-all duration-300 hover:scale-110 
-                       hidden md:flex items-center justify-center group"
-            >
-              <ChevronRight className="w-6 h-6 text-white group-hover:text-white transition-colors" />
-            </button>
-          </>
-        )}
-
-        {/* Page Dots Indicator - Only show when needed */}
-        {needsNavigation && (
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30">
-            <div className="flex space-x-3">
-              {Array.from({ length: Math.ceil(categories.length / categoriesPerPage) }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentPageIndex(index * categoriesPerPage)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 border border-white/30
-                            ${Math.floor(currentPageIndex / categoriesPerPage) === index
-                              ? 'bg-white scale-125' 
-                              : 'bg-white/30 hover:bg-white/60 hover:scale-110'
-                            }`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Mobile Swipe Indicator - Only show when needed */}
-        {needsNavigation && (
-          <div className="md:hidden absolute bottom-20 left-1/2 transform -translate-x-1/2 z-30">
-            <div className="flex items-center space-x-2 bg-black/40 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-              <div className="flex space-x-1">
-                <div className="w-1 h-1 bg-white/60 rounded-full animate-pulse"></div>
-                <div className="w-1 h-1 bg-white/60 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-1 h-1 bg-white/60 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-              </div>
-              <span className="text-white/80 text-xs ml-2">Deslize para navegar</span>
-            </div>
-          </div>
-        )}
-
-        {/* Back Button */}
-        <div className="absolute top-6 left-6 z-30">
-          <Button 
-            onClick={onBack}
-            className="bg-white/10 backdrop-blur-md text-white hover:bg-white/20 
-                     border border-white/20 hover:border-white/40
-                     rounded-full p-3 transition-all duration-300 hover:scale-110"
+          <motion.div 
+            className={`flex h-full ${isMobile ? 'gap-4 px-4' : 'gap-0'}`}
+            ref={constraintsRef}
+            drag="x"
+            dragConstraints={constraintsRef}
+            dragElastic={0.1}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            style={{
+              x: isMobile ? currentIndex * -100 + "%" : currentIndex * -25 + "%"
+            }}
+            animate={{
+              x: isMobile ? currentIndex * -100 + "%" : currentIndex * -25 + "%",
+              opacity: 1
+            }}
+            initial={{ opacity: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 30,
+              duration: 0.4
+            }}
           >
-            <Home className="h-5 w-5" />
-          </Button>
-        </div>
+            {getSlides().map((cat, index) => (
+              <motion.div
+                key={cat.id}
+                className={`relative ${isMobile ? 'w-[100%] flex-shrink-0' : 'w-[25%] flex-shrink-0'} h-full overflow-hidden cursor-pointer group`}
+                onClick={() => {
+                  onCategorySelect(cat.name, cat.name);
+                }}
+                whileHover={{
+                  scale: 1.02,
+                  transition: { duration: 0.3 }
+                }}
+              >
+                <motion.img
+                  src={cat.cover_image_url || '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png'}
+                  alt={cat.name}
+                  className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-90"
+                  initial={{ opacity: 0, scale: 1.1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  onError={(e) => {
+                    console.log('Erro ao carregar imagem:', cat.cover_image_url);
+                    (e.target as HTMLImageElement).src = '/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png';
+                  }}
+                />
+                <motion.div
+                  className="absolute top-9 left-6 text-black font-bold bg-white/0 px-4 py-2 rounded-xl"
+                  style={{
+                    fontSize: "clamp(1.8rem,3vw,2.8rem)",
+                  }}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {cat.name}
+                </motion.div>
+                
+                {/* Overlay de hover */}
+                <motion.div
+                  className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                />
+              </motion.div>
+            ))}
+          </motion.div>
 
-        {/* Page Counter - Only show when needed */}
-        {needsNavigation && (
-          <div className="absolute top-6 right-6 z-30">
-            <div className="bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20">
-              <span className="text-white text-sm font-medium">
-                {Math.floor(currentPageIndex / categoriesPerPage) + 1} / {Math.ceil(categories.length / categoriesPerPage)}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Touch/Swipe Events for Mobile - Only when needed */}
-      {needsNavigation && (
-        <div 
-          className="md:hidden absolute inset-0 z-20 touch-pan-y"
-          onTouchStart={(e) => {
-            const touch = e.touches[0];
-            e.currentTarget.setAttribute('data-start-x', touch.clientX.toString());
-          }}
-          onTouchEnd={(e) => {
-            const startX = parseFloat(e.currentTarget.getAttribute('data-start-x') || '0');
-            const endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
-            
-            if (Math.abs(diff) > 50) { // Minimum swipe distance
-              if (diff > 0) {
-                goToNext();
-              } else {
-                goToPrevious();
-              }
-            }
-          }}
-        />
+          <motion.button
+            onClick={handleHomeClick}
+            className="absolute bottom-8 left-8 z-50 p-3 rounded-full bg-black/50 hover:scale-110 transition-all duration-200"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img src="/catalogo/Home.svg" alt="Home" className="w-6 h-6" />
+          </motion.button>
+        </>
       )}
     </div>
   );
