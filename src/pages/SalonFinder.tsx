@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram } from "lucide-react";
@@ -10,7 +11,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
 
 interface Salon {
   id: string;
@@ -245,64 +245,31 @@ const SalonFinder = () => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2" style={{ borderColor: '#F8E7BF' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black text-white font-figtree overflow-hidden salon-finder-page">
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @media (max-width: 768px) {
-            .salon-finder-page .mobile-header {
-              padding: 2rem 1rem !important;
-            }
-            
-            .salon-finder-page .mobile-search-container {
-              padding: 0 1rem !important;
-            }
-            
-            .salon-finder-page .mobile-title {
-              font-size: 2.5rem !important;
-              line-height: 1.1 !important;
-            }
-            
-            .salon-finder-page .mobile-subtitle {
-              font-size: 2.5rem !important;
-            }
-          }
-
-          @media (max-width: 380px) {
-            .salon-finder-page .mobile-title {
-              font-size: 2rem !important;
-            }
-            
-            .salon-finder-page .mobile-subtitle {
-              font-size: 2rem !important;
-            }
-          }
-        `
-      }} />
-
+    <div className="min-h-screen bg-white text-gray-900 overflow-y-auto">
       {/* Dialog de Localização */}
       <Dialog open={showLocationDialog} onOpenChange={setShowLocationDialog}>
-        <DialogContent className="max-w-md mx-auto bg-zinc-900 border-zinc-800" aria-describedby="location-dialog-description">
+        <DialogContent className="max-w-md mx-auto" aria-describedby="location-dialog-description">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold text-white">
+            <DialogTitle className="text-center text-xl font-bold">
               🎯 Encontre salões próximos!
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4" id="location-dialog-description">
-            <p className="text-center text-zinc-400">
+            <p className="text-center text-gray-600">
               Permita o acesso à sua localização para mostrarmos os salões mais próximos de você.
             </p>
             <div className="flex gap-3">
               <Button 
                 onClick={getUserLocation} 
                 disabled={gettingLocation} 
-                className="flex-1 bg-white text-black hover:bg-gray-200"
+                className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
               >
                 <Navigation className="h-4 w-4 mr-2" />
                 {gettingLocation ? 'Obtendo...' : 'Usar localização'}
@@ -310,7 +277,7 @@ const SalonFinder = () => {
               <Button 
                 variant="outline" 
                 onClick={() => setShowLocationDialog(false)} 
-                className="flex-1 border-zinc-600 text-zinc-300 hover:bg-zinc-800"
+                className="flex-1"
               >
                 Agora não
               </Button>
@@ -319,117 +286,56 @@ const SalonFinder = () => {
         </DialogContent>
       </Dialog>
 
-      {/* CONTAINER PRINCIPAL DO HEADER */}
-      <motion.div 
-        className="relative w-full pt-[clamp(3rem,5vh,4rem)] mobile-header" 
-        style={{ height: "clamp(100px, 12vh, 140px)" }}
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex justify-center items-center w-full h-full px-[8%]">
-          {/* LOGO APPRO */}
-          <motion.div 
-            className="relative" 
-            style={{ width: "clamp(90px, 8vw, 120px)" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="w-full transform transition duration-200 ease-in-out hover:scale-110">
-              <img
-                src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png"
-                alt="Logo Appro"
-                className="w-full h-auto"
-              />
-            </div>
-          </motion.div>
+      {/* Header */}
+      <header className="bg-black border-b border-gray-200 px-4 py-4">
+        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
-      </motion.div>
+      </header>
 
-      {/* CONTAINER PRINCIPAL DO CONTEÚDO */}
-      <div className="relative w-full h-[calc(100vh-clamp(100px,12vh,140px))] overflow-y-auto">
-        {/* BLOCO DE TEXTO E BUSCA */}
-        <motion.div 
-          className="px-[8%] py-8 mobile-search-container"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Título Principal */}
-          <div className="text-center mb-8">
-            <motion.h1
-              className="font-bold mb-2 mobile-title"
-              style={{
-                fontSize: "clamp(3rem, 8vw, 5rem)",
-                lineHeight: "1.1",
-                color: "#FFFFFF"
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+      {/* Hero Section */}
+      <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16" 
+             style={{ backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)' }}>
+        </div>
+        
+        <div className="text-center mb-6">
+          <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{ backgroundColor: '#242424' }}>
+            <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
               Encontre o Salão mais
-            </motion.h1>
-            <motion.h2
-              className="font-bold mb-8 mobile-subtitle"
-              style={{
-                fontSize: "clamp(3rem, 8vw, 5rem)",
-                lineHeight: "1.1",
-                color: "#E8D2A9"
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
+            </h1>
+            <h2 style={{ color: '#F8E7BF' }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
               próximo de você.
-            </motion.h2>
+            </h2>
+            
+            <div className="relative mb-4">
+              <Input 
+                type="text" 
+                placeholder="Buscar salão, endereço ou Instagram..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" 
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+            </div>
           </div>
 
-          {/* Barra de Busca */}
-          <motion.div 
-            className="relative mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+          <Button 
+            onClick={getUserLocation} 
+            disabled={gettingLocation} 
+            variant="outline" 
+            className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
-            <Input 
-              type="text" 
-              placeholder="Buscar salão, endereço ou Instagram..." 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)} 
-              className="bg-white text-black pl-4 pr-12 py-4 rounded-xl w-full border-0 text-lg placeholder:text-gray-500" 
-            />
-            <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
-          </motion.div>
+            <Navigation className="h-4 w-4 mr-2" />
+            {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
+          </Button>
 
-          {/* Botão de Localização */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <Button 
-              onClick={getUserLocation} 
-              disabled={gettingLocation} 
-              className="w-full mb-6 bg-white/10 border border-white/20 text-white hover:bg-white/20 py-4 rounded-xl backdrop-blur-sm"
-            >
-              <Navigation className="h-4 w-4 mr-2" />
-              {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
-            </Button>
-          </motion.div>
-
-          {/* Filtros de Distância */}
-          <motion.div 
-            className="mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.0 }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-zinc-300">Filtrar por distância:</p>
+          {/* Filtros de distância - sempre visíveis, mas desabilitados sem localização */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-gray-600">Filtrar por distância:</p>
               {!userLocation && (
-                <p className="text-xs text-zinc-500">Obtenha sua localização para filtrar</p>
+                <p className="text-xs text-gray-400">Obtenha sua localização para filtrar</p>
               )}
             </div>
             <div className="flex gap-2">
@@ -438,11 +344,7 @@ const SalonFinder = () => {
                 onClick={() => userLocation && setDistanceFilter('50')} 
                 size="sm" 
                 disabled={!userLocation}
-                className={`flex-1 rounded-xl ${
-                  distanceFilter === '50' && userLocation 
-                    ? 'bg-white text-black hover:bg-gray-200' 
-                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex-1 ${distanceFilter === '50' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 50km
               </Button>
@@ -451,11 +353,7 @@ const SalonFinder = () => {
                 onClick={() => userLocation && setDistanceFilter('100')} 
                 size="sm" 
                 disabled={!userLocation}
-                className={`flex-1 rounded-xl ${
-                  distanceFilter === '100' && userLocation 
-                    ? 'bg-white text-black hover:bg-gray-200' 
-                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex-1 ${distanceFilter === '100' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 100km
               </Button>
@@ -463,37 +361,23 @@ const SalonFinder = () => {
                 variant={distanceFilter === 'all' ? 'default' : 'outline'} 
                 onClick={() => setDistanceFilter('all')} 
                 size="sm" 
-                className={`flex-1 rounded-xl ${
-                  distanceFilter === 'all' 
-                    ? 'bg-white text-black hover:bg-gray-200' 
-                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                }`}
+                className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
               >
                 Todos
               </Button>
             </div>
             {userLocation && distanceFilter !== 'all' && (
-              <p className="text-xs text-green-400 mt-2">
+              <p className="text-xs text-green-600 mt-1">
                 ✓ Mostrando salões até {distanceFilter}km de você
               </p>
             )}
-          </motion.div>
+          </div>
 
-          {/* Botões de Visualização */}
-          <motion.div 
-            className="flex gap-3 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-          >
+          <div className="flex gap-2 mb-6">
             <Button 
               variant={viewType === 'list' ? 'default' : 'outline'} 
               onClick={() => setViewType('list')} 
-              className={`flex items-center gap-2 flex-1 rounded-xl ${
-                viewType === 'list' 
-                  ? 'bg-white text-black hover:bg-gray-200' 
-                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-              }`}
+              className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
             >
               <List className="h-4 w-4" />
               Lista
@@ -501,228 +385,231 @@ const SalonFinder = () => {
             <Button 
               variant={viewType === 'map' ? 'default' : 'outline'} 
               onClick={() => setViewType('map')} 
-              className={`flex items-center gap-2 flex-1 rounded-xl ${
-                viewType === 'map' 
-                  ? 'bg-white text-black hover:bg-gray-200' 
-                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-              }`}
+              className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
             >
               <Map className="h-4 w-4" />
               Mapa
             </Button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        {/* Visualização de Mapa */}
+        {/* Map View */}
         {viewType === 'map' && (
-          <motion.div 
-            className="px-[8%] mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="text-lg font-semibold mb-4 text-white">Mapa dos Salões</h3>
-            <div className="rounded-xl overflow-hidden">
-              <GoogleMap salons={filteredSalons} userLocation={userLocation} />
-            </div>
-          </motion.div>
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Mapa dos Salões</h3>
+            <GoogleMap salons={filteredSalons} userLocation={userLocation} />
+          </div>
         )}
 
-        {/* Lista de Salões */}
+        {/* Salons List */}
         {viewType === 'list' && (
-          <motion.div 
-            className="px-[8%] pb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">
+          <div className="space-y-4 md:space-y-6 mb-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
                 {userLocation ? (
-                  <span>Salões <span style={{ color: '#E8D2A9' }}>próximos de você</span></span>
+                  <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span>
                 ) : (
                   'Todos os salões'
                 )}
               </h3>
               {filteredSalons.length > 0 && (
-                <Badge className="bg-white/10 border-white/20 text-white">
+                <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
                   {filteredSalons.length} encontrados
                 </Badge>
               )}
             </div>
             
-            <div className="space-y-4">
-              {filteredSalons.map((salon, index) => {
-                const midPoint = Math.floor(filteredSalons.length / 2);
-                const showMidBanner = index === midPoint && banners.length > 0;
-                const isLastSalon = index === filteredSalons.length - 1;
-                const showEndBanner = isLastSalon && banners.length > 1;
-                
-                return (
-                  <motion.div 
-                    key={salon.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                  >
-                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 rounded-xl">
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 text-xl overflow-hidden">
-                            {salon.photo_url ? (
-                              <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
-                            ) : (
-                              salon.name.charAt(0)
-                            )}
+            {filteredSalons.map((salon, index) => {
+              const midPoint = Math.floor(filteredSalons.length / 2);
+              const showMidBanner = index === midPoint && banners.length > 0;
+              const isLastSalon = index === filteredSalons.length - 1;
+              const showEndBanner = isLastSalon && banners.length > 1;
+              
+              return (
+                <div key={salon.id}>
+                  <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex items-start gap-4 md:gap-6">
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
+                          {salon.photo_url ? (
+                            <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            salon.name.charAt(0)
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
+                              {salon.plan && salon.plan !== 'basico' && (
+                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                              )}
+                            </div>
                           </div>
                           
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-xl text-white">{salon.name}</h4>
-                                {salon.plan && salon.plan !== 'basico' && (
-                                  <CheckCircle className="h-6 w-6 text-blue-400" />
-                                )}
-                              </div>
-                              {salon.distance && (
-                                <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
-                                  {salon.distance.toFixed(1)}km
-                                </Badge>
-                              )}
-                            </div>
-                            
-                            {salon.address && (
-                              <div className="flex items-start gap-2 mb-2">
-                                <MapPin className="h-4 w-4 text-zinc-400 mt-0.5 flex-shrink-0" />
-                                <p className="text-sm text-zinc-300">{salon.address}</p>
-                              </div>
-                            )}
-                            
-                            <div className="flex items-center gap-4 mt-4">
-                              {salon.phone && (
-                                <Button 
-                                  onClick={() => openWhatsApp(salon.phone)} 
-                                  size="sm" 
-                                  className="bg-green-600 text-white hover:bg-green-700 rounded-lg"
-                                >
-                                  <Phone className="h-4 w-4 mr-1" />
-                                  Chamar
-                                </Button>
-                              )}
-                              
-                              {salon.instagram && (
-                                <a 
-                                  href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-1 text-sm text-pink-400 hover:text-pink-300 transition-colors"
-                                >
-                                  <Instagram className="h-4 w-4" />
-                                  {salon.instagram}
-                                </a>
-                              )}
-                              
-                              <a 
-                                href={`/menu/${salon.slug}`} 
-                                className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 transition-colors ml-auto"
+                          {salon.phone && (
+                            <div className="flex items-center gap-2 mb-2">
+                              <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                              <button 
+                                onClick={() => openWhatsApp(salon.phone!)} 
+                                className="text-green-600 hover:underline text-base md:text-xl"
                               >
-                                Ver menu
+                                {formatPhone(salon.phone)}
+                              </button>
+                            </div>
+                          )}
+                          
+                          {salon.address && (
+                            <div className="flex items-start gap-2 mb-3">
+                              <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
+                            </div>
+                          )}
+                          
+                          {salon.instagram && (
+                            <div className="flex items-center gap-2 mb-3">
+                              <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                              <a 
+                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-purple-600 hover:underline text-base md:text-xl"
+                              >
+                                {salon.instagram}
                               </a>
                             </div>
+                          )}
+                          
+                          <div className="text-base md:text-xl text-gray-500 font-medium">
+                            {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Banners inseridos entre salões */}
-                    {showMidBanner && (
-                      <motion.div 
-                        className="my-6"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4 }}
-                      >
-                        <div className="relative bg-gradient-to-r from-zinc-800 to-zinc-900 w-full h-48 rounded-xl overflow-hidden border border-white/10">
-                          <div className="absolute inset-0 p-6 flex items-center justify-center">
-                            <div className="text-center">
-                              <h3 className="text-white text-xl font-bold mb-2">{banners[0].title}</h3>
-                              <p className="text-zinc-300 text-sm mb-4">{banners[0].description}</p>
-                              <Button className="bg-white text-black hover:bg-gray-200 rounded-lg">
-                                Saiba mais
-                              </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  {showMidBanner && (
+                    <div className="my-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative">
+                          <img src={banners[0].image_url} alt={banners[0].title} className="w-full h-auto object-contain" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                            <div className="p-4 md:p-6 text-white">
+                              <h4 className="font-bold text-lg md:text-2xl">{banners[0].title}</h4>
+                              {banners[0].description && (
+                                <p className="text-sm md:text-base opacity-90">{banners[0].description}</p>
+                              )}
                             </div>
                           </div>
-                          {banners[0].image_url && (
-                            <img
-                              src={banners[0].image_url}
-                              alt="Banner"
-                              className="absolute right-0 top-0 h-full w-1/3 object-cover opacity-30"
-                            />
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {showEndBanner && (
-                      <motion.div 
-                        className="my-6"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4 }}
-                      >
-                        <div className="relative bg-gradient-to-r from-zinc-800 to-zinc-900 w-full h-48 rounded-xl overflow-hidden border border-white/10">
-                          <div className="absolute inset-0 p-6 flex items-center justify-center">
-                            <div className="text-center">
-                              <h3 className="text-white text-xl font-bold mb-2">{banners[1].title}</h3>
-                              <p className="text-zinc-300 text-sm mb-4">{banners[1].description}</p>
-                              <Button className="bg-white text-black hover:bg-gray-200 rounded-lg">
-                                Saiba mais
-                              </Button>
-                            </div>
-                          </div>
-                          {banners[1].image_url && (
-                            <img
-                              src={banners[1].image_url}
-                              alt="Banner"
-                              className="absolute right-0 top-0 h-full w-1/3 object-cover opacity-30"
-                            />
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {filteredSalons.length === 0 && (
-              <motion.div 
-                className="text-center py-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
-                  <h3 className="text-xl font-semibold text-white mb-2">Nenhum salão encontrado</h3>
-                  <p className="text-zinc-400">
-                    {userLocation 
-                      ? `Não encontramos salões em um raio de ${distanceFilter === 'all' ? 'qualquer distância' : distanceFilter}.`
-                      : 'Nenhum salão disponível no momento.'}
-                  </p>
-                  {userLocation && distanceFilter !== 'all' && (
-                    <Button 
-                      onClick={() => setDistanceFilter('all')} 
-                      className="mt-4 bg-white text-black hover:bg-gray-200 rounded-lg"
-                    >
-                      Ver todos os salões
-                    </Button>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                  
+                  {showEndBanner && (
+                    <div className="mt-6">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0 relative">
+                          <img src={banners[1].image_url} alt={banners[1].title} className="w-full h-auto object-contain" />
+                        </CardContent>
+                      </Card>
+                    </div>
                   )}
                 </div>
-              </motion.div>
+              );
+            })}
+
+            {filteredSalons.length === 0 && (
+              <Card className="bg-white text-black border border-gray-200">
+                <CardContent className="p-8 text-center">
+                  <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h4 className="font-semibold text-xl mb-3 text-gray-900">Nenhum salão encontrado</h4>
+                  <p className="text-gray-600 text-base">
+                    {searchTerm 
+                      ? `Nenhum salão encontrado para "${searchTerm}". Tente uma busca diferente.`
+                      : userLocation 
+                        ? 'Tente aumentar o raio de busca ou alterar os filtros.' 
+                        : 'Use sua localização para encontrar salões próximos.'
+                    }
+                  </p>
+                </CardContent>
+              </Card>
             )}
-          </motion.div>
+          </div>
         )}
+
+        {/* Banners */}
+        {banners.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
+            <div className="space-y-4">
+              {banners.slice(0, 2).map(banner => (
+                <Card key={banner.id} className="overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="flex h-32">
+                      <div className="w-1/2 bg-black flex items-center justify-center p-4">
+                        <div className="text-center">
+                          <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
+                          {banner.description && (
+                            <p className="text-gray-300 text-sm">{banner.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-1/2">
+                        <img src={banner.image_url} alt={banner.title} className="w-full h-32 object-cover" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Informativo Section */}
+        <div className="mb-8">
+          <h3 className="text-lg md:text-2xl font-semibold mb-4 text-gray-900">Informativo para você</h3>
+          <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
+            <CardContent className="p-0 relative h-48 md:h-64 bg-black rounded-lg">
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+                  </div>
+                  <p className="text-sm">Clique para reproduzir o vídeo</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="mt-4 text-center">
+            <p className="text-sm mb-2 text-gray-900">
+              <strong>Atenção:</strong>
+            </p>
+            <p className="text-xs text-gray-600 mb-4">
+              Este site apenas indica onde utilizam os produtos
+              AP Professional. A responsabilidade pelos serviços prestados é
+              exclusivamente do salão listado acima.
+            </p>
+            <Button style={{ backgroundColor: '#F8E7BF', color: '#000' }} className="text-white hover:opacity-90 w-full bg-zinc-900 hover:bg-zinc-800">
+              Saiba mais
+            </Button>
+          </div>
+        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="text-center py-6 px-4 bg-zinc-900">
+        <div className="max-w-md mx-auto">
+          <p className="text-xs text-gray-400">
+            A.R.P COSMETICA LTDA - CNPJ: 38.730.230.0001-41
+          </p>
+          <p className="text-xs text-gray-400">
+            RUA VISCONDE DE ITAORNA, 1503 - SAO CAETANO DO SUL
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
