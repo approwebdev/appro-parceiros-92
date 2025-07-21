@@ -158,7 +158,7 @@ const MenuDigital = ({
     }} transition={{
       duration: 0.6
     }}>
-        <div className="flex justify-between items-center w-full h-full px-[8%]">
+        <div className="flex justify-between items-center w-full h-full pl-[8%] pr-[8%]">
           {/* LOGO APPRO */}
           <motion.div className="relative flex items-center" style={{
           width: "clamp(70px, 6vw, 90px)"
