@@ -154,10 +154,20 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       setTreatment(fullTreatment);
       setRelatedTreatments(relatedTreatments);
 
+      // Adicionar imagens de exemplo se não houver imagens
+      const imagensGaleria = [
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+      ];
+      
+      fullTreatment.images = fullTreatment.images && fullTreatment.images.length > 0 
+        ? fullTreatment.images 
+        : imagensGaleria;
+
       // Definir a primeira imagem como ativa
-      if (fullTreatment.images && fullTreatment.images.length > 0) {
-        setImagemAtiva(fullTreatment.images[0]);
-      }
+      setImagemAtiva(fullTreatment.images[0]);
 
       const { data: allTreatmentsData, error: allTreatmentsError } = await supabase
         .from('salon_treatments')
@@ -577,7 +587,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                                 className="transform hover:scale-110 transition-all duration-300"
                               >
                                 <img
-                                  src={showPrice ? "/lovable-uploads/058b2b94-b909-437a-a7ca-7630a654016f.png" : "/lovable-uploads/1572fc57-750b-4248-a2aa-a7bf7e6da5a2.png"}
+                                  src={showPrice ? "/catalogo/Olho aberto.svg" : "/catalogo/olho fechado.svg"}
                                   alt="Visualizar"
                                   className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600"
                                 />
