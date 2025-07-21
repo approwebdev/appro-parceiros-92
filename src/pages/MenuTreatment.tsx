@@ -449,7 +449,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
               <div key={idx} className="w-full flex-shrink-0 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] h-full gap-0">
                 {/* Galeria e detalhes */}
                 <div className="flex flex-col h-full justify-start lg:justify-start px-4 sm:px-6 overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
-                  <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 w-full justify-center mt-4 lg:mt-0">
+                  <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 w-full justify-center mt-4 lg:mt-0 lg:px-4">
                     {/* Galeria */}
                     <div className="flex flex-col items-center justify-start w-full lg:w-1/2">
                       <div className="w-full max-w-md mx-auto">
