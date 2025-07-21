@@ -271,7 +271,7 @@ const SalonFinder = () => {
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8 relative z-10">
         
         <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-32 relative z-10" style={{
-        backgroundImage: 'url(/lovable-uploads/fa174794-d3fd-4386-b4ef-9e7dcbe25faf.png)'
+        backgroundImage: 'url(/lovable-uploads/ff951bca-a5cb-43d3-ac0f-1380adb3c389.png)'
       }}>
         </div>
         
