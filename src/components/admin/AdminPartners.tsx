@@ -87,7 +87,7 @@ export const AdminPartners = () => {
 
       <div className="grid gap-4">
         {partners.map((partner) => (
-          <Card key={partner.id} className="bg-admin-card border-admin-border">
+          <Card key={partner.id} className="bg-admin-card border-admin-border md:rounded-full">
             <CardHeader className="p-4">
               <div className="flex flex-col lg:flex-row justify-between gap-4">
                 <div className="flex-1 space-y-4">

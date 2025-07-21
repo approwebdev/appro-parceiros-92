@@ -461,7 +461,7 @@ const SalonFinder = () => {
         <div className="mb-8">
           <h3 className="text-lg md:text-2xl font-semibold mb-4 text-gray-900">Informativo para você</h3>
           <Card className="bg-gradient-to-r from-orange-400 to-yellow-500 overflow-hidden">
-            <CardContent className="p-0 relative h-48 md:h-64 bg-black rounded-lg">
+            <CardContent className="p-0 relative aspect-video bg-black rounded-lg">
               <div className="w-full h-full flex items-center justify-center">
                 <div className="text-white text-center">
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
