@@ -277,9 +277,12 @@ const SalonFinder = () => {
         
         <div className="text-center mb-6">
           <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black">
-            <h1 className="font-bold mb-4 text-white text-2xl md:text-3xl">
-              Encontre os salões que utilizam Ap Professional!
+            <h1 className="font-bold mb-2 text-white text-2xl md:text-3xl">
+              Encontre os salões que utilizam
             </h1>
+            <h2 className="font-bold mb-6 text-2xl md:text-3xl" style={{ color: '#F8E7BF' }}>
+              Ap Professional!
+            </h2>
             
             <div className="relative mb-4">
               <Input type="text" placeholder="Digite um endereço." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-white text-gray-500 pl-4 pr-12 py-3 md:py-4 rounded-xl w-full border-0 text-lg placeholder:text-gray-500" />
