@@ -731,7 +731,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     }}
                   />
                   
-                  <div className="w-[clamp(209px,33.25vw,380px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-95">
+                  <div className="w-[clamp(213px,33.915vw,387.6px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-95">
                     {typeof item.video_url === 'string' && item.video_url ? (
                       <video className="w-full h-full object-cover" controls>
                         <source src={item.video_url} type="video/mp4" />
