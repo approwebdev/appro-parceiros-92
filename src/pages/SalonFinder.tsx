@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram } from "lucide-react";
+import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram, Store } from "lucide-react";
 import { generateSalonCoordinates } from "@/utils/geocoding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -288,14 +288,43 @@ const SalonFinder = () => {
               <p className="text-sm text-gray-600">Filtrar por distância:</p>
               {!userLocation && <p className="text-xs text-gray-400">Obtenha sua localização para filtrar</p>}
             </div>
-            <div className="flex gap-2">
-              <Button variant={distanceFilter === '50' ? 'default' : 'outline'} onClick={() => userLocation && setDistanceFilter('50')} size="sm" disabled={!userLocation} className={`flex-1 ${distanceFilter === '50' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <div className="bg-gray-100 rounded-full p-1 flex gap-1">
+              <Button 
+                variant={distanceFilter === '50' ? 'default' : 'ghost'} 
+                onClick={() => userLocation && setDistanceFilter('50')} 
+                size="sm" 
+                disabled={!userLocation} 
+                className={`flex-1 rounded-full text-sm ${
+                  distanceFilter === '50' && userLocation 
+                    ? 'bg-white text-black shadow-sm' 
+                    : 'text-gray-600 hover:text-black hover:bg-white/50'
+                } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
                 50km
               </Button>
-              <Button variant={distanceFilter === '100' ? 'default' : 'outline'} onClick={() => userLocation && setDistanceFilter('100')} size="sm" disabled={!userLocation} className={`flex-1 ${distanceFilter === '100' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <Button 
+                variant={distanceFilter === '100' ? 'default' : 'ghost'} 
+                onClick={() => userLocation && setDistanceFilter('100')} 
+                size="sm" 
+                disabled={!userLocation} 
+                className={`flex-1 rounded-full text-sm ${
+                  distanceFilter === '100' && userLocation 
+                    ? 'bg-white text-black shadow-sm' 
+                    : 'text-gray-600 hover:text-black hover:bg-white/50'
+                } ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
                 100km
               </Button>
-              <Button variant={distanceFilter === 'all' ? 'default' : 'outline'} onClick={() => setDistanceFilter('all')} size="sm" className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}>
+              <Button 
+                variant={distanceFilter === 'all' ? 'default' : 'ghost'} 
+                onClick={() => setDistanceFilter('all')} 
+                size="sm" 
+                className={`flex-1 rounded-full text-sm ${
+                  distanceFilter === 'all' 
+                    ? 'bg-white text-black shadow-sm' 
+                    : 'text-gray-600 hover:text-black hover:bg-white/50'
+                }`}
+              >
                 Todos
               </Button>
             </div>
@@ -304,13 +333,29 @@ const SalonFinder = () => {
               </p>}
           </div>
 
-          <div className="flex gap-2 mb-6">
-            <Button variant={viewType === 'list' ? 'default' : 'outline'} onClick={() => setViewType('list')} className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
+          <div className="bg-gray-100 rounded-full p-1 flex gap-1 mb-6">
+            <Button 
+              variant={viewType === 'list' ? 'default' : 'ghost'} 
+              onClick={() => setViewType('list')} 
+              className={`flex items-center justify-center gap-2 flex-1 rounded-full text-sm ${
+                viewType === 'list' 
+                  ? 'bg-white text-black shadow-sm' 
+                  : 'text-gray-600 hover:text-black hover:bg-white/50'
+              }`}
+            >
               <List className="h-4 w-4" />
               Lista
             </Button>
-            <Button variant={viewType === 'map' ? 'default' : 'outline'} onClick={() => setViewType('map')} className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
-              <Map className="h-4 w-4" />
+            <Button 
+              variant={viewType === 'map' ? 'default' : 'ghost'} 
+              onClick={() => setViewType('map')} 
+              className={`flex items-center justify-center gap-2 flex-1 rounded-full text-sm ${
+                viewType === 'map' 
+                  ? 'bg-white text-black shadow-sm' 
+                  : 'text-gray-600 hover:text-black hover:bg-white/50'
+              }`}
+            >
+              <MapPin className="h-4 w-4" />
               Mapa
             </Button>
           </div>
@@ -331,14 +376,14 @@ const SalonFinder = () => {
               </h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {filteredSalons.map((salon, index) => {
             const midPoint = Math.floor(filteredSalons.length / 2);
             const showMidBanner = index === midPoint && banners.length > 0;
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-2xl p-4">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-4 w-full">
                       <CardContent className="p-0">
                         <div className="flex items-center gap-4">
                           <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
@@ -366,10 +411,8 @@ const SalonFinder = () => {
                             
                             {/* Segunda linha: Endereço */}
                             {salon.address && <div className="flex items-start gap-2 mb-2">
-                                <div className="w-4 h-4 bg-gray-800 rounded-sm flex items-center justify-center mt-0.5 flex-shrink-0">
-                                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                                </div>
-                                <span className="text-sm text-gray-600">{salon.address}</span>
+                                <Store className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm text-blue-500">{salon.address}</span>
                               </div>}
                             
                             {/* Terceira linha: Distância */}
@@ -408,7 +451,7 @@ const SalonFinder = () => {
                     <div className="flex h-48">
                       <div className="w-1/2 bg-black flex items-center justify-center p-4">
                         <div className="text-center">
-                          <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
+                          <h4 className="text-white text-3xl font-bold mb-2">{banner.title}</h4>
                           {banner.description && <p className="text-gray-300 text-sm">{banner.description}</p>}
                         </div>
                       </div>
