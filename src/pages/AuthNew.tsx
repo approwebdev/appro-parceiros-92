@@ -240,8 +240,8 @@ const AuthNew = () => {
       </div>
       
       {/* Lado direito - Formulário */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 bg-white">
-        <div className="w-full max-w-md h-screen overflow-y-auto py-8 px-2">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 bg-white min-h-screen">
+        <div className="w-full max-w-md py-8 px-2">
           <div className="text-center mb-8">
             <img src="/lovable-uploads/4645a4ff-beda-4f6f-90f1-ea6a54167f18.png" alt="ARO" className="h-12 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900">

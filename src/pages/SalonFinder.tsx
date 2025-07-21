@@ -259,8 +259,10 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8 relative z-10">
         
-        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-64 -mt-8 relative z-10" style={{
-        backgroundImage: 'url(/lovable-uploads/97fb24e2-cd79-438d-9fcb-d9e51311a96d.png)'
+        <div className="w-full bg-contain bg-center bg-no-repeat rounded-lg -mb-64 -mt-8 relative z-10" style={{
+        backgroundImage: 'url(/lovable-uploads/97fb24e2-cd79-438d-9fcb-d9e51311a96d.png)',
+        aspectRatio: '16/9',
+        height: 'auto'
       }}>
         </div>
         
@@ -374,29 +376,29 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-3 md:p-5 w-full">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-2xl p-4 md:p-5 w-full">
                       <CardContent className="p-0">
-                        <div className="flex items-center gap-4 md:gap-7">
-                          <div className="w-20 h-20 md:w-28 md:h-28 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-base md:text-xl overflow-hidden">
-                            {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
+                        <div className="flex items-center gap-3 md:gap-6">
+                          <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-2xl flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-sm md:text-lg overflow-hidden">
+                            {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-2xl" /> : salon.name.charAt(0)}
                           </div>
                           
-                           <div className="flex-1 min-w-0">
-                               <div className="flex items-center gap-2 mb-2 md:mb-3">
-                                <h4 className="font-bold text-xl md:text-2xl text-gray-900">{salon.name}</h4>
-                                <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-6 w-6 md:h-8 md:w-8" />
-                              </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1 md:mb-2">
+                                 <h4 className="font-bold text-lg md:text-xl text-gray-900 truncate">{salon.name}</h4>
+                                 <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
+                               </div>
                            
-                            {/* Primeira linha: WhatsApp e Instagram */}
-                            <div className="flex items-center gap-3 md:gap-5 mb-2">
-                              {salon.phone && <div className="flex items-center gap-2 md:gap-3">
-                                  <Phone className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
-                                  <span className="text-sm md:text-base text-gray-600">{formatPhone(salon.phone)}</span>
+                             {/* Primeira linha: WhatsApp e Instagram */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mb-1">
+                              {salon.phone && <div className="flex items-center gap-1.5 md:gap-2">
+                                  <Phone className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
+                                  <span className="text-xs md:text-sm text-gray-600 truncate">{formatPhone(salon.phone)}</span>
                                 </div>}
                               
-                              {salon.instagram && <div className="flex items-center gap-2 md:gap-3">
-                                  <Instagram className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
-                                  <span className="text-sm md:text-base text-gray-600">{salon.instagram}</span>
+                              {salon.instagram && <div className="flex items-center gap-1.5 md:gap-2">
+                                  <Instagram className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
+                                  <span className="text-xs md:text-sm text-gray-600 truncate">{salon.instagram}</span>
                                 </div>}
                             </div>
                             
@@ -437,17 +439,17 @@ const SalonFinder = () => {
         {banners.length > 0 && <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Novidades</h3>
             <div className="space-y-4">
-              {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden rounded-none">
+              {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden rounded-2xl md:rounded-none">
                   <CardContent className="p-0">
-                    <div className="flex h-48">
-                      <div className="w-1/2 bg-black flex items-center justify-center p-4">
+                    <div className="flex h-32 md:h-48">
+                      <div className="w-1/2 bg-black flex items-center justify-center p-2 md:p-4">
                         <div className="text-center">
-                          <h4 className="text-white text-3xl font-bold mb-2">{banner.title}</h4>
-                          {banner.description && <p className="text-gray-300 text-sm">{banner.description}</p>}
+                          <h4 className="text-white text-sm md:text-3xl font-bold mb-1 md:mb-2">{banner.title}</h4>
+                          {banner.description && <p className="text-gray-300 text-xs md:text-sm hidden md:block">{banner.description}</p>}
                         </div>
                       </div>
                       <div className="w-1/2">
-                        <img src={banner.image_url} alt={banner.title} className="w-full h-48 object-cover" />
+                        <img src={banner.image_url} alt={banner.title} className="w-full h-32 md:h-48 object-cover" />
                       </div>
                     </div>
                   </CardContent>
