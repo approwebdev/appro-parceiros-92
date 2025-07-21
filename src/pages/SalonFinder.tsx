@@ -374,42 +374,43 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-4 w-full">
+                    <Card className="bg-white border border-gray-200 hover:shadow-lg transition-shadow rounded-2xl p-4 w-full shadow-sm">
                       <CardContent className="p-0">
-                        <div className="flex items-center gap-6">
-                          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
+                        <div className="flex items-start gap-4">
+                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
                             {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
                           </div>
                           
-                           <div className="flex-1 min-w-0">
-                             <div className="flex items-center gap-2 mb-2">
-                               <h4 className="font-bold text-xl text-gray-900">{salon.name}</h4>
-                               {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-5 w-5 text-yellow-500" />}
-                             </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-bold text-lg text-gray-700">{salon.name}</h4>
+                              {salon.plan && salon.plan !== 'basico' && <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <CheckCircle className="h-3 w-3 text-white" />
+                              </div>}
+                            </div>
                            
-                            {/* Primeira linha: WhatsApp e Instagram */}
-                            <div className="flex items-center gap-4 mb-1">
+                            <div className="space-y-1">
                               {salon.phone && <div className="flex items-center gap-2">
-                                  <Phone className="h-4 w-4 text-gray-600" />
-                                  <span className="text-sm text-gray-600">{formatPhone(salon.phone)}</span>
-                                </div>}
+                                <Phone className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600">{formatPhone(salon.phone)}</span>
+                              </div>}
                               
                               {salon.instagram && <div className="flex items-center gap-2">
-                                  <Instagram className="h-4 w-4 text-gray-600" />
-                                  <span className="text-sm text-gray-600">{salon.instagram}</span>
-                                </div>}
-                            </div>
-                            
-                            {/* Segunda linha: Endereço */}
-                            {salon.address && <div className="flex items-start gap-2 mb-2">
+                                <Instagram className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600">{salon.instagram}</span>
+                              </div>}
+                              
+                              {salon.address && <div className="flex items-start gap-2">
                                 <Store className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-sm text-blue-500">{salon.address}</span>
                               </div>}
-                            
-                            {/* Terceira linha: Distância */}
-                            <div className="flex items-center gap-2 text-lg text-gray-700 font-medium">
-                              <MapPin className="h-4 w-4 text-blue-500" />
-                              {salon.distance ? `A ${salon.distance.toFixed(0)}km de você` : 'A 5km de você'}
+                              
+                              <div className="flex items-center gap-2 text-base text-gray-700 font-semibold">
+                                <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                  <MapPin className="h-3 w-3 text-white" />
+                                </div>
+                                {salon.distance ? `A ${salon.distance.toFixed(0)}km de você` : 'A 5km de você'}
+                              </div>
                             </div>
                           </div>
                         </div>
