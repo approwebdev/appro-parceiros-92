@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Phone, Star, Eye, EyeOff } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FaWhatsapp, FaFacebookF, FaTwitter, FaPinterestP, FaEnvelope, FaCopy, FaShareAlt, FaBell } from "react-icons/fa";
 
 interface Treatment {
@@ -499,9 +500,32 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                       <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800">
                         {typeof item.subtitle === 'string' ? item.subtitle : ''}
                       </h2>
-                      <p className="text-[clamp(0.9rem,1.2vw,1rem)] text-gray-700 leading-relaxed line-clamp-3 lg:line-clamp-5">
-                        {typeof item.description === 'string' ? item.description : ''}
-                      </p>
+                       <div className="text-[clamp(0.9rem,1.2vw,1rem)] text-gray-700 leading-relaxed">
+                         <p className="line-clamp-3 lg:line-clamp-5">
+                           {typeof item.description === 'string' ? item.description : ''}
+                         </p>
+                         {typeof item.description === 'string' && item.description.length > 200 && (
+                           <Dialog>
+                             <DialogTrigger asChild>
+                               <button className="text-blue-600 hover:text-blue-800 text-sm mt-1 underline">
+                                 Ler mais
+                               </button>
+                             </DialogTrigger>
+                             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                               <DialogHeader>
+                                 <DialogTitle className="text-xl font-bold mb-4">
+                                   {typeof item.name === 'string' ? item.name : 'Descrição completa'}
+                                 </DialogTitle>
+                               </DialogHeader>
+                               <div className="prose max-w-none">
+                                 <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                   {item.description}
+                                 </p>
+                               </div>
+                             </DialogContent>
+                           </Dialog>
+                         )}
+                       </div>
 
                       {/* Avaliações */}
                       <div className="flex items-center gap-1 mt-2">
