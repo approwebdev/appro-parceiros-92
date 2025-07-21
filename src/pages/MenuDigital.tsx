@@ -160,8 +160,8 @@ const MenuDigital = ({
     }}>
         <div className="flex justify-between items-center w-full h-full px-[8%]">
           {/* LOGO APPRO */}
-          <motion.div className="relative" style={{
-          width: "clamp(90px, 8vw, 120px)"
+          <motion.div className="relative flex items-center" style={{
+          width: "clamp(70px, 6vw, 90px)"
         }} initial={{
           opacity: 0,
           y: 20
@@ -172,7 +172,7 @@ const MenuDigital = ({
           duration: 0.6
         }}>
             <div className="w-full transform transition duration-200 ease-in-out hover:scale-110">
-              <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="Logo Appro" className="w-full h-auto" />
+              <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="Logo Appro" className="w-full h-auto brightness-0 invert opacity-60" />
             </div>
           </motion.div>
 
