@@ -4,13 +4,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
+import Central from "./pages/Central";
 import MenuApp from "./pages/MenuApp";
 import SalonFinder from "./pages/SalonFinder";
 import Auth from "./pages/AuthNew";
 import AdminPanel from "./pages/AdminPanel";
 import SalonPanel from "./pages/SalonPanelNew";
-import Navigation from "./pages/Navigation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,12 +22,10 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/navigation" element={<Navigation />} />
-            <Route path="/salons" element={<SalonFinder />} />
-            <Route path="/salon-finder" element={<SalonFinder />} />
+            <Route path="/" element={<SalonFinder />} />
+            <Route path="/central" element={<Central />} />
             <Route path="/menu/:slug" element={<MenuApp />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Auth />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/salon-panel" element={<SalonPanel />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

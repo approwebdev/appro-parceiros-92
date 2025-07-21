@@ -59,19 +59,49 @@ export const useSalons = () => {
     }
   };
 
-  const generateSlug = (name: string) => {
-    return name
+  const generateSlug = async (name: string, editingSalonId?: string) => {
+    const baseSlug = name
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s]/g, '')
       .replace(/\s+/g, '-')
       .trim();
+    
+    // Verificar se o slug já existe
+    const { data: existingSalons, error } = await supabase
+      .from('salons')
+      .select('slug, id')
+      .ilike('slug', `${baseSlug}%`);
+    
+    if (error) {
+      console.error('Erro ao verificar slugs:', error);
+      return baseSlug;
+    }
+    
+    // Filtrar salões existentes (excluindo o que está sendo editado)
+    const filteredSalons = existingSalons?.filter(salon => salon.id !== editingSalonId) || [];
+    
+    // Se não existe slug igual, retornar o slug base
+    if (!filteredSalons.some(salon => salon.slug === baseSlug)) {
+      return baseSlug;
+    }
+    
+    // Se existe, encontrar o próximo número disponível
+    let counter = 1;
+    let newSlug = `${baseSlug}${counter}`;
+    
+    while (filteredSalons.some(salon => salon.slug === newSlug)) {
+      counter++;
+      newSlug = `${baseSlug}${counter}`;
+    }
+    
+    return newSlug;
   };
 
   const saveSalon = async (formData: SalonFormData, editingSalon?: Salon | null) => {
     try {
-      const slug = formData.slug || generateSlug(formData.name);
+      const slug = formData.slug || await generateSlug(formData.name, editingSalon?.id);
       
       // Remover campos que não existem na tabela e processar endereço completo
       const { address_number, address_complement, ...salonData } = formData;

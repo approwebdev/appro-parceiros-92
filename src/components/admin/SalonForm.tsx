@@ -45,7 +45,7 @@ interface SalonFormProps {
   editingSalon: Salon | null;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
-  generateSlug: (name: string) => string;
+  generateSlug: (name: string, editingSalonId?: string) => Promise<string>;
 }
 
 export const SalonForm = ({ 
@@ -102,11 +102,13 @@ export const SalonForm = ({
           <Input
             id="name"
             value={formData.name}
-            onChange={(e) => {
+            onChange={async (e) => {
+              const newName = e.target.value;
+              const newSlug = await generateSlug(newName, editingSalon?.id);
               setFormData({ 
                 ...formData, 
-                name: e.target.value,
-                slug: generateSlug(e.target.value)
+                name: newName,
+                slug: newSlug
               });
             }}
             required
