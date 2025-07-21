@@ -382,10 +382,10 @@ const SalonFinder = () => {
                           </div>
                           
                            <div className="flex-1 min-w-0">
-                             <div className="flex items-center gap-2 mb-2">
-                               <h4 className="font-bold text-xl text-gray-900">{salon.name}</h4>
-                               {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-5 w-5 text-yellow-500" />}
-                             </div>
+                               <div className="flex items-center gap-2 mb-2">
+                                <h4 className="font-bold text-xl text-gray-900">{salon.name}</h4>
+                                <CheckCircle className="h-5 w-5 text-yellow-500" />
+                              </div>
                            
                             {/* Primeira linha: WhatsApp e Instagram */}
                             <div className="flex items-center gap-4 mb-1">
