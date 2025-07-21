@@ -338,16 +338,16 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-full p-4">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-2xl p-4">
                       <CardContent className="p-0">
-                        <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
+                        <div className="flex items-center gap-4">
+                          <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
                             {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
                           </div>
                           
                            <div className="flex-1 min-w-0">
                              <div className="flex items-center gap-2 mb-2">
-                               <h4 className="font-bold text-lg text-gray-900">{salon.name}</h4>
+                               <h4 className="font-bold text-xl text-gray-900">{salon.name}</h4>
                                {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-5 w-5 text-yellow-500" />}
                              </div>
                            
@@ -366,8 +366,10 @@ const SalonFinder = () => {
                             
                             {/* Segunda linha: Endereço */}
                             {salon.address && <div className="flex items-start gap-2 mb-2">
-                                <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm text-blue-500">{salon.address}</span>
+                                <div className="w-4 h-4 bg-gray-800 rounded-sm flex items-center justify-center mt-0.5 flex-shrink-0">
+                                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                                </div>
+                                <span className="text-sm text-gray-600">{salon.address}</span>
                               </div>}
                             
                             {/* Terceira linha: Distância */}
@@ -382,15 +384,6 @@ const SalonFinder = () => {
                   
                   {showMidBanner}
                   
-                  {showEndBanner && <div className="mt-6">
-                      <Card className="overflow-hidden">
-                        <CardContent className="p-0 relative">
-                          <div className="h-32 md:h-48 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-                            <p className="text-white text-lg font-semibold">Banner promocional</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>}
                   </div>;
           })}
             </div>
@@ -412,7 +405,7 @@ const SalonFinder = () => {
             <div className="space-y-4">
               {banners.slice(0, 2).map(banner => <Card key={banner.id} className="overflow-hidden">
                   <CardContent className="p-0">
-                    <div className="flex h-32">
+                    <div className="flex h-48">
                       <div className="w-1/2 bg-black flex items-center justify-center p-4">
                         <div className="text-center">
                           <h4 className="text-white text-lg font-bold mb-2">{banner.title}</h4>
@@ -420,7 +413,7 @@ const SalonFinder = () => {
                         </div>
                       </div>
                       <div className="w-1/2">
-                        <img src={banner.image_url} alt={banner.title} className="w-full h-32 object-cover" />
+                        <img src={banner.image_url} alt={banner.title} className="w-full h-48 object-cover" />
                       </div>
                     </div>
                   </CardContent>
@@ -464,13 +457,24 @@ const SalonFinder = () => {
       </div>
 
       {/* Footer */}
-      <footer className="text-center py-6 px-4 bg-zinc-900">
+      <footer className="text-center py-6 px-4 bg-black">
         <div className="max-w-md mx-auto">
+          <p className="text-white text-sm font-medium mb-4">Rede Social</p>
+          <div className="flex justify-center mb-6">
+            <a 
+              href="https://instagram.com/anapaulacarvalhooficial" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-white/10 border border-white/20 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors"
+            >
+              <Instagram className="h-6 w-6 text-white" />
+            </a>
+          </div>
           <p className="text-xs text-gray-400">
-            A.R.P COSMETICA LTDA - CNPJ: 38.730.230.0001-41
+            A & P COSMETICA LTDA - CNPJ: 38.730.213/0001-41
           </p>
           <p className="text-xs text-gray-400">
-            RUA VISCONDE DE ITAORNA, 1503 - SAO CAETANO DO SUL
+            © Todos os direitos reservados. 2025
           </p>
         </div>
       </footer>
