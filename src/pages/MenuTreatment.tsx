@@ -701,11 +701,9 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     className="absolute inset-0 bg-no-repeat bg-center opacity-30 z-0"
                     style={{
                       backgroundImage: `url(/lovable-uploads/1ac586b1-3175-4a7d-8e81-692161f57930.png)`,
-                      backgroundSize: 'cover',
-                      width: '150%',
-                      height: '120%',
-                      left: '-25%',
-                      top: '-10%'
+                      backgroundSize: 'contain',
+                      width: '100%',
+                      height: '100%'
                     }}
                   />
                   
