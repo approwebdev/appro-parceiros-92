@@ -266,10 +266,10 @@ const SalonFinder = () => {
         
         <div className="text-center mb-6">
           <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black mt-32">
-            <h1 className="font-bold mb-2 text-white text-2xl md:text-3xl">
+            <h1 className="font-bold mb-2 text-white text-3xl md:text-4xl lg:text-5xl">
               Encontre os salões que utilizam
             </h1>
-            <h2 className="font-bold mb-6 text-2xl md:text-3xl" style={{ color: '#F8E7BF' }}>
+            <h2 className="font-bold mb-6 text-3xl md:text-4xl lg:text-5xl" style={{ color: '#F8E7BF' }}>
               Ap Professional!
             </h2>
             
