@@ -698,9 +698,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 <div className="hidden lg:flex items-center justify-center h-full relative">
                   {/* Imagem de fundo */}
                   <div 
-                    className="absolute inset-0 bg-cover bg-center opacity-20 z-0"
+                    className="absolute inset-0 bg-no-repeat bg-center opacity-30 z-0"
                     style={{
-                      backgroundImage: `url(/lovable-uploads/1ac586b1-3175-4a7d-8e81-692161f57930.png)`
+                      backgroundImage: `url(/lovable-uploads/1ac586b1-3175-4a7d-8e81-692161f57930.png)`,
+                      backgroundSize: 'contain'
                     }}
                   />
                   
