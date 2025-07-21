@@ -376,11 +376,11 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-2xl p-4 md:p-5 w-full">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-2xl md:rounded-full p-4 md:p-5 w-full">
                       <CardContent className="p-0">
                         <div className="flex items-center gap-3 md:gap-6">
-                          <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-2xl flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-sm md:text-lg overflow-hidden">
-                            {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-2xl" /> : salon.name.charAt(0)}
+                          <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-sm md:text-lg overflow-hidden">
+                            {salon.photo_url ? <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" /> : salon.name.charAt(0)}
                           </div>
                           
                             <div className="flex-1 min-w-0">
