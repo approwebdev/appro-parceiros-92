@@ -160,7 +160,7 @@ const MenuDigital = ({
     }}>
         <div className="flex justify-between items-center w-full h-full pl-[8%] pr-[8%]">
           {/* LOGO APPRO */}
-          <motion.div className="relative flex items-center mt-[4%]" style={{
+          <motion.div className="relative flex items-center mt-[2%]" style={{
           width: "clamp(70px, 6vw, 90px)"
         }} initial={{
           opacity: 0,
@@ -238,7 +238,7 @@ const MenuDigital = ({
           <div className="relative">
             <div className="flex items-baseline menu-digital-container">
               <motion.span className="block font-bold menu-text" style={{
-              fontSize: "220%",
+              fontSize: "226.6%",
               letterSpacing: "-0.03em",
               lineHeight: "1",
               marginLeft: "clamp(0.5rem, 1vw, 1rem)",
@@ -272,9 +272,9 @@ const MenuDigital = ({
           </div>
 
           <motion.button onClick={onEnter} className="mt-[clamp(3rem,5vh,4rem)] bg-white text-black font-semibold rounded-full shadow-lg transform transition duration-200 ease-in-out hover:scale-110" style={{
-          fontSize: "clamp(0.99rem, 1.44vw, 1.26rem)",
-          paddingInline: "clamp(2.25rem, 6.3vw, 4.5rem)",
-          paddingBlock: "clamp(0.9rem, 1.62vw, 1.35rem)",
+          fontSize: "clamp(0.91rem, 1.32vw, 1.16rem)",
+          paddingInline: "clamp(2.07rem, 5.8vw, 4.14rem)",
+          paddingBlock: "clamp(0.83rem, 1.49vw, 1.24rem)",
           marginLeft: "clamp(0.5rem, 1vw, 1rem)"
         }} initial={{
           opacity: 0
