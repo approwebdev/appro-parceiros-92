@@ -338,7 +338,7 @@ const SalonFinder = () => {
             const isLastSalon = index === filteredSalons.length - 1;
             const showEndBanner = isLastSalon && banners.length > 1;
             return <div key={salon.id}>
-                    <Card className="bg-white border border-gray-200 hover:shadow-lg transition-shadow rounded-[20px] p-4">
+                    <Card className="bg-gray-50 border border-gray-200 hover:shadow-lg transition-shadow rounded-[20px] p-4">
                       <CardContent className="p-0">
                         <div className="flex items-start gap-4">
                           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
@@ -347,18 +347,18 @@ const SalonFinder = () => {
                           
                            <div className="flex-1 min-w-0">
                              <div className="flex items-center gap-2 mb-2">
-                               <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
-                               {salon.plan && salon.plan !== 'basico' && <CheckCircle className={`h-5 w-5 ${salon.plan === 'premium' ? 'text-yellow-500' : 'text-blue-500'}`} />}
+                               <h4 className="font-bold text-lg text-gray-900">{salon.name}</h4>
+                               {salon.plan && salon.plan !== 'basico' && <CheckCircle className="h-5 w-5 text-yellow-500" />}
                              </div>
                            
                             {salon.phone && <div className="flex items-center gap-2 mb-1">
-                                <Phone className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm text-gray-700">{formatPhone(salon.phone)}</span>
+                                <Phone className="h-4 w-4 text-gray-600" />
+                                <span className="text-sm text-gray-600">{formatPhone(salon.phone)}</span>
                               </div>}
                             
                             {salon.instagram && <div className="flex items-center gap-2 mb-1">
-                                <Instagram className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm text-gray-700">{salon.instagram}</span>
+                                <Instagram className="h-4 w-4 text-gray-600" />
+                                <span className="text-sm text-gray-600">{salon.instagram}</span>
                               </div>}
                             
                             {salon.address && <div className="flex items-start gap-2 mb-2">
