@@ -258,7 +258,7 @@ const SalonFinder = () => {
 
       {/* Background Image */}
       <div 
-        className="absolute top-[72px] left-0 right-0 h-80 opacity-15 pointer-events-none z-0"
+        className="absolute top-[72px] left-0 right-0 h-96 opacity-15 pointer-events-none z-0"
         style={{
           backgroundImage: 'url(/lovable-uploads/b1459855-6ccd-4b81-9144-e120fef5dece.png)',
           backgroundSize: '80%',
@@ -270,7 +270,7 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8 relative z-10">
         
-        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16 relative z-10" style={{
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-24 relative z-10" style={{
         backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)'
       }}>
         </div>
