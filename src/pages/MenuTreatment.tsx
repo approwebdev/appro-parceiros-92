@@ -625,7 +625,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   </div>
 
                   {/* Produtos Relacionados */}
-                  <div className="absolute bottom-0 w-full px-4 sm:px-6 lg:px-4">
+                  <div className="absolute bottom-[4%] w-[60%] px-4 sm:px-6 lg:px-4">
                     <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-2 sm:mb-3 ml-[clamp(2rem,4vw,6rem)]">
                       Tratamentos Relacionados
                     </h3>
