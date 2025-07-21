@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import verifiedBadge from "@/assets/verified-badge.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Menu, MapPin, Phone, List, Map, Navigation, ChevronDown, ChevronUp, CheckCircle, Instagram, Store, ShieldCheck } from "lucide-react";
 import { generateSalonCoordinates } from "@/utils/geocoding";
@@ -384,7 +385,7 @@ const SalonFinder = () => {
                            <div className="flex-1 min-w-0">
                                <div className="flex items-center justify-between mb-2">
                                 <h4 className="font-bold text-xl text-gray-900">{salon.name}</h4>
-                                <ShieldCheck className="h-8 w-8 text-yellow-500" />
+                                <img src={verifiedBadge} alt="Verificado" className="h-8 w-8" />
                               </div>
                            
                             {/* Primeira linha: WhatsApp e Instagram */}
