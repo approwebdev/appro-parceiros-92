@@ -507,7 +507,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                          {typeof item.description === 'string' && item.description.length > 200 && (
                            <Dialog>
                              <DialogTrigger asChild>
-                               <button className="text-blue-600 hover:text-blue-800 text-sm mt-1 underline">
+                               <button className="text-sm mt-1 underline" style={{ color: '#F8E7BF' }}>
                                  Ler mais
                                </button>
                              </DialogTrigger>
@@ -719,7 +719,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                 </div>
 
                 {/* Vídeo em Desktop */}
-                <div className="hidden lg:flex items-center justify-center h-full relative overflow-visible">
+                <div className="hidden lg:flex items-start justify-center h-full relative overflow-visible pt-[2%]">
                   {/* Imagem de fundo expandida */}
                   <div 
                     className="absolute inset-0 bg-no-repeat bg-center opacity-30 z-0"
@@ -731,7 +731,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     }}
                   />
                   
-                  <div className="w-[clamp(220px,35vw,400px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100">
+                  <div className="w-[clamp(209px,33.25vw,380px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-95">
                     {typeof item.video_url === 'string' && item.video_url ? (
                       <video className="w-full h-full object-cover" controls>
                         <source src={item.video_url} type="video/mp4" />
