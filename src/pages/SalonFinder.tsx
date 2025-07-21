@@ -288,54 +288,96 @@ const SalonFinder = () => {
 
       {/* Header */}
       <header className="bg-black border-b border-gray-200 px-4 py-4">
-        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-between">
-          <div className="text-white font-bold text-2xl">AR</div>
-          <Menu className="text-white w-6 h-6" />
+        <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-center">
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" className="h-8" />
         </div>
       </header>
 
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8">
-        <div className="h-64 md:h-[400px] bg-contain bg-center bg-no-repeat rounded-lg mb-6 relative" 
-             style={{ backgroundImage: 'url(/lovable-uploads/1567dc39-5e7a-488d-a617-d78388806614.png)' }}>
+        <div className="h-96 md:h-[500px] lg:h-[600px] bg-contain bg-center bg-no-repeat rounded-lg -mb-16" 
+             style={{ backgroundImage: 'url(/lovable-uploads/9c25a7ad-7cc5-4900-8063-caae12ddfd0f.png)' }}>
         </div>
         
         <div className="text-center mb-6">
           <div className="rounded-lg p-6 mb-6 md:p-8 relative z-10" style={{ backgroundColor: '#242424' }}>
-            <h1 className="font-bold mb-2 text-white text-xl md:text-2xl">
-              Encontre os salões que utilizam
+            <h1 className="font-bold mb-1 text-white text-4xl md:text-6xl">
+              Encontre o Salão mais
             </h1>
-            <h2 style={{ color: '#F8E7BF' }} className="font-bold mb-6 text-xl md:text-2xl">
-              AR Professional!
+            <h2 style={{ color: '#F8E7BF' }} className="font-bold mb-6 text-4xl md:text-6xl text-yellow-100">
+              próximo de você.
             </h2>
             
             <div className="relative mb-4">
               <Input 
                 type="text" 
-                placeholder="Digite um endereço..." 
+                placeholder="Buscar salão, endereço ou Instagram..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
                 className="bg-white text-black pl-4 pr-12 py-3 md:py-4 rounded-lg w-full border border-gray-300 md:text-lg" 
               />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
             </div>
-            
-            {/* Dropdown Localização */}
-            <div className="mb-4">
-              <select className="bg-white text-gray-500 w-full py-3 px-4 rounded-lg border border-gray-300">
-                <option>105km</option>
-                <option>50km</option>
-                <option>100km</option>
-              </select>
-            </div>
           </div>
 
+          <Button 
+            onClick={getUserLocation} 
+            disabled={gettingLocation} 
+            variant="outline" 
+            className="w-full mb-4 border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            <Navigation className="h-4 w-4 mr-2" />
+            {gettingLocation ? 'Obtendo localização...' : 'Usar minha localização'}
+          </Button>
+
+          {/* Filtros de distância - sempre visíveis, mas desabilitados sem localização */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-gray-600">Filtrar por distância:</p>
+              {!userLocation && (
+                <p className="text-xs text-gray-400">Obtenha sua localização para filtrar</p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant={distanceFilter === '50' ? 'default' : 'outline'} 
+                onClick={() => userLocation && setDistanceFilter('50')} 
+                size="sm" 
+                disabled={!userLocation}
+                className={`flex-1 ${distanceFilter === '50' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                50km
+              </Button>
+              <Button 
+                variant={distanceFilter === '100' ? 'default' : 'outline'} 
+                onClick={() => userLocation && setDistanceFilter('100')} 
+                size="sm" 
+                disabled={!userLocation}
+                className={`flex-1 ${distanceFilter === '100' && userLocation ? 'bg-blue-600 text-white hover:bg-blue-700' : ''} ${!userLocation ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                100km
+              </Button>
+              <Button 
+                variant={distanceFilter === 'all' ? 'default' : 'outline'} 
+                onClick={() => setDistanceFilter('all')} 
+                size="sm" 
+                className={`flex-1 ${distanceFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}`}
+              >
+                Todos
+              </Button>
+            </div>
+            {userLocation && distanceFilter !== 'all' && (
+              <p className="text-xs text-green-600 mt-1">
+                ✓ Mostrando salões até {distanceFilter}km de você
+              </p>
+            )}
+          </div>
 
           <div className="flex gap-2 mb-6">
             <Button 
               variant={viewType === 'list' ? 'default' : 'outline'} 
               onClick={() => setViewType('list')} 
-              className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-black text-white hover:bg-gray-800' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              className={`flex items-center gap-2 flex-1 ${viewType === 'list' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
             >
               <List className="h-4 w-4" />
               Lista
@@ -343,7 +385,7 @@ const SalonFinder = () => {
             <Button 
               variant={viewType === 'map' ? 'default' : 'outline'} 
               onClick={() => setViewType('map')} 
-              className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-black text-white hover:bg-gray-800' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              className={`flex items-center gap-2 flex-1 ${viewType === 'map' ? 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
             >
               <Map className="h-4 w-4" />
               Mapa
@@ -363,9 +405,18 @@ const SalonFinder = () => {
         {viewType === 'list' && (
           <div className="space-y-4 md:space-y-6 mb-8">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg md:text-xl font-semibold text-gray-900">
-                Salões mais próximo de você
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-900">
+                {userLocation ? (
+                  <span>Salões <span style={{ color: '#F8E7BF' }}>próximos de você</span></span>
+                ) : (
+                  'Todos os salões'
+                )}
               </h3>
+              {filteredSalons.length > 0 && (
+                <Badge variant="outline" className="border-gray-300 text-gray-600 md:text-base md:px-4 md:py-2">
+                  {filteredSalons.length} encontrados
+                </Badge>
+              )}
             </div>
             
             {filteredSalons.map((salon, index) => {
@@ -377,9 +428,9 @@ const SalonFinder = () => {
               return (
                 <div key={salon.id}>
                   <Card className="bg-white text-black border border-gray-200 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-lg overflow-hidden">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="flex items-start gap-4 md:gap-6">
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0 text-xl md:text-3xl overflow-hidden">
                           {salon.photo_url ? (
                             <img src={salon.photo_url} alt={salon.name} className="w-full h-full object-cover rounded-full" />
                           ) : (
@@ -388,29 +439,50 @@ const SalonFinder = () => {
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold text-lg text-gray-900">{salon.name}</h4>
-                            <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                              <CheckCircle className="h-3 w-3 text-white" />
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-xl md:text-3xl text-gray-900">{salon.name}</h4>
+                              {salon.plan && salon.plan !== 'basico' && (
+                                <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+                              )}
                             </div>
                           </div>
                           
-                          {salon.instagram && (
+                          {salon.phone && (
                             <div className="flex items-center gap-2 mb-2">
-                              <Instagram className="h-4 w-4 text-purple-600" />
-                              <span className="text-sm text-gray-600">{salon.instagram}</span>
+                              <Phone className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                              <button 
+                                onClick={() => openWhatsApp(salon.phone!)} 
+                                className="text-green-600 hover:underline text-base md:text-xl"
+                              >
+                                {formatPhone(salon.phone)}
+                              </button>
                             </div>
                           )}
                           
                           {salon.address && (
-                            <div className="flex items-start gap-2 mb-2">
-                              <MapPin className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                              <span className="text-sm text-gray-600">{salon.address}</span>
+                            <div className="flex items-start gap-2 mb-3">
+                              <MapPin className="h-5 w-5 md:h-6 md:w-6 text-gray-600 mt-0.5 flex-shrink-0" />
+                              <span className="text-base md:text-xl text-gray-600">{salon.address}</span>
                             </div>
                           )}
                           
-                          <div className="text-sm text-gray-500 font-medium">
-                            {salon.distance ? `A ${salon.distance.toFixed(0)}km de você` : 'Localização não disponível'}
+                          {salon.instagram && (
+                            <div className="flex items-center gap-2 mb-3">
+                              <Instagram className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                              <a 
+                                href={`https://instagram.com/${salon.instagram.replace('@', '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-purple-600 hover:underline text-base md:text-xl"
+                              >
+                                {salon.instagram}
+                              </a>
+                            </div>
+                          )}
+                          
+                          <div className="text-base md:text-xl text-gray-500 font-medium">
+                            {salon.distance ? `A ${salon.distance.toFixed(1)}km de você` : 'Localização não disponível'}
                           </div>
                         </div>
                       </div>
@@ -528,15 +600,12 @@ const SalonFinder = () => {
       </div>
 
       {/* Footer */}
-      <footer className="text-center py-6 px-4 bg-black">
+      <footer className="text-center py-6 px-4 bg-zinc-900">
         <div className="max-w-md mx-auto">
-          <div className="mb-4">
-            <Instagram className="h-8 w-8 text-white mx-auto mb-2" />
-          </div>
-          <p className="text-xs text-white mb-1">
+          <p className="text-xs text-gray-400">
             A.R.P COSMETICA LTDA - CNPJ: 38.730.230.0001-41
           </p>
-          <p className="text-xs text-white">
+          <p className="text-xs text-gray-400">
             RUA VISCONDE DE ITAORNA, 1503 - SAO CAETANO DO SUL
           </p>
         </div>

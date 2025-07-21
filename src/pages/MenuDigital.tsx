@@ -78,12 +78,14 @@ const MenuDigital = ({
       <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-center" style={{
         padding: 'clamp(1rem, 2vw, 1.5rem)'
       }}>
-        {/* Logo AR */}
+        {/* Logo Appro */}
         <div className="flex items-center z-50">
-          <div className="text-white font-bold text-2xl">AR</div>
+          <img src="/lovable-uploads/f77b22c2-a495-423a-bce4-4ddc7b37074d.png" alt="ARO" style={{
+            height: 'clamp(1.5rem, 3vw, 2rem)'
+          }} />
         </div>
 
-        {/* Ícones superiores direita */}
+        {/* Ícones superiores */}
         <div className="flex items-center z-50" style={{
           gap: 'clamp(0.75rem, 1.5vw, 1rem)'
         }}>
@@ -93,15 +95,20 @@ const MenuDigital = ({
                 height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
               }} />
             </a>}
-          <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-          </div>
-          <div className="w-6 h-6 bg-orange-500 rounded-full"></div>
-          <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-            <div className="w-3 h-1 bg-black"></div>
-            <div className="w-3 h-1 bg-black ml-0.5"></div>
-            <div className="w-3 h-1 bg-black ml-0.5"></div>
-          </div>
+          {salon.instagram && <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
+              <Instagram style={{
+                width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+              }} />
+            </a>}
+          {salon.address && <LocationDialog address={salon.address}>
+              <button className="text-white hover:text-gold transition-colors">
+                <MapPin style={{
+                  width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                  height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                }} />
+              </button>
+            </LocationDialog>}
         </div>
       </div>
 
@@ -111,14 +118,17 @@ const MenuDigital = ({
         <div className="flex-1 flex flex-col justify-center order-2 md:order-1 relative z-30" style={{
           paddingLeft: 'clamp(1rem, 4vw, 4rem)',
           paddingRight: 'clamp(1rem, 2vw, 2rem)',
-          paddingTop: 'clamp(2rem, 5vh, 5rem)',
-          paddingBottom: 'clamp(1rem, 2vh, 2rem)'
+          paddingTop: 'clamp(2rem, 5vh, 5rem)', // Reduzido no mobile
+          paddingBottom: 'clamp(1rem, 2vh, 2rem)' // Reduzido no mobile
         }}>
           <div className="text-center md:text-left">
             <h1 className="flex flex-col md:flex-row md:items-baseline md:gap-4" style={{
               marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)'
             }}>
-              <span className="font-black text-[#D4B08A]" style={{
+              <span className="font-black bg-gradient-to-r from-[#D4B08A] to-[#E6C7A3]" style={{
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
                 fontSize: 'clamp(6rem, 20vw, 12rem)'
               }}>
                 Menu
@@ -134,8 +144,8 @@ const MenuDigital = ({
                 onClick={onEnter} 
                 className="bg-white text-black hover:bg-gray-100 font-semibold rounded-full relative z-40"
                 style={{
-                  padding: 'clamp(1rem, 2vw, 1.25rem) clamp(2.5rem, 5vw, 3rem)',
-                  fontSize: 'clamp(1rem, 2.5vw, 1.125rem)'
+                  padding: 'clamp(1.5rem, 3vw, 1.5rem) clamp(3rem, 6vw, 3rem)',
+                  fontSize: 'clamp(1.25rem, 3vw, 1.25rem)'
                 }}
               >
                 Entrar
@@ -146,25 +156,14 @@ const MenuDigital = ({
 
         {/* Lado Direito - Modelo */}
         <div className="flex-1 relative h-1/2 md:h-full order-1 md:order-2">
+          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-black/60 via-transparent to-transparent md:from-black/20 md:to-black/20 z-0"></div>
           <img 
-            src="/lovable-uploads/9c955626-919c-48a6-99ec-0548d46d6009.png" 
-            alt="Mulher profissional" 
-            className="w-full h-full object-cover object-center relative z-10 pointer-events-none" 
+            src="/lovable-uploads/7b0ce177-78db-44ee-9a51-a94e3561d5cd.png" 
+            alt="Profissional de beleza" 
+            className="w-full h-full object-cover object-[center_bottom] md:object-center relative z-10 pointer-events-none" 
           />
         </div>
       </div>
-
-      {/* Instagram icon no canto inferior direito */}
-      {salon.instagram && (
-        <div className="absolute bottom-6 right-6 z-50">
-          <a href={`https://instagram.com/${salon.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
-            <Instagram style={{
-              width: 'clamp(1.5rem, 3vw, 2rem)',
-              height: 'clamp(1.5rem, 3vw, 2rem)'
-            }} />
-          </a>
-        </div>
-      )}
     </div>;
 };
 
