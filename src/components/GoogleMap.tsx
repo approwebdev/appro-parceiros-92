@@ -16,6 +16,7 @@ declare global {
   interface Window {
     google: any;
     googleMapsLoaded?: boolean;
+    initializeMap?: () => void;
   }
 }
 
@@ -40,6 +41,8 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         if (window.google?.maps) {
           console.log('[GoogleMap] API já carregada');
           window.googleMapsLoaded = true;
+          setIsLoaded(true);
+          setIsLoading(false);
           return;
         }
 
@@ -62,17 +65,20 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
         console.log('[GoogleMap] Chave obtida, carregando script...');
         setLoadingStep('Carregando script do Google Maps...');
 
+        // Função callback global para quando o Google Maps carregar
+        window.initializeMap = () => {
+          console.log('[GoogleMap] Callback do Google Maps executado');
+          window.googleMapsLoaded = true;
+          setIsLoaded(true);
+          setIsLoading(false);
+        };
+
         // Carregar script
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${keyData.key}&libraries=places&callback=initializeMap`;
         script.async = true;
         script.defer = true;
         
-        script.onload = () => {
-          console.log('[GoogleMap] Script carregado com sucesso');
-          window.googleMapsLoaded = true;
-        };
-
         script.onerror = (e) => {
           console.error('[GoogleMap] Erro ao carregar script:', e);
           if (mountedRef.current) {
@@ -92,7 +98,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
             setIsLoading(false);
             setLoadingStep('Timeout na API');
           }
-        }, 15000);
+        }, 20000);
 
       } catch (error) {
         console.error('[GoogleMap] Erro ao carregar API:', error);
@@ -104,7 +110,12 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
       }
     };
 
-    loadGoogleMapsAPI();
+    if (!window.googleMapsLoaded && !isLoaded) {
+      loadGoogleMapsAPI();
+    } else if (window.googleMapsLoaded) {
+      setIsLoaded(true);
+      setIsLoading(false);
+    }
 
     return () => {
       if (timeoutId) clearTimeout(timeoutId);

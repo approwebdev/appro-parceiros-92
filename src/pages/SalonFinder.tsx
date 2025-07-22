@@ -10,7 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
-import verifiedBadgeBlue from "@/assets/verified-badge-blue.png";
+import verifiedBadgeBlue from "@/assets/verified-badge-new.png";
 interface Salon {
   id: string;
   name: string;
@@ -68,7 +68,7 @@ const SalonFinder = () => {
   useEffect(() => {
     if (userLocation && salons.length > 0) {
       console.log('Recalculando distâncias para', salons.length, 'salões');
-      setSalons(prevSalons => prevSalons.map(salon => {
+      const salonsWithDistance = salons.map(salon => {
         if (salon.latitude && salon.longitude) {
           const distance = calculateDistance(userLocation.lat, userLocation.lng, salon.latitude, salon.longitude);
           console.log(`Distância para ${salon.name}: ${distance.toFixed(1)}km`);
@@ -78,9 +78,10 @@ const SalonFinder = () => {
           };
         }
         return salon;
-      }));
+      });
+      setSalons(salonsWithDistance);
     }
-  }, [userLocation, salons.length]);
+  }, [userLocation]);
   const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -197,18 +198,15 @@ const SalonFinder = () => {
     const instagramMatch = salon.instagram?.toLowerCase().includes(searchLower);
     return nameMatch || addressMatch || instagramMatch;
   }).filter(salon => {
-    // Debug do filtro de distância
-    console.log(`Filtrando ${salon.name}: distância=${salon.distance}, filtro=${distanceFilter}`);
+    // Filtro de distância
     if (distanceFilter === 'all') return true;
-    if (!userLocation || !salon.distance) return true; // Mostrar todos se não há localização
+    if (!userLocation || typeof salon.distance !== 'number') return true; // Mostrar todos se não há localização ou distância
 
     const maxDistance = parseInt(distanceFilter);
-    const withinDistance = salon.distance <= maxDistance;
-    console.log(`${salon.name}: ${salon.distance.toFixed(1)}km <= ${maxDistance}km? ${withinDistance}`);
-    return withinDistance;
+    return salon.distance <= maxDistance;
   }).sort((a, b) => {
     // Ordenar por distância se houver, senão por nome
-    if (userLocation && a.distance && b.distance) {
+    if (userLocation && typeof a.distance === 'number' && typeof b.distance === 'number') {
       return a.distance - b.distance;
     }
     return a.name.localeCompare(b.name);
