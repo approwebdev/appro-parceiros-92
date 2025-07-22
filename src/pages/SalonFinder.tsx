@@ -146,7 +146,7 @@ const SalonFinder = () => {
       const {
         data,
         error
-      } = await supabase.from('salons').select('id, name, slug, phone, address, instagram, photo_url, responsible_name, plan, city, state, postal_code, latitude, longitude, is_verified').eq('is_active', true).order('name');
+      } = await supabase.from('salons').select('*, is_verified').eq('is_active', true).order('name');
       if (error) {
         console.error('Erro ao buscar salões:', error);
         return;

@@ -355,7 +355,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     <div className="w-full min-h-screen bg-white">
       {/* CONTAINER PRINCIPAL DO HEADER */}
       <motion.div 
-        className="relative w-full pt-[clamp(2rem,4vh,4rem)] sm:pt-[clamp(3rem,5vh,4rem)] md:fixed md:top-0 md:z-50 md:bg-white" 
+        className="relative w-full pt-[clamp(2rem,4vh,4rem)] sm:pt-[clamp(3rem,5vh,4rem)]" 
         style={{ height: "clamp(80px, 10vh, 140px)" }}
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -461,7 +461,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       </motion.div>
 
       {/* Conteúdo Principal */}
-      <motion.div className="relative w-full h-screen md:h-[calc(100vh-clamp(80px,10vh,140px))] lg:h-screen overflow-hidden md:pt-[clamp(80px,10vh,140px)]">
+      <motion.div className="relative w-full h-[calc(100vh-clamp(80px,10vh,140px))] overflow-hidden">
         <div className="flex h-full" style={{ transform: `translateX(-${slideIndex*100}%)`, transition: 'transform 0.5s ease' }}>
           {slides.length > 0 ? slides.map((item, idx) => {
             if (!item || typeof item !== 'object') return null;
@@ -669,31 +669,15 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   </div>
 
                   {/* Produtos Relacionados */}
-                  <div className="md:absolute md:bottom-[4%] relative bottom-0 w-full md:w-[60%] px-4 sm:px-6 lg:px-4 mt-4 md:mt-0">
-                    <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-2 sm:mb-3 ml-0 md:ml-[clamp(2rem,4vw,6rem)]">
+                  <div className="absolute bottom-[4%] w-[60%] px-4 sm:px-6 lg:px-4">
+                    <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-2 sm:mb-3 ml-[clamp(2rem,4vw,6rem)]">
                       Tratamentos Relacionados
                     </h3>
-                    {/* Controles mobile acima do carrossel */}
-                    <div className="flex justify-center gap-4 mb-3 md:hidden">
-                      <button
-                        onClick={() => scrollCarrossel("left")}
-                        className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
-                      >
-                        Anterior
-                      </button>
-                      <button
-                        onClick={() => scrollCarrossel("right")}
-                        className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
-                      >
-                        Próximo
-                      </button>
-                    </div>
-                    <div className="relative ml-0 md:ml-[clamp(2rem,4vw,6rem)]">
-                      {/* Controles laterais apenas para desktop */}
+                    <div className="relative ml-[clamp(2rem,4vw,6rem)]">
                       <button
                         onClick={() => scrollCarrossel("left")}
                         className="
-                          hidden md:block absolute left-0 top-1/2 transform -translate-y-1/2 z-10
+                          absolute left-0 top-1/2 transform -translate-y-1/2 z-10
                           bg-black text-white w-[clamp(16px,1.8vw,28px)] h-[clamp(16px,1.8vw,28px)] rounded-full 
                           flex items-center justify-center shadow-md
                           transition-all duration-300
@@ -706,7 +690,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                       <button
                         onClick={() => scrollCarrossel("right")}
                         className="
-                          hidden md:block absolute right-0 top-1/2 transform -translate-y-1/2 z-10
+                          absolute right-0 top-1/2 transform -translate-y-1/2 z-10
                           bg-black text-white w-[clamp(16px,1.8vw,28px)] h-[clamp(16px,1.8vw,28px)] rounded-full 
                           flex items-center justify-center shadow-md
                           transition-all duration-300
@@ -767,7 +751,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     }}
                   />
                   
-                  <div className="w-[clamp(180px,28vw,320px)] xl:w-[clamp(225px,35.975vw,411px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-75 xl:scale-95">
+                  <div className="w-[clamp(225px,35.975vw,411px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-95">
                     {typeof item.video_url === 'string' && item.video_url ? (
                       <video className="w-full h-full object-cover" controls>
                         <source src={item.video_url} type="video/mp4" />
