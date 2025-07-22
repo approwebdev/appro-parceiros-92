@@ -274,7 +274,7 @@ const SalonFinder = () => {
         </div>
         
         <div className="text-center mb-6">
-          <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black mt-48 md:mt-32">
+          <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black mt-40 md:mt-24">
             <h1 className="font-bold mb-2 text-white text-3xl md:text-4xl lg:text-5xl">
               Encontre os salões que utilizam
             </h1>
