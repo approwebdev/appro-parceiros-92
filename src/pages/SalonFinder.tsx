@@ -50,13 +50,16 @@ const SalonFinder = () => {
   useEffect(() => {
     fetchSalons();
     fetchBanners();
-    // Solicitar localização automaticamente após carregar os salões
-    const timer = setTimeout(() => {
-      if (!userLocation) {
-        setShowLocationDialog(true);
-      }
-    }, 2000);
-    return () => clearTimeout(timer);
+    // Verificar se usuário já aceitou localização antes
+    const locationAccepted = localStorage.getItem('locationAccepted');
+    if (!locationAccepted) {
+      const timer = setTimeout(() => {
+        if (!userLocation) {
+          setShowLocationDialog(true);
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   // Recalcular distâncias quando a localização for obtida
@@ -108,6 +111,8 @@ const SalonFinder = () => {
       });
       setGettingLocation(false);
       setShowLocationDialog(false);
+      // Salvar que usuário aceitou localização
+      localStorage.setItem('locationAccepted', 'true');
     }, error => {
       console.error('Erro de geolocalização:', error);
       let errorMessage = "Não foi possível acessar sua localização. Tente novamente.";
@@ -389,24 +394,39 @@ const SalonFinder = () => {
                                  <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
                                </div>
                            
-                             {/* Primeira linha: WhatsApp e Instagram */}
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mb-1">
-                              {salon.phone && <div className="flex items-center gap-1.5 md:gap-2">
-                                  <Phone className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
-                                  <span className="text-xs md:text-sm text-gray-600 truncate">{formatPhone(salon.phone)}</span>
-                                </div>}
-                              
-                              {salon.instagram && <div className="flex items-center gap-1.5 md:gap-2">
-                                  <Instagram className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
-                                  <span className="text-xs md:text-sm text-gray-600 truncate">{salon.instagram}</span>
-                                </div>}
+                              {/* Primeira linha: WhatsApp e Instagram */}
+                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mb-1">
+                               {salon.phone && <div className="flex items-center gap-1.5 md:gap-2">
+                                   <Phone className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
+                                   <button 
+                                     onClick={() => openWhatsApp(salon.phone!)}
+                                     className="text-xs md:text-sm text-blue-500 hover:text-blue-700 underline truncate"
+                                   >
+                                     {formatPhone(salon.phone)}
+                                   </button>
+                                 </div>}
+                               
+                               {salon.instagram && <div className="flex items-center gap-1.5 md:gap-2">
+                                   <Instagram className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
+                                   <button 
+                                     onClick={() => window.open(`https://instagram.com/${salon.instagram.replace('@', '')}`, '_blank')}
+                                     className="text-xs md:text-sm text-blue-500 hover:text-blue-700 underline truncate"
+                                   >
+                                     {salon.instagram}
+                                   </button>
+                                 </div>}
                             </div>
                             
-                            {/* Segunda linha: Endereço */}
-                            {salon.address && <div className="flex items-start gap-2 md:gap-3 mb-2 md:mb-3">
-                                <Store className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm md:text-base text-blue-500">{salon.address}</span>
-                              </div>}
+                             {/* Segunda linha: Endereço */}
+                             {salon.address && <div className="flex items-start gap-2 md:gap-3 mb-2 md:mb-3">
+                                 <Store className="h-4 w-4 md:h-5 md:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                                 <button 
+                                   onClick={() => window.open(`https://maps.google.com/maps?q=${encodeURIComponent(salon.address!)}`, '_blank')}
+                                   className="text-sm md:text-base text-blue-500 hover:text-blue-700 underline text-left"
+                                 >
+                                   {salon.address}
+                                 </button>
+                               </div>}
                             
                             {/* Terceira linha: Distância */}
                             <div className="flex items-center gap-2 md:gap-3 text-base md:text-xl text-gray-700 font-medium">
