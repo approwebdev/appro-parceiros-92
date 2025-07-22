@@ -22,6 +22,7 @@ interface Salon {
   distance?: number;
   plan?: string;
   photo_url?: string;
+  is_verified?: boolean;
 }
 interface Banner {
   id: string;
@@ -145,7 +146,7 @@ const SalonFinder = () => {
       const {
         data,
         error
-      } = await supabase.from('salons').select('*').eq('is_active', true).order('name');
+      } = await supabase.from('salons').select('*, is_verified').eq('is_active', true).order('name');
       if (error) {
         console.error('Erro ao buscar salões:', error);
         return;
@@ -391,7 +392,7 @@ const SalonFinder = () => {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 md:mb-2">
                                  <h4 className="font-bold text-lg md:text-xl text-gray-900 truncate">{salon.name}</h4>
-                                 <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
+                                 {salon.is_verified && <img src="/lovable-uploads/2f75dbe3-74e1-49cd-adff-3dae8c9da4b6.png" alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />}
                                </div>
                            
                               {/* Primeira linha: WhatsApp e Instagram */}

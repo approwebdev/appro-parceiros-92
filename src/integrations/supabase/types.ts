@@ -303,6 +303,7 @@ export type Database = {
           id: string
           instagram: string | null
           is_active: boolean
+          is_verified: boolean | null
           latitude: number | null
           longitude: number | null
           name: string
@@ -326,6 +327,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           is_active?: boolean
+          is_verified?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name: string
@@ -349,6 +351,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           is_active?: boolean
+          is_verified?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name?: string
