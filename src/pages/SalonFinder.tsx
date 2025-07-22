@@ -10,7 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
-import verifiedBadgeBlue from "@/assets/verified-badge-blue.png";
+
 interface Salon {
   id: string;
   name: string;
@@ -393,7 +393,7 @@ const SalonFinder = () => {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 md:mb-2">
                                  <h4 className="font-bold text-lg md:text-xl text-gray-900 truncate">{salon.name}</h4>
-                                 {salon.is_verified && <img src={verifiedBadgeBlue} alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />}
+                                 {salon.is_verified && <img src="/lovable-uploads/8f24c347-c7ca-4574-b5b9-363d5e2cfad0.png" alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />}
                                </div>
                            
                               {/* Primeira linha: WhatsApp e Instagram */}
