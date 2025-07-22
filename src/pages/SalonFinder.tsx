@@ -265,7 +265,7 @@ const SalonFinder = () => {
       {/* Hero Section */}
       <div className="px-4 py-8 max-w-md mx-auto md:max-w-4xl md:px-8 relative z-10">
         
-        <div className="w-full bg-contain md:bg-cover bg-center bg-no-repeat rounded-lg -mb-44 -mt-8 relative z-10 min-h-[300px] md:min-h-0" style={{
+        <div className="w-full bg-contain md:bg-cover bg-center bg-no-repeat rounded-lg -mb-32 md:-mb-44 -mt-8 relative z-10 min-h-[300px] md:min-h-0" style={{
         backgroundImage: 'url(/lovable-uploads/97fb24e2-cd79-438d-9fcb-d9e51311a96d.png)',
         aspectRatio: '16/9',
         height: 'auto'
@@ -273,7 +273,7 @@ const SalonFinder = () => {
         </div>
         
         <div className="text-center mb-6">
-          <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black mt-64 md:mt-32">
+          <div className="rounded-[16px] p-6 mb-6 md:p-8 relative z-10 bg-black mt-48 md:mt-32">
             <h1 className="font-bold mb-2 text-white text-3xl md:text-4xl lg:text-5xl">
               Encontre os salões que utilizam
             </h1>
