@@ -700,26 +700,35 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                   {/* TRATAMENTOS RELACIONADOS */}
                   {relatedTreatments.length > 0 && (
                     <div className="mt-8">
-                      {/* DESKTOP - Layout alinhado */}
-                      <div className="hidden md:block">
-                        {/* Título alinhado à esquerda */}
-                        <h2 className="text-xl md:text-2xl font-bold text-black mb-6 text-left">Tratamentos Relacionados</h2>
+                      <div className="flex flex-col items-center">
+                        <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6 text-center">Tratamentos Relacionados</h2>
                         
-                        {/* Container com setas e produtos na mesma linha */}
-                        <div className="flex items-center gap-4">
-                          {/* Seta esquerda */}
-                          <button
-                            onClick={prevSlide}
-                            disabled={slideIndex === 0}
-                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-                          >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                            </svg>
-                          </button>
+                        {/* DESKTOP - Layout com alinhamento à direita do vídeo */}
+                        <div className="hidden md:block relative">
+                          {/* Controles de navegação */}
+                          <div className="flex justify-between items-center mb-4 w-full max-w-5xl mx-auto">
+                            <button
+                              onClick={prevSlide}
+                              disabled={slideIndex === 0}
+                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                              </svg>
+                            </button>
+                            <button
+                              onClick={nextSlide}
+                              disabled={slideIndex + 4 >= relatedTreatments.length}
+                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                              </svg>
+                            </button>
+                          </div>
                           
                           {/* Grid de 4 itens */}
-                          <div className="grid grid-cols-4 gap-6 flex-1">
+                          <div className="grid grid-cols-4 gap-6 max-w-5xl mx-auto">
                             {relatedTreatments.slice(slideIndex, slideIndex + 4).map((relatedTreatment, index) => (
                               <button
                                 key={`${relatedTreatment.id}-${index}`}
@@ -747,73 +756,61 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                               </button>
                             ))}
                           </div>
-                          
-                          {/* Seta direita */}
-                          <button
-                            onClick={nextSlide}
-                            disabled={slideIndex + 4 >= relatedTreatments.length}
-                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-                          >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                            </svg>
-                          </button>
                         </div>
-                      </div>
 
-                      {/* MOBILE - Layout centralizado com 3 itens */}
-                      <div className="md:hidden">
-                        <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6 text-center">Tratamentos Relacionados</h2>
-                        {/* Controles mais próximos */}
-                        <div className="flex justify-center gap-8 mb-6">
-                          <button
-                            onClick={prevSlide}
-                            disabled={slideIndex === 0}
-                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                            </svg>
-                          </button>
-                          <button
-                            onClick={nextSlide}
-                            disabled={slideIndex + 3 >= relatedTreatments.length}
-                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                            </svg>
-                          </button>
-                        </div>
-                        
-                        {/* Grid centralizado de 3 itens */}
-                        <div className="grid grid-cols-3 gap-4 justify-center max-w-sm mx-auto">
-                          {relatedTreatments.slice(slideIndex, slideIndex + 3).map((relatedTreatment, index) => (
+                        {/* MOBILE - Layout centralizado com 3 itens */}
+                        <div className="md:hidden">
+                          {/* Controles mais próximos */}
+                          <div className="flex justify-center gap-8 mb-6">
                             <button
-                              key={`${relatedTreatment.id}-${index}`}
-                              onClick={() => navigateToTreatment(relatedTreatment)}
-                              className="group transition-all duration-300 hover:scale-105"
+                              onClick={prevSlide}
+                              disabled={slideIndex === 0}
+                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              <div className="w-full aspect-square bg-gray-100 rounded-xl mb-2 overflow-hidden">
-                                {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
-                                  <img
-                                    src={relatedTreatment.images[0]}
-                                    alt={relatedTreatment.name}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                    </svg>
-                                  </div>
-                                )}
-                              </div>
-                              <h3 className="text-xs font-medium text-gray-800 text-center line-clamp-2">
-                                {relatedTreatment.name}
-                              </h3>
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                              </svg>
                             </button>
-                          ))}
+                            <button
+                              onClick={nextSlide}
+                              disabled={slideIndex + 3 >= relatedTreatments.length}
+                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                              </svg>
+                            </button>
+                          </div>
+                          
+                          {/* Grid centralizado de 3 itens */}
+                          <div className="grid grid-cols-3 gap-4 justify-center max-w-sm mx-auto">
+                            {relatedTreatments.slice(slideIndex, slideIndex + 3).map((relatedTreatment, index) => (
+                              <button
+                                key={`${relatedTreatment.id}-${index}`}
+                                onClick={() => navigateToTreatment(relatedTreatment)}
+                                className="group transition-all duration-300 hover:scale-105"
+                              >
+                                <div className="w-full aspect-square bg-gray-100 rounded-xl mb-2 overflow-hidden">
+                                  {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
+                                    <img
+                                      src={relatedTreatment.images[0]}
+                                      alt={relatedTreatment.name}
+                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                      <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                      </svg>
+                                    </div>
+                                  )}
+                                </div>
+                                <h3 className="text-xs font-medium text-gray-800 text-center line-clamp-2">
+                                  {relatedTreatment.name}
+                                </h3>
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
