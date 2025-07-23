@@ -353,7 +353,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* CONTAINER PRINCIPAL DO HEADER */}
+      {/* CONTAINER PRINCIPAL DO HEADER - NÃO FIXO */}
       <motion.div 
         className="relative w-full pt-[clamp(2rem,4vh,4rem)] sm:pt-[clamp(3rem,5vh,4rem)]" 
         style={{ height: "clamp(80px, 10vh, 140px)" }}
@@ -361,7 +361,25 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="flex justify-between items-center w-full h-full px-4 sm:px-[8%]">
+        <div className="flex justify-between items-center w-full h-full px-4 sm:px-[8%]">{/* BOTÕES DE NAVEGAÇÃO MOBILE */}
+        <div className="block md:hidden w-full mb-4">
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => setSlideIndex(Math.max(0, slideIndex - 1))}
+              disabled={slideIndex === 0}
+              className="px-4 py-2 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setSlideIndex(Math.min(slides.length - 1, slideIndex + 1))}
+              disabled={slideIndex === slides.length - 1}
+              className="px-4 py-2 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Próximo
+            </button>
+          </div>
+        </div>
           {/* LOGO + BOTÃO VOLTAR */}
           <motion.div 
             className="flex items-center" 
@@ -668,15 +686,17 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     </div>
                   </div>
 
-                  {/* Produtos Relacionados */}
-                  <div className="absolute bottom-[4%] w-[60%] px-4 sm:px-6 lg:px-4">
+                  {/* Produtos Relacionados - NÃO FIXO */}
+                  <div className="w-[60%] px-4 sm:px-6 lg:px-4 mt-8 relative">
                     <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-2 sm:mb-3 ml-[clamp(2rem,4vw,6rem)]">
                       Tratamentos Relacionados
                     </h3>
                     <div className="relative ml-[clamp(2rem,4vw,6rem)]">
+                      {/* Remover setas em mobile */}
                       <button
                         onClick={() => scrollCarrossel("left")}
                         className="
+                          hidden md:block
                           absolute left-0 top-1/2 transform -translate-y-1/2 z-10
                           bg-black text-white w-[clamp(16px,1.8vw,28px)] h-[clamp(16px,1.8vw,28px)] rounded-full 
                           flex items-center justify-center shadow-md
@@ -690,6 +710,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                       <button
                         onClick={() => scrollCarrossel("right")}
                         className="
+                          hidden md:block
                           absolute right-0 top-1/2 transform -translate-y-1/2 z-10
                           bg-black text-white w-[clamp(16px,1.8vw,28px)] h-[clamp(16px,1.8vw,28px)] rounded-full 
                           flex items-center justify-center shadow-md
