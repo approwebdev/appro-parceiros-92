@@ -8,6 +8,11 @@ interface GoogleMapProps {
     address?: string;
     latitude?: number;
     longitude?: number;
+    phone?: string;
+    instagram?: string;
+    is_verified?: boolean;
+    plan?: string;
+    distance?: number;
   }>;
   userLocation?: { lat: number; lng: number };
 }
@@ -192,9 +197,45 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
             const infoWindow = new window.google.maps.InfoWindow({
               content: `
-                <div style="padding: 8px; max-width: 200px;">
-                  <h3 style="margin: 0 0 4px 0; font-weight: 600;">${salon.name}</h3>
-                  <p style="margin: 0; color: #666; font-size: 14px;">${salon.address || ''}</p>
+                <div style="padding: 12px; max-width: 280px; font-family: system-ui, -apple-system, sans-serif;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <h3 style="margin: 0; font-weight: 600; color: #1f2937; font-size: 16px;">${salon.name}</h3>
+                    ${salon.is_verified ? `
+                      <img src="${salon.plan === 'premium' || salon.plan === 'profissional' ? '/lovable-uploads/b689eb05-022b-4de0-9b7a-e4c94527301d.png' : '/lovable-uploads/0a15abc3-681d-456b-9d90-deecf0d0f549.png'}" 
+                           alt="Verificado" style="width: 18px; height: 18px;">
+                    ` : ''}
+                  </div>
+                  
+                  ${salon.address ? `
+                    <div style="margin-bottom: 8px;">
+                      <span style="color: #6b7280; font-size: 13px; font-weight: 500;">📍 Endereço:</span>
+                      <p style="margin: 2px 0 0 0; color: #374151; font-size: 13px; line-height: 1.4;">${salon.address}</p>
+                    </div>
+                  ` : ''}
+                  
+                  <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    ${salon.phone ? `
+                      <a href="https://wa.me/55${salon.phone.replace(/\D/g, '')}" 
+                         target="_blank"
+                         style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: #25d366; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                        📱 WhatsApp
+                      </a>
+                    ` : ''}
+                    
+                    ${salon.instagram ? `
+                      <a href="https://instagram.com/${salon.instagram.replace('@', '')}" 
+                         target="_blank"
+                         style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: #e4405f; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                        📷 Instagram
+                      </a>
+                    ` : ''}
+                  </div>
+                  
+                  ${salon.distance ? `
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                      <span style="color: #10b981; font-size: 12px; font-weight: 500;">📏 ${salon.distance.toFixed(1)}km de distância</span>
+                    </div>
+                  ` : ''}
                 </div>
               `
             });

@@ -10,18 +10,23 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import GoogleMap from "@/components/GoogleMap";
 import { useToast } from "@/hooks/use-toast";
-import verifiedBadgeBlue from "@/assets/verified-badge-new.png";
+import verifiedBadgeBlue from "/lovable-uploads/0a15abc3-681d-456b-9d90-deecf0d0f549.png";
+import verifiedBadgeGold from "/lovable-uploads/b689eb05-022b-4de0-9b7a-e4c94527301d.png";
 interface Salon {
   id: string;
   name: string;
   slug: string;
   phone?: string;
   address?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
   instagram?: string;
   latitude?: number;
   longitude?: number;
   distance?: number;
   plan?: string;
+  plan_type?: string;
   photo_url?: string;
   is_verified?: boolean;
 }
@@ -145,23 +150,35 @@ const SalonFinder = () => {
   };
   const fetchSalons = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('salons').select('id, name, slug, phone, address, instagram, latitude, longitude, plan, photo_url, is_verified').eq('is_active', true).order('name');
+      const { data, error } = await supabase
+        .from('salons')
+        .select(`
+          id, name, slug, phone, instagram, 
+          address, city, state, postal_code,
+          latitude, longitude, is_verified, 
+          plan, plan_type, photo_url
+        `)
+        .eq('is_active', true)
+        .order('name');
       if (error) {
         console.error('Erro ao buscar salões:', error);
         return;
       }
       const salonsWithCoords = (data || []).map(salon => {
+        // Montar endereço completo
+        const fullAddress = [salon.address, salon.city, salon.state, salon.postal_code]
+          .filter(Boolean)
+          .join(', ');
+        
         if (salon.latitude && salon.longitude && typeof salon.latitude === 'number' && typeof salon.longitude === 'number' && salon.latitude !== 0 && salon.longitude !== 0) {
-          return salon;
+          return { ...salon, address: fullAddress };
         }
 
         // Usar função de geocodificação inteligente
         const coords = generateSalonCoordinates(salon);
         return {
           ...salon,
+          address: fullAddress,
           latitude: coords.lat,
           longitude: coords.lng
         };
@@ -193,10 +210,15 @@ const SalonFinder = () => {
   const filteredSalons = salons.filter(salon => {
     const searchLower = searchTerm.toLowerCase().trim();
     if (!searchLower) return true;
+    
     const nameMatch = salon.name.toLowerCase().includes(searchLower);
     const addressMatch = salon.address?.toLowerCase().includes(searchLower);
     const instagramMatch = salon.instagram?.toLowerCase().includes(searchLower);
-    return nameMatch || addressMatch || instagramMatch;
+    const cityMatch = salon.city?.toLowerCase().includes(searchLower);
+    const stateMatch = salon.state?.toLowerCase().includes(searchLower);
+    const postalCodeMatch = salon.postal_code?.includes(searchTerm.replace(/\D/g, ''));
+    
+    return nameMatch || addressMatch || instagramMatch || cityMatch || stateMatch || postalCodeMatch;
   }).filter(salon => {
     // Filtro de distância
     if (distanceFilter === 'all') return true;
@@ -391,7 +413,13 @@ const SalonFinder = () => {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 md:mb-2">
                                  <h4 className="font-bold text-lg md:text-xl text-gray-900 truncate">{salon.name}</h4>
-                                 {salon.is_verified && <img src={verifiedBadgeBlue} alt="Verificado" className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />}
+                                 {salon.is_verified && (
+                                   <img 
+                                     src={salon.plan === 'premium' || salon.plan === 'profissional' ? verifiedBadgeGold : verifiedBadgeBlue} 
+                                     alt="Verificado" 
+                                     className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" 
+                                   />
+                                 )}
                                </div>
                            
                               {/* Primeira linha: WhatsApp e Instagram */}

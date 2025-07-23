@@ -246,7 +246,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     if (items.length === 0) return;
     
     const itemWidth = items[0].getBoundingClientRect().width;
-    const gap = 8; // 2 * 4 = 8px (gap-2)
+    const gap = 16; // 4 * 4 = 16px (gap-4)
     const scrollAmount = dir === "left" ? -(itemWidth + gap) : (itemWidth + gap);
     
     carrosselRef.current.scrollBy({
@@ -634,7 +634,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
                       {/* Preço */}
                       <div className="border-t pt-2 sm:pt-3 mt-2 sm:mt-3">
-                        <div className="flex items-start justify-between gap-6 sm:gap-8 px-4">{/* Aumentar gap entre preço e botão */}
+                        <div className="flex items-start justify-between gap-2 sm:gap-4">{/* Voltar ao layout desktop original */}
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2 sm:gap-4 mb-2">
                               <span className="text-[clamp(0.95rem,1.2vw,1.125rem)] text-gray-400">
@@ -657,7 +657,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                                  )}
                                </button>
                             </div>
-                            <h2 className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-extrabold text-black">{/* Aumentar tamanho do preço */}
+                            <h2 className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold text-black">{/* Voltar ao tamanho original do preço */}
                               {showPrice ? (
                                 formatPrice(typeof item.custom_price === 'number' ? item.custom_price : 0)
                               ) : (
@@ -672,11 +672,11 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             }}
                             className="
                             hover:opacity-90
-                            px-[clamp(1.2rem,2vw,2rem)] py-[clamp(0.7rem,1vw,1rem)]
-                            rounded-full shadow-lg
+                            px-[clamp(1rem,1.5vw,1.5rem)] py-[clamp(0.5rem,0.8vw,0.75rem)]
+                            rounded-full shadow
                             transition-all duration-300
                             hover:scale-105
-                            text-[clamp(0.9rem,1.4vw,1.1rem)] font-medium
+                            text-[clamp(0.85rem,1.2vw,1rem)] font-medium
                             self-end
                             whitespace-nowrap
                             "
@@ -688,13 +688,13 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     </div>
                   </div>
 
-                  {/* Produtos Relacionados - CENTRALIZADOS */}
-                  <div className="w-full flex justify-center px-4 sm:px-6 lg:px-4 mt-8">
-                    <div className="w-full max-w-md">
-                      <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-4 text-center whitespace-nowrap">
+                  {/* Produtos Relacionados - Setas mais próximas no mobile */}
+                  <div className="w-full md:w-[60%] flex justify-center px-4 sm:px-6 lg:px-4 mt-8">
+                    <div className="w-full max-w-md md:max-w-none">
+                      <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-4 text-center md:text-left md:ml-[clamp(2rem,4vw,6rem)] whitespace-nowrap">
                         Tratamentos Relacionados
                       </h3>
-                      <div className="relative">
+                      <div className="relative md:ml-[clamp(2rem,4vw,6rem)]">
                         <button
                           onClick={() => scrollCarrossel("left")}
                           className="
@@ -743,13 +743,13 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             return (
                               <div 
                                 key={idx} 
-                                className="flex-shrink-0 flex flex-col items-center justify-center item-carrossel w-20 mx-auto"
+                                className="flex-shrink-0 flex flex-col items-center item-carrossel w-16 md:w-auto"
                                 onClick={() => navigateToTreatment(relacionado)}
                               >
                                 <img
                                   src={relacionadoImagem}
                                   alt={typeof relacionado.name === 'string' ? relacionado.name : `Tratamento ${idx + 1}`}
-                                  className="h-16 w-16 object-cover rounded-lg hover:scale-110 transition-all duration-300 cursor-pointer"
+                                  className="h-12 w-12 md:h-[clamp(48px,6vw,96px)] md:w-auto object-cover md:object-contain rounded-lg hover:scale-110 transition-all duration-300 cursor-pointer"
                                 />
                               </div>
                             );
