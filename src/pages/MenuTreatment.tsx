@@ -490,369 +490,166 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
       </div>
 
       {/* Conteúdo Principal */}
-      <motion.div className="relative w-full h-[calc(100vh-clamp(80px,10vh,140px))] overflow-hidden">
-        <div className="flex h-full" style={{ transform: `translateX(-${slideIndex*100}%)`, transition: 'transform 0.5s ease' }}>
-          {slides.length > 0 ? slides.map((item, idx) => {
-            if (!item || typeof item !== 'object') return null;
-            
-            return (
-              <div key={idx} className="w-full flex-shrink-0 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] h-full gap-0">
-                {/* Galeria e detalhes */}
-                <div className="flex flex-col h-full justify-start lg:justify-start px-4 sm:px-6 overflow-y-auto lg:overflow-hidden pb-20 lg:pb-0">
-                  <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 w-full justify-center mt-4 lg:mt-0 lg:px-4 lg:pt-[5%]">
-                    {/* Galeria */}
-                    <div className="flex flex-col items-center justify-start w-full lg:w-1/2">
-                      <div className="w-full max-w-md mx-auto">
-                        {/* Imagem principal */}
-                         <div className="rounded-xl shadow-lg overflow-hidden bg-gray-50 mb-4 w-[280px] mx-auto">
-                           <img
-                             src={imagemAtiva || (item.images && item.images.length > 0 ? item.images[0] : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80")}
-                             alt={typeof item.name === 'string' ? item.name : 'Tratamento'}
-                             className="w-full h-[400px] object-cover"
-                           />
-                         </div>
-                        
-                        {/* Miniaturas */}
-                        {item.images && item.images.length > 1 && (
-                          <div className="flex gap-2 flex-wrap justify-center">
-                            {item.images.map((img, imgIdx) => (
-                              <button
-                                key={imgIdx}
-                                onClick={() => setImagemAtiva(img)}
-                                className={`
-                                  w-16 h-16 
-                                  rounded-lg 
-                                  ${imagemAtiva === img ? 'border-2 border-black' : 'border border-gray-200'}
-                                  overflow-hidden
-                                `}
-                              >
-                                <img
-                                  src={img}
-                                  alt={`Foto ${imgIdx+1}`}
-                                  className="w-full h-full object-cover p-1"
-                                />
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+      <motion.div
+        className="relative w-full min-h-[calc(100vh-clamp(80px,10vh,140px))] overflow-hidden"
+        key={treatment?.id} // Adicione uma key para forçar a re-renderização ao mudar de tratamento
+      >
+        <div className="w-full min-h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] h-full gap-0">
+            {/* Coluna da Esquerda: Galeria, Detalhes e Relacionados */}
+            <div className="flex flex-col h-full justify-start px-4 sm:px-6 lg:overflow-y-auto pb-20 lg:pb-6">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 xl:gap-8 w-full justify-center mt-4 lg:mt-0 lg:px-4 lg:pt-[5%]">
+                {/* Galeria */}
+                <div className="flex flex-col items-center justify-start w-full lg:w-1/2">
+                  <div className="w-full max-w-md mx-auto">
+                    <div className="rounded-xl shadow-lg overflow-hidden bg-gray-50 mb-4 w-[280px] mx-auto">
+                      <img
+                        src={imagemAtiva || (treatment.images && treatment.images.length > 0 ? treatment.images[0] : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80")}
+                        alt={treatment.name}
+                        className="w-full h-[400px] object-cover"
+                      />
                     </div>
-
-                    {/* Texto + Preço */}
-                    <div className="flex flex-col gap-2 sm:gap-3 w-full lg:w-1/2 justify-start lg:justify-start mt-4 lg:mt-0">{/* Remover sticky */}
-                      <p className="text-[clamp(0.85rem,1.2vw,1rem)] uppercase font-medium text-gray-500">
-                        {typeof item.category === 'string' ? item.category : treatmentCategory}
-                      </p>
-                      <h1 className="text-[clamp(1.5rem,3vw,3rem)] font-bold text-black">
-                        {typeof item.name === 'string' ? item.name : 'Nome do tratamento'}
-                      </h1>
-                      <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800">
-                        {typeof item.subtitle === 'string' ? item.subtitle : ''}
-                      </h2>
-                       <div className="text-[clamp(0.9rem,1.2vw,1rem)] text-gray-700 leading-relaxed">
-                         <p className="line-clamp-3 lg:line-clamp-5">
-                           {typeof item.description === 'string' ? item.description : ''}
-                         </p>
-                         {typeof item.description === 'string' && item.description.length > 200 && (
-                           <Dialog>
-                             <DialogTrigger asChild>
-                               <button className="text-sm mt-1 underline" style={{ color: '#8B4513' }}>
-                                 Ler mais
-                               </button>
-                             </DialogTrigger>
-                             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                               <DialogHeader>
-                                 <DialogTitle className="text-xl font-bold mb-4">
-                                   {typeof item.name === 'string' ? item.name : 'Descrição completa'}
-                                 </DialogTitle>
-                               </DialogHeader>
-                               <div className="prose max-w-none">
-                                 <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                   {item.description}
-                                 </p>
-                               </div>
-                             </DialogContent>
-                           </Dialog>
-                         )}
-                       </div>
-
-                      {/* Avaliações */}
-                      <div className="flex items-center gap-1 mt-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-[clamp(14px,1.2vw,20px)] h-[clamp(14px,1.2vw,20px)] ${
-                              i < (typeof item.rating === 'number' ? item.rating : 5) 
-                                ? 'text-yellow-400 fill-current' 
-                                : 'text-gray-300'
-                            } hover:scale-110 transition-all duration-300`}
-                          />
-                        ))}
-                        <span className="text-[clamp(0.85rem,1.2vw,1rem)] text-gray-600 ml-1 sm:ml-2">
-                          ({typeof item.rating_count === 'number' ? item.rating_count : 56})
-                        </span>
-                        <div className="relative ml-auto">
-                          <FaShareAlt
-                            className="w-[clamp(14px,1.2vw,20px)] h-[clamp(14px,1.2vw,20px)] text-gray-500 hover:text-gray-700 hover:scale-110 cursor-pointer transition-all duration-300"
-                            onClick={handleShare}
-                          />
-                          
-                          {/* Menu de opções de compartilhamento */}
-                          {showShareOptions && (
-                            <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-50">
-                              <button 
-                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center" 
-                                onClick={() => shareToSocial('whatsapp')}
-                              >
-                                <FaWhatsapp className="mr-2 text-green-500 text-lg" /> WhatsApp
-                              </button>
-                              <button 
-                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center" 
-                                onClick={() => shareToSocial('facebook')}
-                              >
-                                <FaFacebookF className="mr-2 text-blue-600 text-lg" /> Facebook
-                              </button>
-                              <button 
-                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center" 
-                                onClick={() => shareToSocial('twitter')}
-                              >
-                                <FaTwitter className="mr-2 text-blue-400 text-lg" /> Twitter
-                              </button>
-                              <button 
-                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center" 
-                                onClick={() => shareToSocial('pinterest')}
-                              >
-                                <FaPinterestP className="mr-2 text-red-600 text-lg" /> Pinterest
-                              </button>
-                              <button 
-                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center" 
-                                onClick={() => shareToSocial('email')}
-                              >
-                                <FaEnvelope className="mr-2 text-gray-500 text-lg" /> Email
-                              </button>
-                              <button 
-                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center" 
-                                onClick={() => shareToSocial('copy')}
-                              >
-                                <FaCopy className="mr-2 text-gray-600 text-lg" /> Copiar link
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Preço */}
-                      <div className="border-t pt-2 sm:pt-3 mt-2 sm:mt-3">
-                        <div className="flex items-start justify-between gap-2 sm:gap-4">{/* Voltar ao layout desktop original */}
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2 sm:gap-4 mb-2">
-                              <span className="text-[clamp(0.95rem,1.2vw,1.125rem)] text-gray-400">
-                                {showPrice ? (
-                                  <span className="line-through">
-                                    de {formatPrice((typeof item.custom_price === 'number' ? item.custom_price : 0) * 1.5)}
-                                  </span>
-                                ) : (
-                                  "de ********"
-                                )}
-                              </span>
-                               <button 
-                                 onClick={() => setShowPrice(!showPrice)}
-                                 className="transform hover:scale-110 transition-all duration-300"
-                               >
-                                 {showPrice ? (
-                                   <Eye className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600" />
-                                 ) : (
-                                   <EyeOff className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600" />
-                                 )}
-                               </button>
-                            </div>
-                            <h2 className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold text-black">{/* Voltar ao tamanho original do preço */}
-                              {showPrice ? (
-                                formatPrice(typeof item.custom_price === 'number' ? item.custom_price : 0)
-                              ) : (
-                                "R$ ******"
-                              )}
-                            </h2>
-                          </div>
-                          <button 
-                            style={{ 
-                              backgroundColor: buttonColor,
-                              color: 'white'
-                            }}
-                            className="
-                            hover:opacity-90
-                            px-[clamp(1rem,1.5vw,1.5rem)] py-[clamp(0.5rem,0.8vw,0.75rem)]
-                            rounded-full shadow
-                            transition-all duration-300
-                            hover:scale-105
-                            text-[clamp(0.85rem,1.2vw,1rem)] font-medium
-                            self-end
-                            whitespace-nowrap
-                            "
+                    {treatment.images && treatment.images.length > 1 && (
+                      <div className="flex gap-2 flex-wrap justify-center">
+                        {treatment.images.map((img, imgIdx) => (
+                          <button
+                            key={imgIdx}
+                            onClick={() => setImagemAtiva(img)}
+                            className={`w-16 h-16 rounded-lg ${imagemAtiva === img ? 'border-2 border-black' : 'border border-gray-200'} overflow-hidden`}
                           >
-                            {typeof item.button_text === 'string' ? item.button_text : 'Saiba mais...'}
+                            <img src={img} alt={`Foto ${imgIdx + 1}`} className="w-full h-full object-cover p-1" />
                           </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* TRATAMENTOS RELACIONADOS */}
-                  {relatedTreatments.length > 0 && (
-                    <div className="mt-8">
-                      <div className="flex flex-col items-center">
-                        <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6 text-center">Tratamentos Relacionados</h2>
-                        
-                        {/* DESKTOP - Layout com alinhamento à direita do vídeo */}
-                        <div className="hidden md:block relative">
-                          {/* Controles de navegação */}
-                          <div className="flex justify-between items-center mb-4 w-full max-w-5xl mx-auto">
-                            <button
-                              onClick={prevSlide}
-                              disabled={slideIndex === 0}
-                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                              </svg>
-                            </button>
-                            <button
-                              onClick={nextSlide}
-                              disabled={slideIndex + 4 >= relatedTreatments.length}
-                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                              </svg>
-                            </button>
-                          </div>
-                          
-                          {/* Grid de 4 itens */}
-                          <div className="grid grid-cols-4 gap-6 max-w-5xl mx-auto">
-                            {relatedTreatments.slice(slideIndex, slideIndex + 4).map((relatedTreatment, index) => (
-                              <button
-                                key={`${relatedTreatment.id}-${index}`}
-                                onClick={() => navigateToTreatment(relatedTreatment)}
-                                className="group transition-all duration-300 hover:scale-105"
-                              >
-                                <div className="w-full aspect-square bg-gray-100 rounded-2xl mb-3 overflow-hidden">
-                                  {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
-                                    <img
-                                      src={relatedTreatment.images[0]}
-                                      alt={relatedTreatment.name}
-                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                      <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                      </svg>
-                                    </div>
-                                  )}
-                                </div>
-                                <h3 className="text-sm font-medium text-gray-800 text-center">
-                                  {relatedTreatment.name}
-                                </h3>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* MOBILE - Layout centralizado com 3 itens */}
-                        <div className="md:hidden">
-                          {/* Controles mais próximos */}
-                          <div className="flex justify-center gap-8 mb-6">
-                            <button
-                              onClick={prevSlide}
-                              disabled={slideIndex === 0}
-                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                              </svg>
-                            </button>
-                            <button
-                              onClick={nextSlide}
-                              disabled={slideIndex + 3 >= relatedTreatments.length}
-                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                              </svg>
-                            </button>
-                          </div>
-                          
-                          {/* Grid centralizado de 3 itens */}
-                          <div className="grid grid-cols-3 gap-4 justify-center max-w-sm mx-auto">
-                            {relatedTreatments.slice(slideIndex, slideIndex + 3).map((relatedTreatment, index) => (
-                              <button
-                                key={`${relatedTreatment.id}-${index}`}
-                                onClick={() => navigateToTreatment(relatedTreatment)}
-                                className="group transition-all duration-300 hover:scale-105"
-                              >
-                                <div className="w-full aspect-square bg-gray-100 rounded-xl mb-2 overflow-hidden">
-                                  {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
-                                    <img
-                                      src={relatedTreatment.images[0]}
-                                      alt={relatedTreatment.name}
-                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                      <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                      </svg>
-                                    </div>
-                                  )}
-                                </div>
-                                <h3 className="text-xs font-medium text-gray-800 text-center line-clamp-2">
-                                  {relatedTreatment.name}
-                                </h3>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Vídeo em Desktop */}
-                <div className="hidden lg:flex items-start justify-center h-full relative overflow-visible pt-[2%]">
-                  {/* Imagem de fundo expandida */}
-                  <div 
-                    className="absolute inset-0 bg-no-repeat bg-center opacity-30 z-0"
-                    style={{
-                      backgroundImage: `url(/lovable-uploads/1ac586b1-3175-4a7d-8e81-692161f57930.png)`,
-                      backgroundSize: 'contain',
-                      width: '100%',
-                      height: '100%'
-                    }}
-                  />
-                  
-                  <div className="w-[clamp(225px,35.975vw,411px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-95">
-                    {typeof item.video_url === 'string' && item.video_url ? (
-                      <video className="w-full h-full object-cover" controls>
-                        <source src={item.video_url} type="video/mp4" />
-                        Seu navegador não suporta vídeos.
-                      </video>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                        <p className="text-gray-500 text-center p-4">Vídeo não disponível</p>
+                        ))}
                       </div>
                     )}
                   </div>
                 </div>
+
+                {/* Texto + Preço */}
+                <div className="flex flex-col gap-2 sm:gap-3 w-full lg:w-1/2 justify-start">
+                  <p className="text-[clamp(0.85rem,1.2vw,1rem)] uppercase font-medium text-gray-500">
+                    {treatmentCategory}
+                  </p>
+                  <h1 className="text-[clamp(1.5rem,3vw,3rem)] font-bold text-black leading-none">
+                    {treatment.name}
+                  </h1>
+                  <h2 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800">
+                    {treatment.subtitle}
+                  </h2>
+                  <div className="text-[clamp(0.9rem,1.2vw,1rem)] text-gray-700 leading-relaxed">
+                    <p className="line-clamp-3 lg:line-clamp-5">
+                      {treatment.description}
+                    </p>
+                    {treatment.description && treatment.description.length > 200 && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="text-sm mt-1 underline" style={{ color: '#8B4513' }}>
+                            Ler mais
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle className="text-xl font-bold mb-4">
+                              {treatment.name}
+                            </DialogTitle>
+                          </DialogHeader>
+                          <div className="prose max-w-none">
+                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                              {treatment.description}
+                            </p>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 mt-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-[clamp(14px,1.2vw,20px)] h-[clamp(14px,1.2vw,20px)] ${i < treatment.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'} hover:scale-110 transition-all duration-300`} />
+                    ))}
+                    <span className="text-[clamp(0.85rem,1.2vw,1rem)] text-gray-600 ml-1 sm:ml-2">
+                      ({treatment.rating_count})
+                    </span>
+                    <div className="relative ml-auto">
+                      <FaShareAlt className="w-[clamp(14px,1.2vw,20px)] h-[clamp(14px,1.2vw,20px)] text-gray-500 hover:text-gray-700 hover:scale-110 cursor-pointer transition-all duration-300" onClick={handleShare} />
+                      {showShareOptions && (
+                        <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-50">
+                          {/* Share Options */}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="border-t pt-2 sm:pt-3 mt-2 sm:mt-3">
+                    <div className="flex items-start justify-between gap-2 sm:gap-4">
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 sm:gap-4 mb-2">
+                          <span className="text-[clamp(0.95rem,1.2vw,1.125rem)] text-gray-400">
+                            {showPrice ? <span className="line-through">de {formatPrice(treatment.custom_price * 1.5)}</span> : "de ********"}
+                          </span>
+                          <button onClick={() => setShowPrice(!showPrice)} className="transform hover:scale-110 transition-all duration-300">
+                            {showPrice ? <Eye className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600" /> : <EyeOff className="w-[clamp(24px,2vw,32px)] h-[clamp(24px,2vw,32px)] text-gray-600" />}
+                          </button>
+                        </div>
+                        <h2 className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold text-black">
+                          {showPrice ? formatPrice(treatment.custom_price) : "R$ ******"}
+                        </h2>
+                      </div>
+                      <button style={{ backgroundColor: buttonColor, color: 'white' }} className="hover:opacity-90 px-[clamp(1rem,1.5vw,1.5rem)] py-[clamp(0.5rem,0.8vw,0.75rem)] rounded-full shadow transition-all duration-300 hover:scale-105 text-[clamp(0.85rem,1.2vw,1rem)] font-medium self-end whitespace-nowrap">
+                        {treatment.button_text || 'Saiba mais...'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            );
-          }) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <p className="text-xl text-gray-500">Carregando tratamento...</p>
+
+              {/* TRATAMENTOS RELACIONADOS */}
+              {relatedTreatments.length > 0 && (
+                <div className="mt-auto pt-8">
+                  <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6 text-left">Tratamentos Relacionados</h2>
+                  <div className="relative">
+                    <div className="flex justify-end mb-4">
+                        <button onClick={prevSlide} disabled={slideIndex === 0} className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mr-2">
+                          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        </button>
+                        <button onClick={nextSlide} disabled={slideIndex + 4 >= relatedTreatments.length} className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {relatedTreatments.slice(slideIndex, slideIndex + 4).map((relatedTreatment, index) => (
+                        <button key={`${relatedTreatment.id}-${index}`} onClick={() => navigateToTreatment(relatedTreatment)} className="group transition-all duration-300 hover:scale-105">
+                          <div className="w-full aspect-square bg-gray-100 rounded-2xl mb-3 overflow-hidden">
+                            {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
+                              <img src={relatedTreatment.images[0]} alt={relatedTreatment.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400"><svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
+                            )}
+                          </div>
+                          <h3 className="text-sm font-medium text-gray-800 text-center">{relatedTreatment.name}</h3>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Coluna da Direita: Vídeo */}
+            <div className="hidden lg:flex items-center justify-center h-full relative overflow-visible">
+              <div className="w-[clamp(225px,35.975vw,411px)] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl relative z-10 hover:shadow-2xl transition-all duration-300 bg-gray-100 scale-95">
+                {treatment.video_url ? (
+                  <video className="w-full h-full object-cover" controls>
+                    <source src={treatment.video_url} type="video/mp4" />
+                    Seu navegador não suporta vídeos.
+                  </video>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                    <p className="text-gray-500 text-center p-4">Vídeo não disponível</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-        
-        {/* Controles do slider removidos */}
       </motion.div>
     </div>
   );
