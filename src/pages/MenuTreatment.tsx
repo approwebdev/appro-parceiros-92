@@ -634,7 +634,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
                       {/* Preço */}
                       <div className="border-t pt-2 sm:pt-3 mt-2 sm:mt-3">
-                        <div className="flex items-start justify-between gap-2 sm:gap-4">
+                        <div className="flex items-start justify-center gap-2 sm:gap-4 px-4">{/* Centralizar e adicionar padding lateral */}
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2 sm:gap-4 mb-2">
                               <span className="text-[clamp(0.95rem,1.2vw,1.125rem)] text-gray-400">
