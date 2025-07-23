@@ -721,10 +721,10 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                         >
                           ❯
                         </button>
-                        <div
-                          ref={carrosselRef}
-                          className="flex overflow-x-auto gap-2 py-3 scroll-smooth hide-scrollbar cursor-grab">{/* Diminuir gap dos tratamentos relacionados */}
-                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                         <div
+                           ref={carrosselRef}
+                           className="flex overflow-x-auto gap-2 py-3 scroll-smooth hide-scrollbar cursor-grab"
+                           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                           onMouseDown={handleMouseDown}
                           onMouseUp={handleMouseUp}
                           onMouseLeave={handleMouseUp}
