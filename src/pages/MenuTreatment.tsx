@@ -246,7 +246,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     if (items.length === 0) return;
     
     const itemWidth = items[0].getBoundingClientRect().width;
-    const gap = 112;
+    const gap = 16; // 4 * 4 = 16px (gap-4)
     const scrollAmount = dir === "left" ? -(itemWidth + gap) : (itemWidth + gap);
     
     carrosselRef.current.scrollBy({
@@ -361,25 +361,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="flex justify-between items-center w-full h-full px-4 sm:px-[8%]">{/* BOTÕES DE NAVEGAÇÃO MOBILE */}
-        <div className="block md:hidden w-full mb-4">
-          <div className="flex justify-center gap-4">
-            <button
-              onClick={() => setSlideIndex(Math.max(0, slideIndex - 1))}
-              disabled={slideIndex === 0}
-              className="px-4 py-2 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => setSlideIndex(Math.min(slides.length - 1, slideIndex + 1))}
-              disabled={slideIndex === slides.length - 1}
-              className="px-4 py-2 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Próximo
-            </button>
-          </div>
-        </div>
+        <div className="flex justify-between items-center w-full h-full px-4 sm:px-[8%]">
           {/* LOGO + BOTÃO VOLTAR */}
           <motion.div 
             className="flex items-center" 
@@ -477,6 +459,26 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           </motion.div>
         </div>
       </motion.div>
+
+      {/* BOTÕES DE NAVEGAÇÃO MOBILE - FORA DO HEADER */}
+      <div className="block md:hidden w-full py-4">
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={() => setSlideIndex(Math.max(0, slideIndex - 1))}
+            disabled={slideIndex === 0}
+            className="px-6 py-3 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => setSlideIndex(Math.min(slides.length - 1, slideIndex + 1))}
+            disabled={slideIndex === slides.length - 1}
+            className="px-6 py-3 bg-black text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+          >
+            Próximo
+          </button>
+        </div>
+      </div>
 
       {/* Conteúdo Principal */}
       <motion.div className="relative w-full h-[calc(100vh-clamp(80px,10vh,140px))] overflow-hidden">
@@ -670,11 +672,11 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             }}
                             className="
                             hover:opacity-90
-                            px-[clamp(1rem,1.5vw,1.5rem)] py-[clamp(0.5rem,0.8vw,0.75rem)]
-                            rounded-full shadow
+                            px-[clamp(1.2rem,2vw,2rem)] py-[clamp(0.7rem,1vw,1rem)]
+                            rounded-full shadow-lg
                             transition-all duration-300
                             hover:scale-105
-                            text-[clamp(0.85rem,1.2vw,1rem)] font-medium
+                            text-[clamp(0.9rem,1.4vw,1.1rem)] font-medium
                             self-end
                             whitespace-nowrap
                             "
@@ -686,54 +688,52 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     </div>
                   </div>
 
-                  {/* Produtos Relacionados - NÃO FIXO */}
-                  <div className="w-[60%] px-4 sm:px-6 lg:px-4 mt-8 relative">
-                    <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-2 sm:mb-3 ml-[clamp(2rem,4vw,6rem)]">
-                      Tratamentos Relacionados
-                    </h3>
-                    <div className="relative ml-[clamp(2rem,4vw,6rem)]">
-                      {/* Remover setas em mobile */}
-                      <button
-                        onClick={() => scrollCarrossel("left")}
-                        className="
-                          hidden md:block
-                          absolute left-0 top-1/2 transform -translate-y-1/2 z-10
-                          bg-black text-white w-[clamp(16px,1.8vw,28px)] h-[clamp(16px,1.8vw,28px)] rounded-full 
-                          flex items-center justify-center shadow-md
-                          transition-all duration-300
-                          hover:scale-110
-                          p-1
-                        "
-                      >
-                        ❮
-                      </button>
-                      <button
-                        onClick={() => scrollCarrossel("right")}
-                        className="
-                          hidden md:block
-                          absolute right-0 top-1/2 transform -translate-y-1/2 z-10
-                          bg-black text-white w-[clamp(16px,1.8vw,28px)] h-[clamp(16px,1.8vw,28px)] rounded-full 
-                          flex items-center justify-center shadow-md
-                          transition-all duration-300
-                          hover:scale-110
-                          p-1
-                        "
-                      >
-                        ❯
-                      </button>
-                      <div
-                        ref={carrosselRef}
-                        className="flex overflow-x-auto gap-[clamp(1.5rem,3vw,5rem)] px-4 sm:px-6 py-3 scroll-smooth hide-scrollbar cursor-grab w-[calc(100%-clamp(32px,3.6vw,56px))] mx-auto"
-                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                        onMouseDown={handleMouseDown}
-                        onMouseUp={handleMouseUp}
-                        onMouseLeave={handleMouseUp}
-                        onMouseMove={handleMouseMove}
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleMouseUp}
-                        onTouchMove={handleTouchMove}
-                      >
-                        {Array.isArray(relatedTreatments) && relatedTreatments.map((relacionado, idx) => {
+                  {/* Produtos Relacionados - CENTRALIZADOS */}
+                  <div className="w-full flex justify-center px-4 sm:px-6 lg:px-4 mt-8">
+                    <div className="w-full max-w-md">
+                      <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-4 text-center whitespace-nowrap">
+                        Tratamentos Relacionados
+                      </h3>
+                      <div className="relative">
+                        <button
+                          onClick={() => scrollCarrossel("left")}
+                          className="
+                            absolute left-0 top-1/2 transform -translate-y-1/2 z-10 -translate-x-8
+                            bg-black text-white w-6 h-6 rounded-full 
+                            flex items-center justify-center shadow-md
+                            transition-all duration-300
+                            hover:scale-110
+                            text-xs
+                          "
+                        >
+                          ❮
+                        </button>
+                        <button
+                          onClick={() => scrollCarrossel("right")}
+                          className="
+                            absolute right-0 top-1/2 transform -translate-y-1/2 z-10 translate-x-8
+                            bg-black text-white w-6 h-6 rounded-full 
+                            flex items-center justify-center shadow-md
+                            transition-all duration-300
+                            hover:scale-110
+                            text-xs
+                          "
+                        >
+                          ❯
+                        </button>
+                        <div
+                          ref={carrosselRef}
+                          className="flex overflow-x-auto gap-4 py-3 scroll-smooth hide-scrollbar cursor-grab"
+                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                          onMouseDown={handleMouseDown}
+                          onMouseUp={handleMouseUp}
+                          onMouseLeave={handleMouseUp}
+                          onMouseMove={handleMouseMove}
+                          onTouchStart={handleTouchStart}
+                          onTouchEnd={handleMouseUp}
+                          onTouchMove={handleTouchMove}
+                        >
+                          {Array.isArray(relatedTreatments) && relatedTreatments.slice(0, 3).map((relacionado, idx) => {
                           if (!relacionado || typeof relacionado !== 'object') return null;
                           
                           const relacionadoImagem = relacionado.images && relacionado.images.length > 0 
@@ -743,17 +743,18 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           return (
                             <div 
                               key={idx} 
-                              className="flex-shrink-0 flex flex-col items-center item-carrossel"
+                              className="flex-shrink-0 flex flex-col items-center item-carrossel w-20"
                               onClick={() => navigateToTreatment(relacionado)}
                             >
                               <img
                                 src={relacionadoImagem}
                                 alt={typeof relacionado.name === 'string' ? relacionado.name : `Tratamento ${idx + 1}`}
-                                className="h-[clamp(48px,6vw,96px)] w-auto object-contain hover:scale-110 transition-all duration-300 cursor-pointer"
+                                className="h-16 w-16 object-cover rounded-lg hover:scale-110 transition-all duration-300 cursor-pointer"
                               />
                             </div>
                           );
                         })}
+                        </div>
                       </div>
                     </div>
                   </div>
