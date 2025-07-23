@@ -413,9 +413,9 @@ const SalonFinder = () => {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 md:mb-2">
                                  <h4 className="font-bold text-lg md:text-xl text-gray-900 truncate">{salon.name}</h4>
-                                 {salon.is_verified && (
-                                   <img 
-                                     src={salon.plan === 'premium' || salon.plan === 'profissional' ? verifiedBadgeGold : verifiedBadgeBlue} 
+                                 {(salon.is_verified || salon.plan_type === 'verificado_azul' || salon.plan_type === 'verificado_dourado') && (
+                                   <img
+                                     src={salon.plan_type === 'verificado_dourado' || salon.plan === 'premium' || salon.plan === 'profissional' ? verifiedBadgeGold : verifiedBadgeBlue} 
                                      alt="Verificado" 
                                      className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0" 
                                    />

@@ -58,11 +58,11 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
   const fetchTreatment = async () => {
     try {
-      const { data: salonData, error: salonError } = await supabase
-        .from('salons')
-        .select('id, phone, instagram, address')
-        .eq('slug', slug)
-        .maybeSingle();
+        const { data: salonData, error: salonError } = await supabase
+          .from('salons')
+          .select('id, phone, instagram, address, city, state, postal_code')
+          .eq('slug', slug)
+          .maybeSingle();
 
       if (salonError || !salonData) {
         setLoading(false);
@@ -140,12 +140,17 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
         .eq('name', treatmentData.category)
         .maybeSingle();
 
+      // Montar endereço completo para exibição
+      const fullAddress = [salonData.address, salonData.city, salonData.state, salonData.postal_code]
+        .filter(Boolean)
+        .join(', ');
+
       const fullTreatment = {
         ...treatmentData,
         custom_price: salonTreatmentData.custom_price,
         salon_phone: salonData.phone,
         salon_instagram: salonData.instagram,
-        salon_address: salonData.address
+        salon_address: fullAddress
       };
 
       setTreatmentCategory(categoryData?.name || treatmentData.category || '');
@@ -199,7 +204,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           custom_price: item.custom_price,
           salon_phone: salonData.phone,
           salon_instagram: salonData.instagram,
-          salon_address: salonData.address
+          salon_address: fullAddress
         })) || [];
         
         setAllTreatments(allFormattedTreatments);
@@ -688,76 +693,131 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     </div>
                   </div>
 
-                  {/* Produtos Relacionados - Setas mais próximas no mobile */}
-                  <div className="w-full md:w-[60%] flex justify-center px-4 sm:px-6 lg:px-4 mt-8">
-                    <div className="w-full max-w-md md:max-w-none">
-                      <h3 className="text-[clamp(1.1rem,1.8vw,1.5rem)] font-semibold text-gray-800 mb-4 text-center md:text-left md:ml-[clamp(2rem,4vw,6rem)] whitespace-nowrap">
-                        Tratamentos Relacionados
-                      </h3>
-                      <div className="relative md:ml-[clamp(2rem,4vw,6rem)]">
-                        <button
-                          onClick={() => scrollCarrossel("left")}
-                          className="
-                            absolute left-0 top-1/2 transform -translate-y-1/2 z-10 -translate-x-8
-                            bg-black text-white w-5 h-5 rounded-full {/* Diminuir tamanho das setas */}
-                            flex items-center justify-center shadow-md
-                            transition-all duration-300
-                            hover:scale-110
-                            text-xs
-                          "
-                        >
-                          ❮
-                        </button>
-                        <button
-                          onClick={() => scrollCarrossel("right")}
-                          className="
-                            absolute right-0 top-1/2 transform -translate-y-1/2 z-10 translate-x-8
-                            bg-black text-white w-5 h-5 rounded-full {/* Diminuir tamanho das setas */} 
-                            flex items-center justify-center shadow-md
-                            transition-all duration-300
-                            hover:scale-110
-                            text-xs
-                          "
-                        >
-                          ❯
-                        </button>
-                         <div
-                           ref={carrosselRef}
-                           className="flex overflow-x-auto gap-2 py-3 scroll-smooth hide-scrollbar cursor-grab"
-                           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                          onMouseDown={handleMouseDown}
-                          onMouseUp={handleMouseUp}
-                          onMouseLeave={handleMouseUp}
-                          onMouseMove={handleMouseMove}
-                          onTouchStart={handleTouchStart}
-                          onTouchEnd={handleMouseUp}
-                          onTouchMove={handleTouchMove}
-                        >
-                          {Array.isArray(relatedTreatments) && relatedTreatments.slice(0, 3).map((relacionado, idx) => {
-                            if (!relacionado || typeof relacionado !== 'object') return null;
+                  {/* TRATAMENTOS RELACIONADOS */}
+                  {relatedTreatments.length > 0 && (
+                    <div className="w-full">
+                      {/* Desktop: Fixo no bottom */}
+                      <div className="hidden md:block fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg z-40">
+                        <div className="max-w-6xl mx-auto px-8 py-6">
+                          <div className="flex flex-col items-center">
+                            <h2 className="text-2xl font-bold text-black mb-6 text-center">Tratamentos Relacionados</h2>
                             
-                            const relacionadoImagem = relacionado.images && relacionado.images.length > 0 
-                              ? relacionado.images[0] 
-                              : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80";
-                            
-                            return (
-                              <div 
-                                key={idx} 
-                                className="flex-shrink-0 flex flex-col items-center item-carrossel w-16 md:w-auto"
-                                onClick={() => navigateToTreatment(relacionado)}
+                            <div className="flex justify-center gap-8">
+                              {relatedTreatments.slice(0, 4).map((relatedTreatment, index) => (
+                                <button
+                                  key={`${relatedTreatment.id}-${index}`}
+                                  onClick={() => navigateToTreatment(relatedTreatment)}
+                                  className="group bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100 w-64"
+                                >
+                                  <div className="w-full h-32 bg-gray-100 rounded-2xl mb-3 overflow-hidden">
+                                    {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
+                                      <img
+                                        src={relatedTreatment.images[0]}
+                                        alt={relatedTreatment.name}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                        </svg>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <h3 className="text-sm font-semibold text-gray-800 mb-1 text-center line-clamp-2">
+                                    {relatedTreatment.name}
+                                  </h3>
+                                  <p className="text-xs text-gray-500 text-center line-clamp-2">
+                                    {relatedTreatment.subtitle}
+                                  </p>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Mobile: 3 tratamentos centralizados, não fixos */}
+                      <div className="md:hidden mt-8">
+                        <div className="flex flex-col items-center">
+                          <h2 className="text-xl font-bold text-black mb-4 text-center">Tratamentos Relacionados</h2>
+                          
+                          {/* Setas mais próximas dos tratamentos */}
+                          <div className="flex justify-center gap-3 mb-3">
+                            <button
+                              className="bg-white/90 backdrop-blur rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200"
+                              onClick={() => scrollCarrossel("left")}
+                            >
+                              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                              </svg>
+                            </button>
+                            <button
+                              className="bg-white/90 backdrop-blur rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200"
+                              onClick={() => scrollCarrossel("right")}
+                            >
+                              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                              </svg>
+                            </button>
+                          </div>
+
+                          <div 
+                            ref={carrosselRef}
+                            className="flex gap-3 overflow-x-auto scrollbar-hide px-4 pb-4 justify-center"
+                            style={{
+                              scrollbarWidth: 'none',
+                              msOverflowStyle: 'none',
+                              cursor: isDragging ? 'grabbing' : 'grab'
+                            }}
+                            onMouseDown={handleMouseDown}
+                            onMouseUp={handleMouseUp}
+                            onMouseLeave={handleMouseUp}
+                            onMouseMove={handleMouseMove}
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleMouseUp}
+                          >
+                            {relatedTreatments.slice(0, 3).map((relatedTreatment, index) => (
+                              <button
+                                key={`${relatedTreatment.id}-${index}`}
+                                onClick={(e) => {
+                                  if (!isDragging) {
+                                    navigateToTreatment(relatedTreatment);
+                                  }
+                                  e.preventDefault();
+                                }}
+                                className="item-carrossel flex-shrink-0 group bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100 w-52"
+                                style={{ userSelect: 'none' }}
                               >
-                                <img
-                                  src={relacionadoImagem}
-                                  alt={typeof relacionado.name === 'string' ? relacionado.name : `Tratamento ${idx + 1}`}
-                                  className="h-12 w-12 md:h-[clamp(48px,6vw,96px)] md:w-auto object-cover md:object-contain rounded-lg hover:scale-110 transition-all duration-300 cursor-pointer"
-                                />
-                              </div>
-                            );
-                          })}
+                                <div className="w-full h-28 bg-gray-100 rounded-2xl mb-3 overflow-hidden">
+                                  {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
+                                    <img
+                                      src={relatedTreatment.images[0]}
+                                      alt={relatedTreatment.name}
+                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                      <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                      </svg>
+                                    </div>
+                                  )}
+                                </div>
+                                <h3 className="text-sm font-semibold text-gray-800 mb-1 text-center line-clamp-2">
+                                  {relatedTreatment.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 text-center line-clamp-2">
+                                  {relatedTreatment.subtitle}
+                                </p>
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Vídeo em Desktop */}
