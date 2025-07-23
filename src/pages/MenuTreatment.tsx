@@ -530,7 +530,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                     </div>
 
                     {/* Texto + Preço */}
-                    <div className="flex flex-col gap-2 sm:gap-3 w-full lg:w-1/2 justify-start lg:justify-start mt-4 lg:mt-0 lg:sticky lg:top-4 lg:self-start">
+                    <div className="flex flex-col gap-2 sm:gap-3 w-full lg:w-1/2 justify-start lg:justify-start mt-4 lg:mt-0">{/* Remover sticky */}
                       <p className="text-[clamp(0.85rem,1.2vw,1rem)] uppercase font-medium text-gray-500">
                         {typeof item.category === 'string' ? item.category : treatmentCategory}
                       </p>
