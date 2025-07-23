@@ -72,8 +72,15 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
 
   const next = () => {
     setCurrentIndex((prev) => {
-      if (prev >= total - (isMobile ? 1 : 4)) return prev;
-      return prev + 1;
+      if (isMobile) {
+        // Mobile: 1 categoria por vez
+        if (prev >= total - 1) return prev;
+        return prev + 1;
+      } else {
+        // Desktop: 4 categorias por vez
+        if (prev >= total - 4) return prev;
+        return prev + 1;
+      }
     });
   };
 
@@ -166,16 +173,16 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
           )}
 
           <motion.div 
-            className={`flex h-full ${isMobile ? 'gap-4 px-2' : 'gap-0'}`}
+            className={`flex h-full ${isMobile ? 'gap-0' : 'gap-0'}`}
             ref={constraintsRef}
-            drag="x"
+            drag={isMobile ? "x" : "x"}
             dragConstraints={constraintsRef}
-            dragElastic={0.1}
+            dragElastic={isMobile ? 0.05 : 0.1}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             style={{
               x: isMobile ? `calc(${currentIndex * -100}%)` : currentIndex * -25 + "%",
-              paddingRight: isMobile ? '20%' : '0',
+              paddingRight: isMobile ? '0' : '0',
             }}
             animate={{
               x: isMobile ? `calc(${currentIndex * -100}%)` : currentIndex * -25 + "%",
@@ -183,16 +190,16 @@ const MenuCategories = ({ onBack, onCategorySelect }: MenuCategoriesProps) => {
             }}
             initial={{ opacity: 0 }}
             transition={{
-              type: "spring",
-              stiffness: 400,
-              damping: 30,
-              duration: 0.4
+              type: isMobile ? "spring" : "spring",
+              stiffness: isMobile ? 300 : 400,
+              damping: isMobile ? 40 : 30,
+              duration: isMobile ? 0.6 : 0.4
             }}
           >
             {getSlides().map((cat, index) => (
               <motion.div
                 key={cat.id}
-                className={`relative ${isMobile ? 'w-[100%] flex-shrink-0' : 'w-[25%] flex-shrink-0'} h-full overflow-hidden cursor-pointer group`}
+                className={`relative ${isMobile ? 'w-[100vw] flex-shrink-0' : 'w-[25%] flex-shrink-0'} h-full overflow-hidden cursor-pointer group`}
                 onClick={() => {
                   onCategorySelect(cat.name, cat.name);
                 }}
