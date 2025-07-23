@@ -743,7 +743,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                             return (
                               <div 
                                 key={idx} 
-                                className="flex-shrink-0 flex flex-col items-center item-carrossel w-20"
+                                className="flex-shrink-0 flex flex-col items-center justify-center item-carrossel w-20 mx-auto"
                                 onClick={() => navigateToTreatment(relacionado)}
                               >
                                 <img
