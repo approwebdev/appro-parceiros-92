@@ -246,7 +246,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
     if (items.length === 0) return;
     
     const itemWidth = items[0].getBoundingClientRect().width;
-    const gap = 16; // 4 * 4 = 16px (gap-4)
+    const gap = 8; // 2 * 4 = 8px (gap-2)
     const scrollAmount = dir === "left" ? -(itemWidth + gap) : (itemWidth + gap);
     
     carrosselRef.current.scrollBy({
@@ -634,7 +634,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
                       {/* Preço */}
                       <div className="border-t pt-2 sm:pt-3 mt-2 sm:mt-3">
-                        <div className="flex items-start justify-center gap-2 sm:gap-4 px-4">{/* Centralizar e adicionar padding lateral */}
+                        <div className="flex items-start justify-between gap-6 sm:gap-8 px-4">{/* Aumentar gap entre preço e botão */}
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2 sm:gap-4 mb-2">
                               <span className="text-[clamp(0.95rem,1.2vw,1.125rem)] text-gray-400">
@@ -657,7 +657,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                                  )}
                                </button>
                             </div>
-                            <h2 className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold text-black">
+                            <h2 className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-extrabold text-black">{/* Aumentar tamanho do preço */}
                               {showPrice ? (
                                 formatPrice(typeof item.custom_price === 'number' ? item.custom_price : 0)
                               ) : (
@@ -699,7 +699,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           onClick={() => scrollCarrossel("left")}
                           className="
                             absolute left-0 top-1/2 transform -translate-y-1/2 z-10 -translate-x-8
-                            bg-black text-white w-6 h-6 rounded-full 
+                            bg-black text-white w-5 h-5 rounded-full {/* Diminuir tamanho das setas */}
                             flex items-center justify-center shadow-md
                             transition-all duration-300
                             hover:scale-110
@@ -712,7 +712,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           onClick={() => scrollCarrossel("right")}
                           className="
                             absolute right-0 top-1/2 transform -translate-y-1/2 z-10 translate-x-8
-                            bg-black text-white w-6 h-6 rounded-full 
+                            bg-black text-white w-5 h-5 rounded-full {/* Diminuir tamanho das setas */} 
                             flex items-center justify-center shadow-md
                             transition-all duration-300
                             hover:scale-110
@@ -723,7 +723,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                         </button>
                         <div
                           ref={carrosselRef}
-                          className="flex overflow-x-auto gap-4 py-3 scroll-smooth hide-scrollbar cursor-grab"
+                          className="flex overflow-x-auto gap-2 py-3 scroll-smooth hide-scrollbar cursor-grab">{/* Diminuir gap dos tratamentos relacionados */}
                           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                           onMouseDown={handleMouseDown}
                           onMouseUp={handleMouseUp}
@@ -734,26 +734,26 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
                           onTouchMove={handleTouchMove}
                         >
                           {Array.isArray(relatedTreatments) && relatedTreatments.slice(0, 3).map((relacionado, idx) => {
-                          if (!relacionado || typeof relacionado !== 'object') return null;
-                          
-                          const relacionadoImagem = relacionado.images && relacionado.images.length > 0 
-                            ? relacionado.images[0] 
-                            : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80";
-                          
-                          return (
-                            <div 
-                              key={idx} 
-                              className="flex-shrink-0 flex flex-col items-center item-carrossel w-20"
-                              onClick={() => navigateToTreatment(relacionado)}
-                            >
-                              <img
-                                src={relacionadoImagem}
-                                alt={typeof relacionado.name === 'string' ? relacionado.name : `Tratamento ${idx + 1}`}
-                                className="h-16 w-16 object-cover rounded-lg hover:scale-110 transition-all duration-300 cursor-pointer"
-                              />
-                            </div>
-                          );
-                        })}
+                            if (!relacionado || typeof relacionado !== 'object') return null;
+                            
+                            const relacionadoImagem = relacionado.images && relacionado.images.length > 0 
+                              ? relacionado.images[0] 
+                              : "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80";
+                            
+                            return (
+                              <div 
+                                key={idx} 
+                                className="flex-shrink-0 flex flex-col items-center item-carrossel w-20"
+                                onClick={() => navigateToTreatment(relacionado)}
+                              >
+                                <img
+                                  src={relacionadoImagem}
+                                  alt={typeof relacionado.name === 'string' ? relacionado.name : `Tratamento ${idx + 1}`}
+                                  className="h-16 w-16 object-cover rounded-lg hover:scale-110 transition-all duration-300 cursor-pointer"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
