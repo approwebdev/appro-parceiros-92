@@ -198,27 +198,28 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
 
             const infoWindow = new window.google.maps.InfoWindow({
               content: `
-                <div style="padding: 12px; max-width: 280px; font-family: system-ui, -apple-system, sans-serif;">
-                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                    <h3 style="margin: 0; font-weight: 600; color: #1f2937; font-size: 16px;">${salon.name}</h3>
+                <div style="padding: 16px; width: 320px; font-family: system-ui, -apple-system, sans-serif; overflow: visible;">
+                  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <h3 style="margin: 0; font-weight: 600; color: #1f2937; font-size: 18px;">${salon.name}</h3>
                     ${(salon.is_verified || salon.plan_type === 'verificado_azul' || salon.plan_type === 'verificado_dourado') ? `
                       <img src="${salon.plan_type === 'verificado_dourado' || salon.plan === 'premium' || salon.plan === 'profissional' ? '/lovable-uploads/b689eb05-022b-4de0-9b7a-e4c94527301d.png' : '/lovable-uploads/0a15abc3-681d-456b-9d90-deecf0d0f549.png'}" 
-                           alt="Verificado" style="width: 18px; height: 18px;">
+                           alt="Verificado" style="width: 20px; height: 20px;">
                     ` : ''}
                   </div>
                   
                   ${salon.address ? `
-                    <div style="margin-bottom: 8px;">
-                      <span style="color: #6b7280; font-size: 13px; font-weight: 500;">📍 Endereço:</span>
-                      <p style="margin: 2px 0 0 0; color: #374151; font-size: 13px; line-height: 1.4;">${salon.address}</p>
+                    <div style="margin-bottom: 12px;">
+                      <span style="color: #6b7280; font-size: 14px; font-weight: 600;">📍 Endereço:</span>
+                      <p style="margin: 4px 0 0 0; color: #374151; font-size: 14px; line-height: 1.5;">${salon.address}</p>
                     </div>
                   ` : ''}
                   
-                  <div style="display: flex; gap: 12px; margin-top: 8px;">
+                  
+                  <div style="display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;">
                     ${salon.phone ? `
                       <a href="https://wa.me/55${salon.phone.replace(/\D/g, '')}" 
                          target="_blank"
-                         style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: #25d366; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                         style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #25d366; color: white; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         📱 WhatsApp
                       </a>
                     ` : ''}
@@ -226,19 +227,21 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ salons, userLocation }) => {
                     ${salon.instagram ? `
                       <a href="https://instagram.com/${salon.instagram.replace('@', '')}" 
                          target="_blank"
-                         style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: #e4405f; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                         style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #e4405f; color: white; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         📷 Instagram
                       </a>
                     ` : ''}
                   </div>
                   
                   ${salon.distance ? `
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
-                      <span style="color: #10b981; font-size: 12px; font-weight: 500;">📏 ${salon.distance.toFixed(1)}km de distância</span>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                      <span style="color: #10b981; font-size: 13px; font-weight: 600;">📏 ${salon.distance.toFixed(1)}km de distância</span>
                     </div>
                   ` : ''}
                 </div>
-              `
+              `,
+              maxWidth: 350,
+              disableAutoPan: false
             });
 
             marker.addListener('click', () => infoWindow.open(map, marker));

@@ -695,125 +695,82 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
                   {/* TRATAMENTOS RELACIONADOS */}
                   {relatedTreatments.length > 0 && (
-                    <div className="w-full">
-                      {/* Desktop: Fixo no bottom */}
-                      <div className="hidden md:block fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg z-40">
-                        <div className="max-w-6xl mx-auto px-8 py-6">
-                          <div className="flex flex-col items-center">
-                            <h2 className="text-2xl font-bold text-black mb-6 text-center">Tratamentos Relacionados</h2>
-                            
-                            <div className="flex justify-center gap-8">
-                              {relatedTreatments.slice(0, 4).map((relatedTreatment, index) => (
-                                <button
-                                  key={`${relatedTreatment.id}-${index}`}
-                                  onClick={() => navigateToTreatment(relatedTreatment)}
-                                  className="group bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100 w-64"
-                                >
-                                  <div className="w-full h-32 bg-gray-100 rounded-2xl mb-3 overflow-hidden">
-                                    {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
-                                      <img
-                                        src={relatedTreatment.images[0]}
-                                        alt={relatedTreatment.name}
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                        </svg>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <h3 className="text-sm font-semibold text-gray-800 mb-1 text-center line-clamp-2">
-                                    {relatedTreatment.name}
-                                  </h3>
-                                  <p className="text-xs text-gray-500 text-center line-clamp-2">
-                                    {relatedTreatment.subtitle}
-                                  </p>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Mobile: 3 tratamentos centralizados, não fixos */}
-                      <div className="md:hidden mt-8">
-                        <div className="flex flex-col items-center">
-                          <h2 className="text-xl font-bold text-black mb-4 text-center">Tratamentos Relacionados</h2>
-                          
-                          {/* Setas mais próximas dos tratamentos */}
-                          <div className="flex justify-center gap-3 mb-3">
-                            <button
-                              className="bg-white/90 backdrop-blur rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200"
-                              onClick={() => scrollCarrossel("left")}
-                            >
-                              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                              </svg>
-                            </button>
-                            <button
-                              className="bg-white/90 backdrop-blur rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200"
-                              onClick={() => scrollCarrossel("right")}
-                            >
-                              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                              </svg>
-                            </button>
-                          </div>
-
-                          <div 
-                            ref={carrosselRef}
-                            className="flex gap-3 overflow-x-auto scrollbar-hide px-4 pb-4 justify-center"
-                            style={{
-                              scrollbarWidth: 'none',
-                              msOverflowStyle: 'none',
-                              cursor: isDragging ? 'grabbing' : 'grab'
-                            }}
-                            onMouseDown={handleMouseDown}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
-                            onMouseMove={handleMouseMove}
-                            onTouchStart={handleTouchStart}
-                            onTouchMove={handleTouchMove}
-                            onTouchEnd={handleMouseUp}
+                    <div className="mt-8">
+                      <div className="flex flex-col items-center">
+                        <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6 text-center">Tratamentos Relacionados</h2>
+                        
+                        {/* Controles do carrossel - apenas mobile */}
+                        <div className="flex justify-center gap-4 mb-4 md:hidden">
+                          <button
+                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200"
+                            onClick={() => scrollCarrossel("left")}
                           >
-                            {relatedTreatments.slice(0, 3).map((relatedTreatment, index) => (
-                              <button
-                                key={`${relatedTreatment.id}-${index}`}
-                                onClick={(e) => {
-                                  if (!isDragging) {
-                                    navigateToTreatment(relatedTreatment);
-                                  }
-                                  e.preventDefault();
-                                }}
-                                className="item-carrossel flex-shrink-0 group bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100 w-52"
-                                style={{ userSelect: 'none' }}
-                              >
-                                <div className="w-full h-28 bg-gray-100 rounded-2xl mb-3 overflow-hidden">
-                                  {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
-                                    <img
-                                      src={relatedTreatment.images[0]}
-                                      alt={relatedTreatment.name}
-                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                      <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                      </svg>
-                                    </div>
-                                  )}
-                                </div>
-                                <h3 className="text-sm font-semibold text-gray-800 mb-1 text-center line-clamp-2">
-                                  {relatedTreatment.name}
-                                </h3>
-                                <p className="text-xs text-gray-500 text-center line-clamp-2">
-                                  {relatedTreatment.subtitle}
-                                </p>
-                              </button>
-                            ))}
-                          </div>
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                            </svg>
+                          </button>
+                          <button
+                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200"
+                            onClick={() => scrollCarrossel("right")}
+                          >
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Container do carrossel */}
+                        <div 
+                          ref={carrosselRef}
+                          className="flex gap-4 overflow-x-auto scrollbar-hide px-4 pb-4 md:justify-center md:flex-wrap md:max-w-6xl"
+                          style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            cursor: isDragging ? 'grabbing' : 'grab'
+                          }}
+                          onMouseDown={handleMouseDown}
+                          onMouseUp={handleMouseUp}
+                          onMouseLeave={handleMouseUp}
+                          onMouseMove={handleMouseMove}
+                          onTouchStart={handleTouchStart}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleMouseUp}
+                        >
+                          {relatedTreatments.slice(0, 8).map((relatedTreatment, index) => (
+                            <button
+                              key={`${relatedTreatment.id}-${index}`}
+                              onClick={(e) => {
+                                if (!isDragging) {
+                                  navigateToTreatment(relatedTreatment);
+                                }
+                                e.preventDefault();
+                              }}
+                              className="item-carrossel flex-shrink-0 group bg-white rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100 w-60 md:w-72"
+                              style={{ userSelect: 'none' }}
+                            >
+                              <div className="w-full h-32 md:h-36 bg-gray-100 rounded-2xl mb-3 overflow-hidden">
+                                {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
+                                  <img
+                                    src={relatedTreatment.images[0]}
+                                    alt={relatedTreatment.name}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                    </svg>
+                                  </div>
+                                )}
+                              </div>
+                              <h3 className="text-sm font-semibold text-gray-800 mb-1 text-center line-clamp-2">
+                                {relatedTreatment.name}
+                              </h3>
+                              <p className="text-xs text-gray-500 text-center line-clamp-2">
+                                {relatedTreatment.subtitle}
+                              </p>
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
