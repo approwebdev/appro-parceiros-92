@@ -795,23 +795,7 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
           )}
         </div>
         
-        {/* Controles do slider */}
-        {slides.length > 1 && (
-          <>
-            <button 
-              onClick={() => setSlideIndex(Math.max(slideIndex-1, 0))} 
-              className="absolute left-4 top-[40%] lg:top-1/2 transform -translate-y-1/2 z-40 bg-[#E6E6E6] rounded-full w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center"
-            >
-              ❮
-            </button>
-            <button 
-              onClick={() => setSlideIndex(Math.min(slideIndex+1, slides.length-1))} 
-              className="absolute right-4 top-[40%] lg:top-1/2 transform -translate-y-1/2 z-40 bg-[#E6E6E6] rounded-full w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center"
-            >
-              ❯
-            </button>
-          </>
-        )}
+        {/* Controles do slider removidos */}
       </motion.div>
     </div>
   );
