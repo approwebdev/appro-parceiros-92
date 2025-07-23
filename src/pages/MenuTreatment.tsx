@@ -699,65 +699,74 @@ const MenuTreatment = ({ onBack, treatmentId, selectedCategory }: MenuTreatmentP
 
                   {/* TRATAMENTOS RELACIONADOS */}
                   {relatedTreatments.length > 0 && (
-                    <div className="mt-8">
+                    <div className="mt-8 flex">
                       {/* DESKTOP - Layout alinhado */}
-                      <div className="hidden md:block">
+                      <div className="hidden md:block w-full">
                         {/* Título alinhado à esquerda */}
                         <h2 className="text-xl md:text-2xl font-bold text-black mb-6 text-left">Tratamentos Relacionados</h2>
                         
-                        {/* Container com setas e produtos na mesma linha */}
-                        <div className="flex items-center gap-4">
-                          {/* Seta esquerda */}
-                          <button
-                            onClick={prevSlide}
-                            disabled={slideIndex === 0}
-                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                        {/* Container principal com layout flexível */}
+                        <div className="flex">
+                          {/* Container do carrossel que ocupa toda a largura disponível menos o espaço do vídeo */}
+                          <div 
+                            className="flex items-center gap-4"
+                            style={{ 
+                              width: 'calc(100% - clamp(225px,35.975vw,411px) - 2rem)',
+                              minHeight: 'clamp(225px,35.975vw,411px)'
+                            }}
                           >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-                            </svg>
-                          </button>
-                          
-                          {/* Grid de 4 itens */}
-                          <div className="grid grid-cols-4 gap-6 flex-1">
-                            {relatedTreatments.slice(slideIndex, slideIndex + 4).map((relatedTreatment, index) => (
-                              <button
-                                key={`${relatedTreatment.id}-${index}`}
-                                onClick={() => navigateToTreatment(relatedTreatment)}
-                                className="group transition-all duration-300 hover:scale-105"
-                              >
-                                <div className="w-full aspect-square bg-gray-100 rounded-2xl mb-3 overflow-hidden">
-                                  {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
-                                    <img
-                                      src={relatedTreatment.images[0]}
-                                      alt={relatedTreatment.name}
-                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                      <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                      </svg>
-                                    </div>
-                                  )}
-                                </div>
-                                <h3 className="text-sm font-medium text-gray-800 text-center">
-                                  {relatedTreatment.name}
-                                </h3>
-                              </button>
-                            ))}
+                            {/* Seta esquerda */}
+                            <button
+                              onClick={prevSlide}
+                              disabled={slideIndex === 0}
+                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                            >
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                              </svg>
+                            </button>
+                            
+                            {/* Grid de 4 itens redimensionados */}
+                            <div className="grid grid-cols-4 gap-3 flex-1 max-w-full">
+                              {relatedTreatments.slice(slideIndex, slideIndex + 4).map((relatedTreatment, index) => (
+                                <button
+                                  key={`${relatedTreatment.id}-${index}`}
+                                  onClick={() => navigateToTreatment(relatedTreatment)}
+                                  className="group transition-all duration-300 hover:scale-105"
+                                >
+                                  <div className="w-full aspect-square bg-gray-100 rounded-xl overflow-hidden">
+                                    {relatedTreatment.images && relatedTreatment.images.length > 0 ? (
+                                      <img
+                                        src={relatedTreatment.images[0]}
+                                        alt={relatedTreatment.name}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                        </svg>
+                                      </div>
+                                    )}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                            
+                            {/* Seta direita */}
+                            <button
+                              onClick={nextSlide}
+                              disabled={slideIndex + 4 >= relatedTreatments.length}
+                              className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                            >
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                              </svg>
+                            </button>
                           </div>
                           
-                          {/* Seta direita */}
-                          <button
-                            onClick={nextSlide}
-                            disabled={slideIndex + 4 >= relatedTreatments.length}
-                            className="bg-white/90 backdrop-blur rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-                          >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                            </svg>
-                          </button>
+                          {/* Espaço reservado para o vídeo para manter alinhamento */}
+                          <div className="flex-shrink-0 w-8" />
                         </div>
                       </div>
 
